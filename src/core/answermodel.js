@@ -56,9 +56,15 @@ export class AnswerModel
          * fields: [
          *  {
          *      fieldId: (string),
-         *      answered: { key: (string), value: (string) } | []
+         *      answered: { key: (string), value: (string) } | [...]
          *  }
          * ]
+         * fieldId: id of the field as specified in the definition
+         * answered: Either a single answer object 
+         *           (key - for those answer that are mapped to a key, e.g. multiple choice;
+         *           value - for the actual answer value)
+         *           Or an array, e.g. for multiselect
+         *
          *
          * @type {Object}
          * @private
@@ -136,11 +142,26 @@ export class AnswerModel
         }
 
         var field = this.getStagedField(fieldId);
-        // @todo - Make it an array to accomodate multiple answers
-        field.answered = {
-            key: answeredKey,
-            value: answeredValue
-        };
+
+        // Initially add as an object
+        if (!field.answered) {
+            field.answered = {
+                key: answeredKey,
+                value: answeredValue
+            }; 
+        } else {
+            // Make it an array to accomodate multiple answers
+            var answeredObj;
+            if (!_.isArray(field.answered)) {
+                field.answered = [field.answered];
+                answeredObj = {
+                    key: answeredKey,
+                    value: answeredValue
+                };
+            }
+            field.answered.push(answeredObj)
+        }
+        
 
         return field;
     }
@@ -160,12 +181,28 @@ export class AnswerModel
         }
 
         var field = this.getStagedField(fieldId);
-        if (field.answered.key == answeredKey)
 
-        // @todo - Make it an array to accomodate multiple answers
-        field.answered = null;
+        if (field) {
+            if (_.isArray(field.answered)) {
+                var removeIndex = field.answered.findIndex(function(element, index){
+                    return element.key == answeredKey;
+                });
+                // remove from index
+                if (removeIndex > -1) {
+                    field.answered.splice(removeIndex, 1);
+                    if (field.answered.length == 1) {
+                        // One single array change back to an object
+                        field.answered = field.answered[0];
+                    }
+                }
+            } else {
+                if (field.answered.key == answeredKey)
+                    field.answered = null;
+            }
 
-        return field;
+            return field;
+        }
+        return undefined;
     }
 
     /**

@@ -23,10 +23,10 @@ var promiseutils = require('../../libs/common/promiseutils');
  * @module interactives/evaluation
  *
  * @classdesc
- *  Engine that evaluates regex expression.
+ *  Engine that evaluates all of the the submission (input) matches the correctAnswer.
  *
  */
-export class RegexEval {
+export class Multimatch {
 
     constructor()
     {
@@ -37,6 +37,7 @@ export class RegexEval {
      *
      * @param params  - Evaluation rule param
      * @param {Object{key, value}} input
+     *      where input.value is an array of strings 
      *
      * @returns {Promise(boolean)}
      */
@@ -46,12 +47,10 @@ export class RegexEval {
             if (!input || !input.value) {
                 resolve(false);
             }
-
-            if (typeof input.value != 'string') {
-                throw new Error('Answer value is not of type string');
-            }
-            var re = RegExp('^' + params.pattern + '');
-            var result = re.test(input.value);
+            // LOGIC TEST PENDING!!
+            var result = input.value.every(function(element, index) {
+                return (element in params.matches);
+            });
             resolve(result);
         }.bind(this));
 
@@ -59,4 +58,4 @@ export class RegexEval {
     }
 }
 
-RegexEval.prototype.name = 'regex';
+RegexEval.prototype.name = 'multimatch';
