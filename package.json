@@ -4,6 +4,9 @@
   "description": "EcoLearnia's interactives (UI) library",
   "main": "el-interactives.js",
   "scripts": {
+    "build-deps": "browserify -t babelify  -r bluebird -r lodash -r react/addons | uglifyjs -c >  build/el-externdeps.bundle.min.js",
+    "build-inter": "browserify -t babelify -x bluebird -x lodash -x react/addons -r ./src/interactives.js:interactives -r -o build/el-interactives.bundle.js -d",
+    "watch-inter": "watchify   -t  babelify -x bluebird -x jquery -x lodash -x react/addons -r ./src/interactives.js:interactives -r -o build/el-interactives.bundle.js -d -v",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "repository": {
@@ -20,5 +23,24 @@
   "bugs": {
     "url": "https://github.com/altenia/ecolearnia-interactives/issues"
   },
-  "homepage": "https://github.com/altenia/ecolearnia-interactives#readme"
+  "homepage": "https://github.com/altenia/ecolearnia-interactives#readme",
+  "dependencies": {
+    "ampersand-events": "^1.1.1",
+    "ampersand-view": "^8.0.1",
+    "bluebird": "^2.10.2",
+    "lodash": "^3.10.1",
+    "mathjs": "^2.4.0",
+    "react": "^0.14.0",
+    "react-dom": "^0.14.0"
+  },
+  "devDependencies": {
+    "babelify": "^6.3.0",
+    "blanket": "^1.1.7",
+    "browserify": "^11.2.0",
+    "chai": "^3.3.0",
+    "gulp": "^3.9.0",
+    "mocha": "^2.3.3",
+    "should": "^7.1.1",
+    "watchify": "^3.4.0"
+  }
 }

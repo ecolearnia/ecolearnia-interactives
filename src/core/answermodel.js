@@ -19,8 +19,8 @@
 
 var _ = require('lodash');
 
-var polyfills = require('../../common/polyfills');
-var logger = require('../../common/logger');
+var polyfills = require('../../libs/common/polyfills');
+var logger = require('../../libs/common/logger');
 var Events = require('./events').Events;
 
 
@@ -50,8 +50,10 @@ export class AnswerModel
 
 
         /**
-         * Object that includes fields staged for submission
-         * [
+         * Object that contains fields staged for submission.
+         * For example, student has selected an answer or typed in text but not submitted yet. 
+         *
+         * fields: [
          *  {
          *      fieldId: (string),
          *      answered: { key: (string), value: (string) } | []
@@ -208,7 +210,7 @@ export class AnswerModel
         var timestamp = new Date();
         var payload = {
             fields: _.clone(this.getStagedFields(), true),
-            timeSpent: (timestamp - this.taskStartTime_) * 1000 // in seconds
+            timeSpent: (timestamp.getMilliseconds() - this.taskStartTime_.getMilliseconds()) * 1000 // in seconds
         };
         this.pubsub.publish(
             Events.ANSWER_EVALUATE,

@@ -5,7 +5,7 @@
  * file that was distributed with this source code.
  */
 
-var promiseutils = require('../../common/promiseutils');
+var promiseutils = require('../../libs/common/promiseutils');
 
 /**
  * EcoLearnia v0.0.1

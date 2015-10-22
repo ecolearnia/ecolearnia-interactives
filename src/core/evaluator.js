@@ -19,8 +19,8 @@
 
 var _ = require('lodash');
 
-var logger = require('../../common/logger');
-var promiseutils = require('../../common/promiseutils');
+var logger = require('../../libs/common/logger');
+var promiseutils = require('../../libs/common/promiseutils');
 var Events = require('./events').Events;
 
 /**
@@ -105,8 +105,8 @@ export class LocalEvaluator
      * Register rules per item
      * Applicable for in-memory evaluation (e.g. non remote)
      *
-     * @param {string} itemId
-     * @param {Object} rule
+     * @param {string} itemId - The id associated with item (one per itemContext) 
+     * @param {Object} rule   - The rule associated with the item
      */
     registerItem(itemContext)
     {
@@ -195,7 +195,7 @@ export class LocalEvaluator
      * Evaluate all fields in the submitted answer
      *
      * @param {Object} rule
-     * @param {Object} answer
+     * @param {Array.<{fieldId, answered}>} answer
      *
      * @returns {Promise}
      *      On Succss: (Array<core.AnswerField>)
@@ -204,6 +204,8 @@ export class LocalEvaluator
     {
         var promises = {};
 
+        // Build an array where each element is a evaluation Promise for each field. 
+        // This array is used to make a parallel call to the promises.
         answer.forEach( function(answeredField) {
             var fieldRule = rule.fieldRules[answeredField.fieldId];
 

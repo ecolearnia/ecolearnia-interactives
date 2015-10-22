@@ -7,7 +7,7 @@
 
 //var math = require('mathjs');
 
-var promiseutils = require('../../common/promiseutils');
+var promiseutils = require('../../libs/common/promiseutils');
 
 /**
  * EcoLearnia v0.0.1

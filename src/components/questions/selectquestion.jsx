@@ -17,8 +17,6 @@
 var React = require('react');
 var AbstractQuestionComponent = require('./question.jsx').AbstractQuestionComponent;
 
-var internals = {};
-
 /**
  * @class MultiValueQuestionComponent
  *
@@ -56,7 +54,7 @@ export class SelectQuestionComponent extends AbstractQuestionComponent
         this.bind_('handleChange_');
     }
 
-    handleChange_(fieldId, key, e)
+    handleChange_(fieldId, key, event)
     {
         var checked = event.target.checked;
         var question = this.props.itemContext.getValue(this.props.config.question);

@@ -19,10 +19,11 @@
 
 var _ = require('lodash');
 var React = require('react');
+var ReactDOM = require('react-dom');
 
-var utils = require('../../common/utils');
-var logger = require('../../common/logger');
-var SubPub = require('./../../common/pubsub');
+var utils = require('../../libs/common/utils');
+var logger = require('../../libs/common/logger');
+var PubSub = require('../../libs/common/pubsub');
 
 var AnswerModel = require('./answermodel').AnswerModel;
 
@@ -59,6 +60,7 @@ internals.ItemContext = function(settings)
 
     /**
      * PubSub: component than handles events
+     * @type {PubSub}
      */
     this.pubsub = settings.pubsub;
 
@@ -336,7 +338,7 @@ internals.ItemContext.prototype.renderComponent = function(param, el)
 
     // @todo - Implement strategy pattern to handle different componentKinds
     if (componentKind === 'react') {
-        React.render(component, el);
+        ReactDOM.render(component, el);
     } else {
         component.render();
         el.appendChild(component.el);
