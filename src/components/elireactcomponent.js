@@ -77,7 +77,7 @@ EliReactComponent.prototype.componentKind = function()
 
 EliReactComponent.propTypes = {
     // Component ID
-    componentId: React.PropTypes.object.isRequired,
+    componentId: React.PropTypes.string.isRequired,
     // Content Runtime Environment's context
     itemContext: React.PropTypes.object.isRequired,
     // Component's settings

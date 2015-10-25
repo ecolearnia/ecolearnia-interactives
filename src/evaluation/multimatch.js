@@ -5,6 +5,7 @@
  * file that was distributed with this source code.
  */
 
+var _ = require('lodash');
 var promiseutils = require('../../libs/common/promiseutils');
 
 /**
@@ -26,7 +27,7 @@ var promiseutils = require('../../libs/common/promiseutils');
  *  Engine that evaluates all of the the submission (input) matches the correctAnswer.
  *
  */
-export class Multimatch {
+export class MultiMatch {
 
     constructor()
     {
@@ -44,12 +45,25 @@ export class Multimatch {
     evaluate(params, input)
     {
         var promise = promiseutils.createPromise( function(resolve, reject) {
-            if (!input || !input.value) {
+            if (!input ) {
                 resolve(false);
             }
+
+            // @todo - option to check keys instead of values
             // LOGIC TEST PENDING!!
-            var result = input.value.every(function(element, index) {
-                return (element in params.matches);
+            var values;
+            if (!_.isArray(input)){
+                values = [input.value];
+            } else {
+                values = input.map(function(element) {
+                    return element.value;
+                });
+            }
+
+            // @todo - match all, match subset
+            var result = values.every(function(element, index) {
+                var hasMatch = (params.matches.indexOf(element) > -1);
+                return hasMatch;
             });
             resolve(result);
         }.bind(this));
@@ -58,4 +72,4 @@ export class Multimatch {
     }
 }
 
-RegexEval.prototype.name = 'multimatch';
+MultiMatch.prototype.name = 'multimatch';

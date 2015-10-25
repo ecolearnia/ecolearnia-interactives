@@ -74,7 +74,10 @@ export class SelectQuestionComponent extends AbstractQuestionComponent
         var question = this.props.itemContext.getValue(this.props.config.question);
 
         var optionsSet = [];
+        // For each of the fields
         question.fields.forEach( function(element, index){
+
+            // For each of the options (distractors) within the field
             var options = element.options.map(function(option) {
                 return (
                     <li className="eli-question-option">

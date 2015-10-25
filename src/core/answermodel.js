@@ -153,12 +153,12 @@ export class AnswerModel
             // Make it an array to accomodate multiple answers
             var answeredObj;
             if (!_.isArray(field.answered)) {
-                field.answered = [field.answered];
-                answeredObj = {
-                    key: answeredKey,
-                    value: answeredValue
-                };
-            }
+                field.answered = [field.answered];  
+            } 
+            answeredObj = {
+                key: answeredKey,
+                value: answeredValue
+            };
             field.answered.push(answeredObj)
         }
         

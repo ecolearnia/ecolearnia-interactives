@@ -79,7 +79,7 @@ export class ActionBarComponent extends EliReactComponent
     {
     	var actionbarItems = this.props.config.items.map(function(item) {
             return (
-                <li>{this.renderItem_(item)}</li>
+                <div key={item.type}>{this.renderItem_(item)}</div>
             )
         }.bind(this));
 
@@ -87,7 +87,7 @@ export class ActionBarComponent extends EliReactComponent
         return (
             <div className="eli-actionbar">
                 <ul >
-	                <li className="eli-actionbar-item">
+	                <li >
                         {actionbarItems}
 	                </li>
                 </ul>

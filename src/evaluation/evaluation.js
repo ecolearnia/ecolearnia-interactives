@@ -20,15 +20,21 @@
 
 var MathExpressionEval = require('./mathexpressioneval').MathExpressionEval;
 var RegexEval = require('./regexeval').RegexEval;
+var MultiMatch = require('./multimatch').MultiMatch;
 
 var internals = {};
 
+/**
+ * Registers evaluation engines to the evaluator
+ */
 internals.registerEvalEngines = function(evaluator)
 {
 	var matheval = new MathExpressionEval()
     evaluator.registerEngine(matheval);
     var regexeval = new RegexEval()
     evaluator.registerEngine(regexeval);
+    var multimatch = new MultiMatch()
+    evaluator.registerEngine(multimatch);
 };
 
 
