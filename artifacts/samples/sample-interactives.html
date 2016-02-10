@@ -209,11 +209,11 @@ INTERACTIVES {{
     var evaluator = new interactives.LocalEvaluator(settings);
     interactives.evaluation.registerEvalEngines(evaluator);
 
-    var itemContext = interactives.createItemContext(settings);
-    evaluator.registerItem(itemContext);
+    var itemPlayer = new interactives.ItemPlayer(settings);
+    evaluator.registerItem(itemPlayer);
 
     var el = document.getElementById('placeholder');
-    itemContext.renderComponent('my_question', el);
+    itemPlayer.renderComponent('my_question', el);
 
 </script>
 

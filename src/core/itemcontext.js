@@ -32,6 +32,7 @@ var internals = {};
 
 
 /**
+ * @deprecated Use ItemPlayer instead
  * @class ItemContext
  *
  * @module interactives/core

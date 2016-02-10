@@ -11,7 +11,7 @@
  * EcoLearnia v0.0.1
  *
  * @fileoverview
- *  This file includes the definition of SubmissionHandler class.
+ *  This file includes the definition of AnswerModel class.
  *
  * @author Young Suk Ahn Park
  * @date 6/02/15
@@ -51,7 +51,7 @@ export class AnswerModel
 
         /**
          * Object that contains fields staged for submission.
-         * For example, student has selected an answer or typed in text but not submitted yet. 
+         * For example, student has selected an answer or typed in text but not submitted yet.
          *
          * fields: [
          *  {
@@ -60,7 +60,7 @@ export class AnswerModel
          *  }
          * ]
          * fieldId: id of the field as specified in the definition
-         * answered: Either a single answer object 
+         * answered: Either a single answer object
          *           (key - for those answer that are mapped to a key, e.g. multiple choice;
          *           value - for the actual answer value)
          *           Or an array, e.g. for multiselect
@@ -148,20 +148,20 @@ export class AnswerModel
             field.answered = {
                 key: answeredKey,
                 value: answeredValue
-            }; 
+            };
         } else {
             // Make it an array to accomodate multiple answers
             var answeredObj;
             if (!_.isArray(field.answered)) {
-                field.answered = [field.answered];  
-            } 
+                field.answered = [field.answered];
+            }
             answeredObj = {
                 key: answeredKey,
                 value: answeredValue
             };
             field.answered.push(answeredObj)
         }
-        
+
 
         return field;
     }

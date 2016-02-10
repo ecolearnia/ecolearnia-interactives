@@ -7,7 +7,7 @@
  * file that was distributed with this source code.
  */
 
-var Events = require('ampersand-events');
+var Rx = require('rx');
 
 /**
  * EcoLearnia v0.0.1
@@ -19,7 +19,11 @@ var Events = require('ampersand-events');
  * @date 5/13/15
  */
 
-var internals = {};
+var hasOwnProp = {}.hasOwnProperty;
+
+function createName (name) {
+    return '$' + name;
+}
 
 /**
  * @class SubPub
@@ -34,65 +38,79 @@ var internals = {};
  *
  * @constructor
  */
-internals.PubSub = function(settings)
+export class PubSub
 {
-    // Using Backbone's event
-    this.pubSub = Events.createEmitter();
+    constructor(props)
+    {
+        // Using Backbone's event
+        this.subjects = {};
+    }
+
+    subscribe (topic, handler)
+    {
+        var fnName = createName(topic);
+        this.subjects[fnName] || (this.subjects[fnName] = new Rx.Subject());
+        return this.subjects[fnName].subscribe(handler);
+    }
+
+    /**
+     * Removes subscription
+     *
+     * @param {string} topic
+     * @param {function} handler
+     */
+    unsubscribe (topic, handler)
+    {
+        var fnName = createName(topic);
+        if (this.subjects[fnName]) {
+            this.subjects[fnName].dispose();
+            delete this.subjects[fnName];
+        }
+    }
+
+    /**
+     * Publish message
+     *
+     * @param {string} topic
+     * @param {object} message
+     */
+    publishRaw (topic, data)
+    {
+        var fnName = createName(topic);
+        this.subjects[fnName] || (this.subjects[fnName] = new Rx.Subject());
+        this.subjects[fnName].onNext(data);
+
+    }
+
+    /**
+     * Publish message
+     *
+     * @param {string} topic
+     * @param {string} sourceItemId
+     * @param {string} sourceComponent
+     * @param {object} payload
+     */
+    publish (topic, sourceItemId, sourceComponentId, type, payload) {
+        var message = {
+            timestamp: new Date(),
+            source: {
+                itemId: sourceItemId,
+                componentId: sourceComponentId
+            },
+            type: type,
+            payload: payload
+        };
+        this.publishRaw(topic, message);
+    }
+
+    dispose() {
+        var subjects = this.subjects;
+        for (var prop in subjects) {
+            if (hasOwnProp.call(subjects, prop)) {
+                subjects[prop].dispose();
+            }
+        }
+
+        this.subjects = {};
+    }
 };
-
-
-/**
- * Add subscription
- *
- * @param {string} topic
- * @param {function} handler
- */
-internals.PubSub.prototype.subscribe = function(topic, handler)
-{
-    this.pubSub.on(topic, handler);
-}
-
-/**
- * Removes subscription
- *
- * @param {string} topic
- * @param {function} handler
- */
-internals.PubSub.prototype.unsubscribe = function(topic, handler)
-{
-    this.pubSub.off(topic, handler);
-};
-
-/**
- * Publish message
- *
- * @param {string} topic
- * @param {object} message
- */
-internals.PubSub.prototype.publishRaw = function(topic, message)
-{
-    this.pubSub.trigger(topic, message);
-};
-
-/**
- * Publish message
- *
- * @param {string} topic
- * @param {string} sourceItemId
- * @param {string} sourceComponent
- * @param {object} payload
- */
-internals.PubSub.prototype.publish = function(topic, sourceItemId, sourceComponentId, type, payload) {
-    var message = {
-        timestamp: new Date(),
-        source: {
-            itemId: sourceItemId,
-            componentId: sourceComponentId
-        },
-        type: type,
-        payload: payload
-    };
-    this.publishRaw(topic, message);
-};
-
-module.exports.PubSub = internals.PubSub;

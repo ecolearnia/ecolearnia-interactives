@@ -18,8 +18,9 @@
  * @date 5/14/15
  */
 
-var itemcontext = require('./core/itemcontext');
 var PubSub = require('../libs/common/pubsub').PubSub;
+//var itemcontext = require('./core/itemcontext');
+var ItemPlayer = require('./core/itemplayer').ItemPlayer;
 
 // Interactive Components.
 var ActionBar = require('./components/actionbar.jsx').ActionBarComponent;
@@ -29,12 +30,13 @@ var TemplateContainerComponent = require('./components/templatecontainer').Templ
 
 // @note - this can be externalized to another js bundle
 var LocalEvaluator = require('./core/evaluator').LocalEvaluator;
-module.exports.LocalEvaluator = LocalEvaluator;
 var evaluation = require('./evaluation/evaluation');
+
+module.exports.LocalEvaluator = LocalEvaluator;
 module.exports.evaluation = evaluation;
 
 module.exports.PubSub = PubSub;
-module.exports.createItemContext = itemcontext.createItemContext;
+module.exports.ItemPlayer = ItemPlayer;
 
 // The interactive components must be exported, otherwise the CoreContext will
 // not be able to instantiate.
@@ -42,4 +44,3 @@ module.exports.SelectQuestion = SelectQuestion;
 module.exports.TemplateContainer = TemplateContainerComponent;
 module.exports.ActionBar = ActionBar;
 module.exports.Feedback = Feedback;
-
