@@ -8,7 +8,7 @@
  */
 
 /**
- * EcoLearnia v0.0.2
+ * EcoLearnia v0.0.1
  *
  * @fileoverview
  *  This file includes the definition of ItemPlayer class.
@@ -21,16 +21,12 @@ var _ = require('lodash');
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-import utils from '../../libs/common/utils';
-import logger from '../../libs/common/logger';
-import PubSub from '../../libs/common/pubsub';
+var utils = require('../../libs/common/utils');
+var logger = require('../../libs/common/logger');
+var PubSub = require('../../libs/common/pubsub');
 
-import ComponentContext  from '../../src/components/componentcontext';
-import StoreFacade       from '../../src/core/storefacade';
-import ItemDispatcher    from '../../src/core/itemdispatcher';
-import ItemActionFactory from '../../src/core/itemactionfactory';
-import itemReducers      from '../../src/core/itemreducers';
-import LocalEvaluator    from '../../src/core/localevaluator';
+var AnswerModel = require('./answermodel').AnswerModel;
+
 
 /**
  * @class ItemPlayer
@@ -42,18 +38,19 @@ import LocalEvaluator    from '../../src/core/localevaluator';
  *  components specified in a content item.
  *  Based on the item specification, it creates the components and renders
  *  them as needed.
- *  Besides the components, it also has the references to the dispatcher.
+ *  Besides the components, it also has the references to the subpub for event
+ *  delivery.
  *
  *  The object of this class is created using the factory method createItemPlayer().
  *
  * @constructor
  *
- * @param {object} config
+ * @param {object} settings
  *
  */
 export class ItemPlayer
 {
-    constructor(config)
+    constructor(props)
     {
         /**
          * The logger
@@ -64,7 +61,7 @@ export class ItemPlayer
          * PubSub: component than handles events
          * @type {PubSub}
          */
-        this.pubsub = config.pubsub;
+        this.pubsub = settings.pubsub;
 
         /**
          * Decorator: Decorates UI components by adding styles.
@@ -76,12 +73,12 @@ export class ItemPlayer
          * The namespace to look for the components
          */
         this.componentModule_ = global;
-        if (config.componentModule) {
-            this.componentModule_ = config.componentModule;
+        if (settings.componentModule) {
+            this.componentModule_ = settings.componentModule;
         }
-        else if (config.componentNamespace) {
-            this.componentModule_ = global[config.componentNamespace];
-            this.logger_.info({ componentNamespace: config.componentNamespace} );
+        else if (settings.componentNamespace) {
+            this.componentModule_ = global[settings.componentNamespace];
+            this.logger_.info({ componentNamespace: settings.componentNamespace} );
         }
 
 
@@ -91,31 +88,21 @@ export class ItemPlayer
          * The server uses the retrieved LearnerAssignmentItem to evaluate the
          * submission and append the result (activity).
          */
-        this.associationId_ = config.associationId || (Math.floor((Math.random() * 1000) + 1)).toString();
+        this.associationId_ = settings.associationId || (Math.floor((Math.random() * 1000) + 1)).toString();
 
         /**
          * The content which this context is operating on
          * @type {Object}
          */
-        this.content_ = config.content; // the content body
+        this.content_ = settings.content; // the content body
 
         /**
          * AnswerModel: keeps the answers.
          */
-        this.store_ = new StoreFacade(itemReducers);
-
-        var evaluator = null;
-        if (config.evaluator && config.evaluator === 'remote') {
-            evaluator = new RemoteEvaluator();
-        } else {
-            evaluator = new LocalEvaluator();
-            evaluator.registerItemPlayer(this);
-        }
-
-        this.dispatcher_ = new ItemDispatcher({
-            actionFactory: new ItemActionFactory(evaluator)
+        this.answerModel = new AnswerModel({
+            itemContext: this,
+            definition: this.content_.definition
         });
-        this.dispatcher_.setStore(this.store_);
 
         /**
          * Map of component id and it's specification (description)
@@ -130,9 +117,8 @@ export class ItemPlayer
          */
         this.componentReferences_ = {};
 
-        // Convert component spec from array to Object map for efficient
-        // retrieval.
-        // It populates the this.componentSpecs_
+        // Convert component spec from array to Object map
+        // For efficient retrieval
         this.mapifyComponentSpecs_(this.content_);
     };
 
@@ -202,16 +188,16 @@ export class ItemPlayer
      * a fully qualified name (fqn) of a model object or component object
      *
      * @param {object} param  - the parameter which could be the value itself
-     *      or may be an object which contains "_ref" denoting a local fully
+     *      or may be an object which contains "_lref" denoting a local fully
      *      qualified name to where the actual value is.
      */
     getValue(param)
     {
         var retval = param;
         // If it contains a local reference, get the object it points to.
-        if (param._ref)
+        if (param._lref)
         {
-            retval = this.resolveObject(param._ref);
+            retval = this.resolveObject(param._lref);
         }
         return retval;
     }
@@ -226,33 +212,19 @@ export class ItemPlayer
     resolveObject(fqn)
     {
         var retval;
-
-        if (utils.startsWith(fqn, '.'))
+        // if it starts with '.definition' returns the JSON object,
+        if (utils.startsWith(fqn, '.definition'))
         {
-            // if it starts with '.model' returns the JSON object,
-            if (utils.startsWith(fqn, '.model'))
-            {
-                var refPath = fqn.substring('.model.'.length );
-                retval = utils.dotAccess(this.content_.modelDefinition, refPath);
-            }
-
-            // if it starts with '.component' returns the Component object\
-            else if (utils.startsWith(fqn, '.component.'))
-            {
-                var componentId = fqn.substring(11);
-                retval = this.getComponent(componentId);
-            }
-            else
-            {
-                throw new Exception('Wrong object path, must be either .model or .component')
-            }
-        }
-        // Not starts with dot means it is already a component name.
-        else
-        {
-            retval = this.getComponent(fqn);
+            var refPath = fqn.substring('.definition'.length + 1);
+            retval = utils.dotAccess(this.content_.definition, refPath);
         }
 
+        // if it starts with '.component' returns the Component object\
+        else if (utils.startsWith(fqn, '.component'))
+        {
+            var componentId = fqn.substring(12);
+            retval = this.getComponent(componentId);
+        }
         return retval;
     }
 
@@ -268,15 +240,12 @@ export class ItemPlayer
      */
     mapifyComponentSpecs_(content)
     {
-        /*
-        content.item.components.forEach(function(element, index, array) {
+        content.components.forEach(function(element, index, array) {
             if (element.id in this.componentSpecs_) {
                 throw new Error('Duplicate component ID');
             }
             this.componentSpecs_[element.id] = element;
         }.bind(this));
-        */
-        this.componentSpecs_ = content.item.components;
 
         var componentIds = _.keys(this.componentSpecs_);
 
@@ -289,13 +258,12 @@ export class ItemPlayer
      * Builds the components as specified in the spec
      *
      * @param {object} spec  - The specification of the components
-     * @param {string} componentId  - id of the component
+     * @param {string} id  - id of the component
      *
      * @return {object}  The component instance (a React element)
      */
-    createComponent(componentId)
+    createComponent(spec, id)
     {
-        let spec = this.componentSpecs_[componentId];
         if (!(spec.type in this.componentModule_)) {
             throw new Error('Component ' + spec.type + ' not found in module');
         }
@@ -304,8 +272,10 @@ export class ItemPlayer
         var componentKind = componentClass.prototype.componentKind();
 
         var constructorArg = {
-            context: new ComponentContext(componentId, this),
-            store: this.store_
+            itemAssociationId: this.getAssociationId(),
+            componentId: id,
+            itemContext: this,
+            config: spec.config
         };
 
         var retval = null;
@@ -315,7 +285,7 @@ export class ItemPlayer
             retval = new componentClass(constructorArg);
         }
         this.logger_.info(
-            { componentKind: componentKind, type: spec.type, id: componentId},
+            { componentKind: componentKind, type: spec.type, id: id},
             'Component created'
         );
 
@@ -329,7 +299,7 @@ export class ItemPlayer
      * Either returns the existing object in the reference table, or creates
      * one, registers it and returns it.
      *
-     * @param {string} id - The component Id
+     * @param [string} id
      *
      * @return {object} The component instance (a React element)
      */
@@ -338,7 +308,7 @@ export class ItemPlayer
             if (!(id in this.componentSpecs_)) {
                 throw new Error('Component ID not found');
             }
-            this.componentReferences_[id] = this.createComponent(id);
+            this.componentReferences_[id] = this.createComponent(this.componentSpecs_[id], id);
         }
         return this.componentReferences_[id];
     }

@@ -6,7 +6,7 @@
  */
 
 /**
- * EcoLearnia v0.0.1
+ * EcoLearnia v0.0.2
  *
  * @fileoverview
  *  This file includes the definition of MultiValueQuestionComponent class.
@@ -36,42 +36,39 @@ export class SelectQuestionComponent extends AbstractQuestionComponent
 {
     /*
     propTypes: {
-        // Content Runtime Environment's context
-        itemContext: React.PropTypes.object.isRequired,
-        // Content models
-        contentModels: React.PropTypes.object.isRequired,
-        // Component's settings
-        config: React.PropTypes.object.isRequired
+        // Component context
+        context: React.PropTypes.object.isRequired,
     },*/
     constructor(props)
     {
         super(props);
-
-        this.state = {
-            submitted: false
-        }
 
         this.bind_('handleChange_');
     }
 
     handleChange_(fieldId, key, event)
     {
-        var checked = event.target.checked;
-        var question = this.props.itemContext.getValue(this.props.config.question);
+        var question = this.props.context.getConfigVal('question');
 
-        if (checked) {
+        let state = {};
+        if (event.target.checked) {
             var value = this.getOptionValue(question, fieldId, key);
-            this.props.itemContext.answerModel.addStagedAnswer(fieldId, key, value);
+            state[fieldId] = {
+                key: key,
+                value: value
+            };
         } else {
-            this.props.itemContext.answerModel.removeStagedAnswer(fieldId, key);
+            state[fieldId] = {};
         }
+
+        this.props.context.dispatcher.updateState(state);
     }
 
     render()
     {
         // Returns the object either from the config question value itself
         // Or from the reference to the model.
-        var question = this.props.itemContext.getValue(this.props.config.question);
+        let question = this.props.context.getConfigVal('question');
 
         var optionsSet = [];
         // For each of the fields
@@ -79,9 +76,10 @@ export class SelectQuestionComponent extends AbstractQuestionComponent
 
             // For each of the options (distractors) within the field
             var options = element.options.map(function(option) {
+                // element.responseId is the response's fieldId
                 return (
                     <li className="eli-question-option">
-                        <input type="checkbox" name={element.id} onChange={this.handleChange_.bind(this, element.id, option.key)} value={option.value} />
+                        <input type="checkbox" name={element.responseId} onChange={this.handleChange_.bind(this, element.responseId, option.key)} value={option.value} />
                         {option.value}
                     </li>
                 )

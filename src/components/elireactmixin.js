@@ -19,6 +19,7 @@
 
 /**
  * Mixin for ELI Components based on React
+ * @deprecated
  *
  */
 var EliReactComponentMixin = {

@@ -6,7 +6,7 @@
  */
 
 /**
- * EcoLearnia v0.0.1
+ * EcoLearnia v0.0.2
  *
  * @fileoverview
  *  This file includes the definition of ActionBarComponent class.
@@ -41,20 +41,21 @@ export class ActionBarComponent extends EliReactComponent
     {
         super(props);
         //this.bind_('handleAction_');
-
-        this.state = {
-            submitted: false
-        }
     }
 
     handleAction_(type, e)
     {
         // e.preventDefault();
+        /*
         this.props.itemContext.pubsub.publish(
             'action:' + type,
             this.itemAssociationId(),
             this.componentId(),
             type);
+            */
+        switch (type) {
+            case 'submit': this.props.context.dispatcher.evaluate();
+        }
     }
 
     renderItem_(type)
@@ -77,7 +78,8 @@ export class ActionBarComponent extends EliReactComponent
 
     render()
     {
-    	var actionbarItems = this.props.config.items.map(function(item) {
+        var items = this.props.context.getConfigVal('items');
+    	var actionbarItems = items.map(function(item) {
             return (
                 <div key={item.type}>{this.renderItem_(item)}</div>
             )

@@ -44,10 +44,12 @@ export class FeedbackComponent extends EliReactComponent
             evaluation: {}
         };
 
+        /*
         this.props.itemContext.pubsub.subscribe(
             Events.ANSWER_EVALUATED,
             this.handleEvaluatedEvent_.bind(this)
         );
+        */
     }
 
     handleEvaluatedEvent_(message)

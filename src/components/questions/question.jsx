@@ -39,14 +39,12 @@ export class AbstractQuestionComponent extends EliReactComponent
         super(props);
         this.bind_('handleEvaluatedEvent_');
 
+        /*
         this.props.itemContext.pubsub.subscribe(
             Events.ANSWER_EVALUATED,
             this.handleEvaluatedEvent_.bind(this)
-        );
+        );*/
 
-        this.state = {
-            evaluation: {}
-        };
 
     }
 
@@ -68,7 +66,7 @@ export class AbstractQuestionComponent extends EliReactComponent
     getOptionValue(question, fieldId, key)
     {
         var field = question.fields.find( function(element, index) {
-            return (element.id === fieldId);
+            return (element.responseId === fieldId);
         });
         if (!field) {
             return null;

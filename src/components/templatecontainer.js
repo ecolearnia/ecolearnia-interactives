@@ -74,12 +74,12 @@ export class TemplateContainerComponent extends EliReactComponent
         for (var key in this.elios_) {
             var objectFqn = this.elios_[key];
             var objectEl = this.queryByHook(key);
-            var object = this.props.itemContext.resolveObject(objectFqn);
+            var object = this.props.context.itemPlayer.resolveObject(objectFqn);
 
             if (object.type && object.type.prototype) {
                 // is a component, render it in the el
                 // @todo - Consider checking for object.type.prototype.componentType
-                this.props.itemContext.renderComponent(object, objectEl);
+                this.props.context.itemPlayer.renderComponent(object, objectEl);
             } else {
                 // @todo - Is is OK to just set the textContext with stringified object?
                 objectEl.textContent = object.toString();
@@ -92,7 +92,7 @@ export class TemplateContainerComponent extends EliReactComponent
     }
 
     createMarkup() {
-        var templateMarkup = this.parseTemplate(this.props.config.template);
+        var templateMarkup = this.parseTemplate(this.props.context.getConfigVal('template'));
         return {__html: templateMarkup};
     }
 
@@ -136,4 +136,3 @@ export class TemplateContainerComponent extends EliReactComponent
         return template.join('');
     }
 };
-

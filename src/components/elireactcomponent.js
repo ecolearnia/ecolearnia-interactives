@@ -6,7 +6,7 @@
  */
 
 /**
- * EcoLearnia v0.0.1
+ * EcoLearnia v0.0.2
  *
  * @fileoverview
  *  This file includes the definition of EliReactComponent abstract class.
@@ -76,11 +76,11 @@ EliReactComponent.prototype.componentKind = function()
 };
 
 EliReactComponent.propTypes = {
-    // Component ID
-    componentId: React.PropTypes.string.isRequired,
-    // Content Runtime Environment's context
-    itemContext: React.PropTypes.object.isRequired,
-    // Component's settings
-    config: React.PropTypes.object.isRequired
+    // Component's context
+    context: React.PropTypes.object.isRequired,
+    /**
+     * @type {StoreFacade}
+     * Player's item state store
+     */
+    store: React.PropTypes.object.isRequired
 };
-

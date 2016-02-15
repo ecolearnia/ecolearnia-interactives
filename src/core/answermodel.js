@@ -9,6 +9,7 @@
 
 /**
  * EcoLearnia v0.0.1
+ * @deprecated StateFacade makes obsolte the use of AnserModel
  *
  * @fileoverview
  *  This file includes the definition of AnswerModel class.

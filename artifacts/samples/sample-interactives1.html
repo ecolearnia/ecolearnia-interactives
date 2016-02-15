@@ -1,11 +1,29 @@
-EcoLearnia Interactive Description Language (ELIDS)
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
 
-Loosely Based on QTi 2.1
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8" />
 
-Sample:
+    <link rel="stylesheet" href="css/app.css">
 
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <script src='../../build/el-externdeps.bundle.min.js'></script>
+    <script src="../../build/el-interactives.bundle.js" type="text/javascript" ></script>
 
-    {
+    <title>Interactive (v0.0.2) Test</title>
+</head>
+<body>
+
+INTERACTIVES v0.0.2 {{
+<div id="placeholder"></div>
+}}
+
+<script type="text/javascript">
+    var interactives = require('interactives');
+
+    var contentSpec = {
         "@doc": "This section declares participant's input fields (submission)",
         "responseDeclarations": {
             "field1": {
@@ -19,7 +37,7 @@ Sample:
             },
             "field1": {
                 "cardinality": "single",
-                "baseType": "number"
+                "baseType": "number",
                 "correctAnswer": {
                     "field2": {"expression": "$field2 * $field2 == 4"}
                 }
@@ -35,7 +53,7 @@ Sample:
                 "baseType": "number",
                 "@doc": "This data must be stripped out",
                 "defaultValue": 0,
-            }
+            },
             "@doc": "Following default fields are available:",
             "@doc": "{number:0..1} _aggregate_.score - aggregate score/correctness",
             "@doc": "{string} _aggregate_.feedback -aggregate feedback",
@@ -67,7 +85,7 @@ Sample:
                         ]
                     },
                     {
-                        "id": "field2",
+                        "responseId": "field2",
                         "type": "number",
                         "options": [
                             {
@@ -99,40 +117,41 @@ Sample:
                     "@doc": "For the meantime, this is the method for init",
                     "case": "true",
                     "then": {
-                        "field1.feedback": "Incorrect"
+                        "field1.feedback": "Incorrect",
                         "field2.feedback": "Incorrect"
                     }
                 },
+                /*
                 {
                     "case": { "condition": "incorrect", "field": "field1"},
-                    "then": {
-                        "field": "field1"
+                    "outcomes": {
+                        "field": "field1",
                         "feedback": "Incorrect",
                     }
-                },
+                },*/
                 {
-                    "@doc": "The following is same as { expression: '$field1 > 2'}",
-                    "case": "$field1 > 2",
+                    "@doc": "The following is same as { expression: '$field1_value > 2'}",
+                    "case": "$field1_value > 2",
                     "then": {
                         "field1.score": 0,
                         "field1.feedback": "Number too large"
                     }
                 },
                 {
-                    "case": "$field1 == $field2",
+                    "case": "$field1_value == $field2_value",
                     "then": {
                         "_aggregate_.feedback": "Fields cannot be same"
                     }
                 },
                 {
-                    "case": "$field1 * $field1 == 4",
+                    "case": "$field1_value * $field1_value == 4",
                     "then": {
                         "field1.score": 1,
                         "field1.feedback": "Correct"
                     }
                 },
                 {
-                    "case": "$field2 * $field2 == 4",
+                    "case": "$field2_value * $field2_value == 4",
                     "then": {
                         "field2.score": 1,
                         "field2.feedback": "Correct"
@@ -140,7 +159,7 @@ Sample:
                 },
                 {
                     "case": { "condition": "timeout"},
-                    "outcomes": {
+                    "then": {
                         "_aggregate_.feedback": "Sorry, timed out"
                     }
                 },
@@ -157,17 +176,18 @@ Sample:
         "item": {
             "mainComponent": "my_question",
             "components": {
-                "@doc": "Each component has two properties, type and config."
+                "@doc": "Each component has two properties, type and config.",
                 "my_question": {
                     "type": "TemplateContainer",
                     "config": {
-                        "template": "<div>{{.model.question1.prompt}}<br /> {{.components.selectquestion}} <br/> {{actionbar}} <br/> {{feedback}}</div>",
+                        "template": "<div>{{.model.question1.prompt}}<br /> {{.component.selectquestion}} <br/> {{actionbar}} <br/> {{feedback}}</div>",
+                        //"template": "<div>{{.definition.greet}}<br /> {{.component.selectquestion}} <br/> {{.components.actionbar}} <br/> {{.components.feedback}}</div>",
                     }
                 },
                 "selectquestion": {
-                    "type": "ChoiceInteraction",
+                    "type": "SelectQuestion",
                     "config": {
-                        "question": { "_ref_" : ".model.question"},
+                        "question": { "_ref" : ".model.question1"},
                         "@doc": "Optionally the question property may include the",
                         "@doc": "full definition of the question.",
                         "layout": "flow"
@@ -177,7 +197,7 @@ Sample:
                     "type": "ActionBar",
                     "config": {
                         "items": [
-                            "audio","submission","reset","read","hint"
+                            "tts","submit","reset","hint"
                         ]
                     }
                 },
@@ -201,7 +221,7 @@ Sample:
             "timed": 10,
             "@doc": "If timed is present, following action takes place when time is over",
             "onTimeOver": "autosubmit"
-        }
+        },
 
         "@doc": "This section defines custom actions.",
         "@doc": "WARNING: Specification of this section is not final.",
@@ -212,5 +232,25 @@ Sample:
                 "What multiplied twice gives 4?",
                 "Remember that multiplying two negatives yields positive."
             ]
-        },
-    }
+        }
+    };
+
+    var settings = {};
+    settings.content = contentSpec;
+    // The package name as specified when building the library
+    settings.componentNamespace = 'interactives';
+    settings.pubsub = new interactives.PubSub();
+
+    var evaluator = new interactives.LocalEvaluator(settings);
+    interactives.evaluation.registerEvalEngines(evaluator);
+
+    var itemPlayer = new interactives.ItemPlayer(settings);
+    evaluator.registerItem(itemPlayer);
+
+    var el = document.getElementById('placeholder');
+    itemPlayer.renderComponent('my_question', el);
+
+</script>
+
+</body>
+</html>
