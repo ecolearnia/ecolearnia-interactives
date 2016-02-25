@@ -69,15 +69,13 @@ export default class ItemActionFactory
     /**
      * Returns action for update Evaluation result
      *
-     * @param {string} associationId  - the ID of the item to update
-     * @param {Object} evalResult  - the result of the evaluation
+     * @param {Object} evalDetails  - the result of the evaluation
      */
-    updateEvalResult(componentId, evalResult)
+    appendEvalDetails(evalDetails)
     {
         return {
-            type: 'ITEM_UPDATE_EVALRESULT',
-            componentId: componentId,
-            evalResult: evalResult
+            type: 'ITEM_APPEND_EVALDETAILS',
+            evalDetails: evalDetails
         };
     }
 
@@ -91,6 +89,8 @@ export default class ItemActionFactory
     {
         var self = this;
         return function (dispatch, getState) {
+            let submissionTimestamp = new Date();
+
             // components states are Immutablejs
             let componentStates = getState().components.toJS();
 
@@ -100,18 +100,26 @@ export default class ItemActionFactory
             for (var componentId in componentStates) {
                 itemState = _.assignIn(itemState, componentStates[componentId]);
             }
-            // flatten objects, eg. field1: {key, value} into field1_key and field1_value
-            itemState = _.assignIn(itemState, dehydrate(itemState, null, '_'));
+            // add flatten nested objects,
+            // eg. field1: {key, value} into field1_key and field1_value
+            let itemState2 = {};
+            _.assign(itemState2, itemState, dehydrate(itemState, null, '_'));
 
-            console.log(itemState);
+            console.log(itemState2);
 
             // Evaluator can be either local or remote proxy
-            return self.evaluator_.evaluate(associationId, itemState)
+            return self.evaluator_.evaluate(associationId, itemState2)
                 .then(
                     (evalResult) => {
                         // @todo - obtain the componentId from the fieldName
-                        let componentId = 'aggregate';
-                        return dispatch(self.updateEvalResult(associationId, evalResult))
+                        let evalDetails = {
+                            submission: {
+                                timestamp: submissionTimestamp,
+                                fields: itemState
+                            },
+                            evalResult: evalResult
+                        }
+                        return dispatch(self.appendEvalDetails(evalDetails))
                     }
                 )
                 .catch(

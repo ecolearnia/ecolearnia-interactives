@@ -17,23 +17,38 @@
  * @date 2/10/2016
  */
 
+import _ from 'lodash';
 import Immutable from 'immutable';
 
 
 /**
- * itemReducer
+ * componentReducer
  *
  * @module interactives/core
  *
  * @desc
- *  Redux item reducer function
+ *  Redux item reducer function for component.
+ *  This reducer keeps the component state in the following structure:
+ *  Immutable.Map.<{string} componentName, {object} state >
+ *  Exampole:
+ *  "question1": {
+ *    "field1": {
+ *      "key": "ans1",
+ *      "value": "Earth",
+ *    }
+ *  }
  *
  */
-function componentReducer(state = Immutable.Map({}), action) {
+function componentReducer(state = Immutable.Map(), action) {
     switch (action.type) {
         case 'ITEM_UPDATE_STATE':
             //console.log('state (pre)=' + JSON.stringify(state));
-            let newState = state.set(action.componentId, action.state);
+            var currState = state.get(action.componentId) || {};
+            console.log('currState (pre)=' + JSON.stringify(currState));
+            _.assign(currState, action.state);
+            console.log('currState (post)=' + JSON.stringify(currState));
+
+            let newState = state.set(action.componentId, currState);
             //console.log('state (post)=' + JSON.stringify(newState));
             return newState;
         default:
@@ -42,20 +57,50 @@ function componentReducer(state = Immutable.Map({}), action) {
 }
 
 /**
- * Reducer for item's evaluation results
+ * evalResultReducer
+ *
+ * @module interactives/core
+ *
+ * @desc
+ *  Redux item reducer function for evaluations (aka response processing)
+ *  resulting from submission.
+ *  This reducer keeps the evaluation details in the following structure:
+ *  Immutable.List.<{object} evalDetails> }.
+ *  Exampole:
+ *  [{
+ *    "submission": {
+ *      "timestamp": "20160213T13:25:00.23",
+ *      "fields": {
+ *        "field1": {
+ *          "key": "ans1",
+ *          "value": "Earth",
+ *        }
+ *      }
+ *    },
+ *    "evalResult": {
+ *      "field1": {
+ *        "score": 1,
+ *        "feedback": "You are correct!",
+ *      }
+ *    }
+ *  }]
+ *
  */
-function evalResultReducer(state = Immutable.Map({}), action) {
+function evaluationReducer(state = Immutable.List(), action) {
     switch (action.type) {
-        case 'ITEM_UPDATE_EVALRESULT':
-            return state.set(action.componentId, action.evalResult);
+        case 'ITEM_APPEND_EVALDETAILS':
+            return state.push(action.evalDetails);
         default:
             return state;
     }
 }
 
+/**
+ * Combined reducers
+ */
 const reducers = {
     components: componentReducer,
-    evalResults: evalResultReducer
+    evaluations: evaluationReducer
 }
 
 export default reducers;

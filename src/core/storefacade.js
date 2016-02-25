@@ -19,7 +19,7 @@
 
 var _ = require('lodash');
 import { PubSub } from '../../libs/common/pubsub';
-import { createStore, applyMiddleware, combineReducers } from 'redux'
+import { createStore, applyMiddleware, combineReducers, compose} from 'redux'
 import thunk from 'redux-thunk';
 
 /**
@@ -44,8 +44,12 @@ export default class StoreFacade
 
         this.store_ = createStore(
             rootReducer,
-            applyMiddleware(thunk)
+            compose(
+                applyMiddleware(thunk),
+                window.devToolsExtension ? window.devToolsExtension() : f => f
+            )
         );
+        
     }
 
     /**
@@ -65,12 +69,22 @@ export default class StoreFacade
         return this.dispatcher_[name];
     }
 
+    /**
+     * returns the state
+     *
+     * @param {!string} name - the name of the top level property
+     */
     getState(name)
     {
-        if (name != undefined)
-            // Assuming the state is Immutablejs 
+        var state;
+        if (name != undefined){
+            state = this.store_.getState()[name];
             return this.store_.getState()[name].toJS();
-        return this.store_.getState();
+        } else {
+            state = this.store_.getState();
+        }
+        // If the state is of type Immutablejs, return the native java value.
+        return (state.toJS) ? state.toJS() : state;
     }
 
     /**
