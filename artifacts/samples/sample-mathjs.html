@@ -16,13 +16,19 @@
 </head>
 <body>
 
-INTERACTIVES {{
-<div id="placeholder"></div>
-}}
+<h2>MathJS expression test</h2>
+Expression: <input type="text" id="expression"></input> <button onClick="evaluate()" >eval</button>
+<div id="placeholder">
+</div>
 
 <script type="text/javascript">
+function evaluate()
+{
+    var expr = $('#expression').val();
+    console.log(expr);
+    math.eval(expr);
+}
 
-math"$field1 > 2"
 </script>
 
 </body>

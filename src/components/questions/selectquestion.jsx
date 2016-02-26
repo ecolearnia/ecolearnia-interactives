@@ -18,7 +18,7 @@ var React = require('react');
 var AbstractQuestionComponent = require('./question.jsx').AbstractQuestionComponent;
 
 /**
- * @class MultiValueQuestionComponent
+ * @class SelectQuestionComponent
  *
  * @module interactives/components/questions
  *
@@ -84,6 +84,7 @@ export class SelectQuestionComponent extends AbstractQuestionComponent
                 let optionLabel = '';
                 let isCorrect = false;
                 if (lastEval) {
+                    // if field exists, and submission key is same as current option key
                     if (lastEval.submission.fields[element.responseId] && lastEval.submission.fields[element.responseId].key == option.key) {
                         isCorrect = (lastEval && lastEval.evalResult[element.responseId].score == 1);
                         optionLabel = (isCorrect) ? 'Correct' : 'Wrong!!';

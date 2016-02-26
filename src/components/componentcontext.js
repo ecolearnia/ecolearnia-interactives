@@ -87,4 +87,24 @@ export default class ComponentContext
         return this.itemPlayer.getValue(configVal);
     }
 
+    /**
+     * Casts the field value to appropriated type (either number of string)
+     */
+    castFieldValue(fieldName, val)
+    {
+        let content = this.itemPlayer.getContent();
+        let fieldDecl = content.responseDeclarations[fieldName];
+        let fieldType = (fieldDecl && fieldDecl.baseType) ? fieldDecl.baseType.toLowerCase() : 'string';
+        if (typeof val === fieldType) {
+            return val;
+        }
+        else if (fieldType === 'number') {
+            return Number(val);
+        }
+        else if (fieldType === 'boolean') {
+            return (val.toLowerCase() === 'true');
+        }
+        return val;
+    }
+
 }

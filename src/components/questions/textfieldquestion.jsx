@@ -42,15 +42,13 @@ export class TextFieldQuestionComponent extends AbstractQuestionComponent
     /**
      * Handle click
      */
-    handleChange_(fieldId, key, event)
+    handleChange_(fieldId, event)
     {
-        var question = this.props.context.getConfigVal('question');
+        let value = this.props.context.castFieldValue(fieldId, event.target.value);
 
         let componentState = {};
-        if (event.target.checked) {
-            var value = this.getOptionValue(question, fieldId, key);
+        if (event.target.value) {
             componentState[fieldId] = {
-                key: key,
                 value: value
             };
         } else {
@@ -70,50 +68,35 @@ export class TextFieldQuestionComponent extends AbstractQuestionComponent
         let evalsState = this.props.store.getState('evaluations');
         let lastEval = (evalsState && evalsState.length > 0) ? evalsState[evalsState.length-1] : null;
 
-        var optionsSet = [];
+        var fieldList = [];
         // For each of the fields
         question.fields.forEach( function(element, index){
 
-            // For each of the options (distractors) within the field
-            var options = element.options.map(function(option) {
-                // element.responseId is the response's fieldId
-
-                // @todo - find out if the current option was selected
-                let optionLabel = '';
-                let isCorrect = false;
-                if (lastEval) {
-                    if (lastEval.submission.fields[element.responseId] && lastEval.submission.fields[element.responseId].key == option.key) {
-                        isCorrect = (lastEval && lastEval.evalResult[element.responseId].score == 1);
-                        optionLabel = (isCorrect) ? 'Correct' : 'Wrong!!';
-                    }
+            let optionLabel = '';
+            let isCorrect = false;
+            if (lastEval) {
+                if (lastEval.submission.fields[element.responseId] ) {
+                    isCorrect = (lastEval && lastEval.evalResult[element.responseId].score == 1);
+                    optionLabel = (isCorrect) ? 'Correct' : 'Wrong!!';
                 }
+            }
+            var labelStyle = {
+                color: isCorrect ? 'green': 'red'
+            };
 
-                var labelStyle = {
-                    color: isCorrect ? 'green': 'red'
-                };
-
-                return (
-                    <li className="eli-question-option">
-                        <input type="radio" name={element.responseId} onChange={this.handleChange_.bind(this, element.responseId, option.key)} value={option.value} />
-                        {option.value}
-                        <span style={labelStyle}> {optionLabel}</span>
-                    </li>
-                )
-            }.bind(this));
-            optionsSet.push(
-                <ul>
-                    {options}
-                </ul>);
+            fieldList.push(
+                <div>
+                    <input type="text" name={element.responseId} onChange={this.handleChange_.bind(this, element.responseId)} />
+                    <span style={labelStyle}> {optionLabel}</span>
+                </div>);
         }.bind(this));
-
-
 
         // The "eli" prefix in the className stands for EcoLearnia Interactive
 
         return (
             <div className="eli-question">
                 <span className="eli-question-prompt">{question.prompt}</span>
-                {optionsSet}
+                {fieldList}
             </div>
         );
     }

@@ -26,7 +26,8 @@ var ItemPlayer = require('./core/itemplayer').ItemPlayer;
 var ActionBar = require('./components/actionbar.jsx').ActionBarComponent;
 var Feedback = require('./components/feedback.jsx').FeedbackComponent;
 var SelectQuestion = require('./components/questions/selectquestion.jsx').SelectQuestionComponent;
-var TemplateContainerComponent = require('./components/templatecontainer').TemplateContainerComponent;
+var TextFieldQuestion = require('./components/questions/textfieldquestion.jsx').TextFieldQuestionComponent;
+var TemplateContainer = require('./components/templatecontainer').TemplateContainerComponent;
 
 // @note - this can be externalized to another js bundle
 var LocalEvaluator = require('./core/localevaluator').LocalEvaluator;
@@ -40,7 +41,8 @@ module.exports.ItemPlayer = ItemPlayer;
 
 // The interactive components must be exported, otherwise the CoreContext will
 // not be able to instantiate.
-module.exports.SelectQuestion = SelectQuestion;
-module.exports.TemplateContainer = TemplateContainerComponent;
 module.exports.ActionBar = ActionBar;
 module.exports.Feedback = Feedback;
+module.exports.SelectQuestion = SelectQuestion;
+module.exports.TextFieldQuestion = TextFieldQuestion;
+module.exports.TemplateContainer = TemplateContainer;

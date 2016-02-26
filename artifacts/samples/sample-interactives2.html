@@ -37,7 +37,7 @@ INTERACTIVES v0.0.2 {{
                     "field1": {"regex": "2"},
                 }
             },
-            "field1": {
+            "field2": {
                 "cardinality": "single",
                 "baseType": "number",
                 "correctAnswer": {
@@ -95,6 +95,14 @@ INTERACTIVES v0.0.2 {{
                         ]
                     }
                 ],
+            },
+            "question2": {
+                "prompt": "What is 9 x 2",
+                "fields": [
+                    {
+                        "responseId": "field2"
+                    }
+                ],
             }
         },
 
@@ -110,7 +118,9 @@ INTERACTIVES v0.0.2 {{
                     "case": "true",
                     "then": {
                         "field1.score": 0,
-                        "field1.feedback": "Incorrect"
+                        "field1.feedback": "Incorrect",
+                        "field2.score": 0,
+                        "field2.feedback": "Incorrect"
                     }
                 },
                 {
@@ -122,7 +132,6 @@ INTERACTIVES v0.0.2 {{
                     }
                 },
                 {
-                    "@doc": "The following is same as { expression: '$field1_value > 2'}",
                     "case": "$field1_key > 5 * 3",
                     "then": {
                         "field1.score": 0,
@@ -130,13 +139,19 @@ INTERACTIVES v0.0.2 {{
                     }
                 },
                 {
-                    "@doc": "The following is same as { expression: '$field1_value > 2'}",
                     "case": "$field1_key < 5 * 3",
                     "then": {
                         "field1.score": 0,
                         "field1.feedback": "NUMBER TOO SMALL"
                     }
-                }
+                },
+                {
+                    "case": "$field2_value == 9 * 2",
+                    "then": {
+                        "field2.score": 1,
+                        "field2.feedback": "NUMBER Just right!!"
+                    }
+                },
             ]
         },
 
@@ -148,7 +163,7 @@ INTERACTIVES v0.0.2 {{
                 "my_question": {
                     "type": "TemplateContainer",
                     "config": {
-                        "template": "<div>{{.component.selectquestion}} <br/> {{feedback}} <br/> {{actionbar}}</div>",
+                        "template": "<div>{{.component.textfield}} <br/> {{feedback}} <br/> {{actionbar}}</div>",
                     }
                 },
                 "selectquestion": {
@@ -157,6 +172,13 @@ INTERACTIVES v0.0.2 {{
                         "question": { "_ref" : ".model.question1"},
                         "@doc": "Optionally the question property may include the",
                         "@doc": "full definition of the question.",
+                        "layout": "flow"
+                    }
+                },
+                "textfield": {
+                    "type": "TextFieldQuestion",
+                    "config": {
+                        "question": { "_ref" : ".model.question2"},
                         "layout": "flow"
                     }
                 },
