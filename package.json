@@ -4,6 +4,8 @@
   "description": "EcoLearnia's interactives (UI) library",
   "main": "el-interactives.js",
   "scripts": {
+    "webserver": "python -m SimpleHTTPServer 8000",
+    "opentest": "open /Applications/Google\\ Chrome.app http://localhost:8000/artifacts/samples/sample-interactives1.html",
     "build-deps": "browserify -t babelify  -r bluebird -r lodash -r react/addons | uglifyjs -c >  build/el-externdeps.bundle.min.js",
     "build-inter": "browserify -t [ babelify --presets [ es2015 react ] ] -x bluebird -x lodash -x react/addons -r ./src/interactives.js:interactives -r -o build/el-interactives.bundle.js -d",
     "watch-inter": "watchify   -t [ babelify --presets [ es2015 react ] ] -x bluebird -x lodash -x react/addons -r ./src/interactives.js:interactives -r -o build/el-interactives.bundle.js -d -v",

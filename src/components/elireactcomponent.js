@@ -35,8 +35,27 @@ export class EliReactComponent extends React.Component
     {
         super(props);
 
-        this.itemAssociationId_ = props.itemAssociationId;
-        this.componentId_ = props.componentId;
+        //this.itemAssociationId_ = props.itemAssociationId;
+        //this.componentId_ = props.componentId;
+    }
+
+    subscribeToStateChange()
+    {
+        var self = this;
+        this.props.store.subscribe(function() {
+            console.log('state updated!');
+            self.forceUpdate();
+        });
+    }
+
+    /**
+     * React component completed mounting
+     */
+    componentDidMount()
+    {
+        // IF this is a main component, then subscribe to state change
+        // this.props.context.
+        this.subscribeToStateChange();
     }
 
 }

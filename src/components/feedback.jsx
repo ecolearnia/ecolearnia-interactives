@@ -63,7 +63,17 @@ export class FeedbackComponent extends EliReactComponent
     render()
     {
         // The "eli" prefix in the className stands for EcoLearnia Interactive
-        var evalDump = JSON.stringify(this.state.evaluation);
+        let evalsState = this.props.store.getState('evaluations');
+        let lastEval = (evalsState && evalsState.length > 0) ? evalsState[evalsState.length-1] : null;
+
+        var evalDump = lastEval ? JSON.stringify(lastEval.evalResult): null;
+        /*
+        <audio controls autoplay>
+          <source src="http://www.w3schools.com/tags/horse.ogg" type="audio/ogg">
+          Your browser does not support the audio element.
+        </audio>
+
+        */
         return (
             <div className="eli-feedback">
                 {evalDump}

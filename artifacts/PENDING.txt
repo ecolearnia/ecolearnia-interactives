@@ -1,6 +1,3 @@
 
-- Redisign to use Redux as state store.
-  - Redux
-  - Item state reduce
-  - SubmitHandler
-  -  
+- Implement TextFieldQuestionComponent
+- Improve usability of select question

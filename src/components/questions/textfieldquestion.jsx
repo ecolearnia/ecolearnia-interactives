@@ -18,21 +18,19 @@ var React = require('react');
 var AbstractQuestionComponent = require('./question.jsx').AbstractQuestionComponent;
 
 /**
- * @class MultiValueQuestionComponent
+ * @class TextFieldQuestionComponent
  *
  * @module interactives/components/questions
  *
  * @classdesc
  *  React based component that represents a generic multiValue question.
- *  A multivalue quesions are those which the question can ask for multiple
+ *  A TextField question are those which the question can ask for multiple
  *  values.
  *  Therefore the submission has the structure of
  *  Object.<key: string, value: Object>
  *
- * @todo - Submission handling: keep the state in models
- * @todo - Factor out the presenter: multiselect, multichoice, etc.
  */
-export class SelectQuestionComponent extends AbstractQuestionComponent
+export class TextFieldQuestionComponent extends AbstractQuestionComponent
 {
     constructor(props)
     {

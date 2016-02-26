@@ -17,6 +17,7 @@
  * @date 6/06/15
  */
 
+// @todo - Change to constants and include action string literals
 var Events = {
     // When user clicks 'submit' button
     ACTION_SUBMIT: 'action:submit',

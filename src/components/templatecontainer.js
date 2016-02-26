@@ -56,19 +56,30 @@ export class TemplateContainerComponent extends EliReactComponent
 
     }
 
-    /**
-     * Returns the DOM element that matches the data-hook attribute query
-     */
-    queryByHook(hook)
-    {
-        var el = this.refs.templateBody;
-        return el.querySelector('[data-hook~="' + hook + '"]');
-    }
-
     /***** React methods *****/
     componentDidMount()
     {
+        super.componentDidMount();
+        //this.subscribeToStateChange();
+        this.renderChildren_();
+    }
 
+    componentWillUnmount () {
+        // @todo - should anything happen here?
+    }
+
+    render()
+    {
+        this.renderChildren_();
+        return (
+            <div ref="templateBody" dangerouslySetInnerHTML={this.createMarkup()} />
+            )
+    }
+
+    /***** React methods *****/
+
+    renderChildren_()
+    {
         // For each of the placeholders (divs with data-hook)
         // Inject the object from the itemContext
         for (var key in this.elios_) {
@@ -87,24 +98,27 @@ export class TemplateContainerComponent extends EliReactComponent
         }
     }
 
-    componentWillUnmount () {
-
+    /**
+     * Returns the DOM element that matches the data-hook attribute query
+     */
+    queryByHook(hook)
+    {
+        var el = this.refs.templateBody;
+        return el.querySelector('[data-hook~="' + hook + '"]');
     }
 
+    /**
+     * Create markup based on the template
+     */
     createMarkup() {
         var templateMarkup = this.parseTemplate(this.props.context.getConfigVal('template'));
         return {__html: templateMarkup};
     }
 
-    render()
-    {
-        return (
-            <div ref="templateBody" dangerouslySetInnerHTML={this.createMarkup()} />
-            )
-    }
-
-    // Parses a template of format
-    // "{{.comonents.mvquestion}} <br /> {{.models.question.prompt}}"
+    /**
+     * Parses a XHTML based template and converts {{placeholder-name}}
+     * into  <div data-hook="<placeholder-name>"></div>
+     */
     parseTemplate (templateStr)
     {
         var re = new RegExp('{{\\s*[\\w.]*\\s*}}', 'g');

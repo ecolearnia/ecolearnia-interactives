@@ -49,7 +49,7 @@ export default class StoreFacade
                 window.devToolsExtension ? window.devToolsExtension() : f => f
             )
         );
-        
+
     }
 
     /**
@@ -67,6 +67,11 @@ export default class StoreFacade
     dispatcher(name)
     {
         return this.dispatcher_[name];
+    }
+
+    subscribe(listener)
+    {
+        return this.store_.subscribe(listener);
     }
 
     /**

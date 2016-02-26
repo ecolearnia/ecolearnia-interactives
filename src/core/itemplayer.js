@@ -84,6 +84,19 @@ export class ItemPlayer
             this.logger_.info({ componentNamespace: config.componentNamespace} );
         }
 
+        /**
+         * The content which this context is operating on
+         * @type {Object}
+         */
+        this.content_ = null;
+
+        /**
+         * Map of component id and it's specification (description)
+         * @type {Object}
+         * @private
+         */
+        this.componentSpecs_ = {};
+
 
         /**
          * ID used to retrieve the LearnerAssignmentItem, the content instance
@@ -93,14 +106,10 @@ export class ItemPlayer
          */
         this.associationId_ = config.associationId || (Math.floor((Math.random() * 1000) + 1)).toString();
 
-        /**
-         * The content which this context is operating on
-         * @type {Object}
-         */
-        this.content_ = config.content; // the content body
+        this.setContent(config.content); // the content body
 
         /**
-         * AnswerModel: keeps the answers.
+         * Flux Store
          */
         this.store_ = new StoreFacade(itemReducers);
 
@@ -118,22 +127,11 @@ export class ItemPlayer
         this.dispatcher_.setStore(this.store_);
 
         /**
-         * Map of component id and it's specification (description)
-         * @type {Object}
-         * @private
-         */
-        this.componentSpecs_ = {};
-
-        /**
          * Reference to component instances
          * @type {Object} Map where keys are component ids and value are the components instances
          */
         this.componentReferences_ = {};
 
-        // Convert component spec from array to Object map for efficient
-        // retrieval.
-        // It populates the this.componentSpecs_
-        this.mapifyComponentSpecs_(this.content_);
     };
 
     /*** Static methods ***/
@@ -171,7 +169,6 @@ export class ItemPlayer
         return this.associationId_;
     }
 
-
     /**
      * Gets the content.
      *
@@ -192,7 +189,19 @@ export class ItemPlayer
      */
     setContent(content)
     {
+        /**
+         * The content which this context is operating on
+         * @type {Object}
+         */
         this.content_ = content;
+
+        // Convert component spec from array to Object map for efficient
+        // retrieval.
+        // the components are already in form of map
+        this.componentSpecs_ = content.item.components;
+
+        this.logger_.debug('Component set.');
+
     }
 
     /**
@@ -256,34 +265,6 @@ export class ItemPlayer
         return retval;
     }
 
-
-    /**
-     * mapifyComponentSpecs_
-     * @private
-     *
-     * Initializes the componentSpec map. Converts the content.components array into map
-     * @param content
-     *
-     * @return {Object.<string, Object>}
-     */
-    mapifyComponentSpecs_(content)
-    {
-        /*
-        content.item.components.forEach(function(element, index, array) {
-            if (element.id in this.componentSpecs_) {
-                throw new Error('Duplicate component ID');
-            }
-            this.componentSpecs_[element.id] = element;
-        }.bind(this));
-        */
-        this.componentSpecs_ = content.item.components;
-
-        var componentIds = _.keys(this.componentSpecs_);
-
-        this.logger_.debug(componentIds, 'Component Specs mapified.');
-
-        return this.componentSpecs_;
-    }
 
     /**
      * Builds the components as specified in the spec
@@ -385,13 +366,23 @@ export class ItemPlayer
      *
      * @returns {DOM}
      */
-    render(el)
+    render()
     {
-        if (!this.content_ || !this.content_.components) {
+        if (!this.content_ || !this.content_.item.mainComponent) {
             throw new Error('No component was specified');
         }
-        var mainComponentId = this.content_.components[0].id;
-        return this.renderComponent(mainComponentId, el);
+        var mainComponentId = this.content_.item.mainComponent;
+        return this.renderComponent(mainComponentId, this.el_);
+    }
+
+    load(el) {
+        this.el_ = el;
+        this.render();
+
+        let self = this;
+        var mainComponent = this.getComponent(this.content_.item.mainComponent);
+
+        //this.storeUnsubscribe_ = this.store_.subscribe(() => this.render());
     }
 
 }

@@ -29,7 +29,7 @@ var SelectQuestion = require('./components/questions/selectquestion.jsx').Select
 var TemplateContainerComponent = require('./components/templatecontainer').TemplateContainerComponent;
 
 // @note - this can be externalized to another js bundle
-var LocalEvaluator = require('./core/evaluator').LocalEvaluator;
+var LocalEvaluator = require('./core/localevaluator').LocalEvaluator;
 var evaluation = require('./evaluation/evaluation');
 
 module.exports.LocalEvaluator = LocalEvaluator;

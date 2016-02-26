@@ -39,10 +39,8 @@ import WhenHandler from '../evaluation/whenhandler';
  * @module interactives/core
  *
  * @classdesc
- *  An object of this class is handles the submission data by:
- *  - saving the question field data to staging for submission
- *  - evaluating the submission using remote service
- *  - constraining submission based on policy
+ *  An object of this class is handles the submission data by evaluating data
+ * locally with the registered handlers.
  *
  */
 export default class LocalEvaluator
