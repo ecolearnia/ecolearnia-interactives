@@ -23,6 +23,7 @@ var ReactDOM = require('react-dom');
 
 import utils from '../../libs/common/utils';
 import logger from '../../libs/common/logger';
+import stringTemplate from '../../libs/contrib/templateengine';
 import PubSub from '../../libs/common/pubsub';
 
 import ComponentContext  from '../../src/components/componentcontext';
@@ -207,8 +208,38 @@ export class ItemPlayer
     /**
      * getValue
      *
-     * Returns the parameter itself unless it contains a local reference which is
+     * If the parameter is a primitive value return it, if the paremeter
+     * is an object with reference (_ref) property, which is
      * a fully qualified name (fqn) of a model object or component object
+     * return the resolved object.
+     *
+     * @param {object} param  - the parameter which could be the value itself
+     *      or may be an object which contains "_ref" denoting a local fully
+     *      qualified name to where the actual value is.
+     */
+    renderTemplateString(template)
+    {
+        if (!this.getContent().variableDeclarations)
+        {
+            return template;
+        }
+        let vars = {};
+        for(let varName in this.getContent().variableDeclarations)
+        {
+            vars[varName] = this.getContent().variableDeclarations[varName].value;
+        }
+
+        let retval = stringTemplate(template, vars);
+        return retval;
+    }
+
+    /**
+     * getValue
+     *
+     * If the parameter is a primitive value return it, if the paremeter
+     * is an object with reference (_ref) property, which is
+     * a fully qualified name (fqn) of a model object or component object
+     * return the resolved object.
      *
      * @param {object} param  - the parameter which could be the value itself
      *      or may be an object which contains "_ref" denoting a local fully

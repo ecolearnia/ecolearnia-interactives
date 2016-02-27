@@ -46,7 +46,7 @@ export default class StoreFacade
             rootReducer,
             compose(
                 applyMiddleware(thunk),
-                window.devToolsExtension ? window.devToolsExtension() : f => f
+                (typeof window !== 'undefined' && window.devToolsExtension) ? window.devToolsExtension() : f => f
             )
         );
 

@@ -92,10 +92,10 @@ export class TextFieldQuestionComponent extends AbstractQuestionComponent
         }.bind(this));
 
         // The "eli" prefix in the className stands for EcoLearnia Interactive
-
+        var prompt = this.props.context.itemPlayer.renderTemplateString(question.prompt);
         return (
             <div className="eli-question">
-                <span className="eli-question-prompt">{question.prompt}</span>
+                <span className="eli-question-prompt">{prompt}</span>
                 {fieldList}
             </div>
         );

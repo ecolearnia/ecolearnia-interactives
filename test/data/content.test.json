@@ -1,0 +1,198 @@
+{
+    "variableDeclarations": {
+        "num1": {
+            "baseType": "number",
+            "value": 11
+        },
+        "data2": {
+            "baseType": "string",
+            "value": "test-data"
+        }
+    },
+    "@doc": "This section declares participant's input fields (submission)",
+    "responseDeclarations": {
+        "field1": {
+            "cardinality": "multiple",
+            "baseType": "number",
+            "@doc": "correctAnswer is optional and must be stripped out prior sending to client",
+            "@doc": "If it is not defined, the responseProcessing should include scoring evaluation",
+            "correctAnswer": {
+                "field1": {"regex": "2"}
+            }
+        },
+        "field2": {
+            "cardinality": "single",
+            "baseType": "number",
+            "correctAnswer": {
+                "field2": {"expression": "$field2 * $field2 == 4"}
+            }
+        }
+    },
+
+    "outcomeDeclarations": {
+        "@doc": "The following is a ",
+        "score": {
+            "cardinality": "single",
+            "baseType": "number",
+            "@doc": "This data must be stripped out",
+            "defaultValue": 0
+        }
+    },
+    "modelDefinition": {
+        "question1": {
+            "prompt": "What is 5 x 3",
+            "fields": [
+                {
+                    "responseId": "field1",
+                    "options": [
+                        {
+                            "key": 12,
+                            "value": "12"
+                        },
+                        {
+                            "key": 15,
+                            "value": "15"
+                        },
+                        {
+                            "key": 18,
+                            "value": "18"
+                        },
+                        {
+                            "key": 20,
+                            "value": "20"
+                        },
+                        {
+                            "key": 25,
+                            "value": "25"
+                        }
+                    ]
+                }
+            ]
+        },
+        "question2": {
+            "prompt": "What is 9 x 2",
+            "fields": [
+                {
+                    "responseId": "field2"
+                }
+            ]
+        }
+    },
+
+    "@doc": "This section handles the submission of the participant.",
+    "@doc": "It computes and assigns value to the fields in outcomeDeclarations",
+    "responseProcessing": {
+
+        "@doc": "Next block is a 'when' statement. The player is responsible",
+        "@doc": "of implementing the statement evaluator",
+        "when": [
+            {
+                "@doc": "For the meantime, this is the method for init",
+                "case": "true",
+                "then": {
+                    "field1.score": 0,
+                    "field1.feedback": "Incorrect",
+                    "field2.score": 0,
+                    "field2.feedback": "Incorrect"
+                }
+            },
+            {
+                "@doc": "The following is same as { expression: '$field1_value > 2'}",
+                "case": "$field1_key == 5 * 3",
+                "then": {
+                    "field1.score": 1,
+                    "field1.feedback": "NUMBER Just right!!"
+                }
+            },
+            {
+                "case": "$field1_key > 5 * 3",
+                "then": {
+                    "field1.score": 0,
+                    "field1.feedback": "NUMBER TOO BIG"
+                }
+            },
+            {
+                "case": "$field1_key < 5 * 3",
+                "then": {
+                    "field1.score": 0,
+                    "field1.feedback": "NUMBER TOO SMALL"
+                }
+            },
+            {
+                "case": "$field2_value == 9 * 2",
+                "then": {
+                    "field2.score": 1,
+                    "field2.feedback": "NUMBER Just right!!"
+                }
+            }
+        ]
+    },
+
+    "@doc": "This section is defines the structure of this item.",
+    "item": {
+        "mainComponent": "my_question",
+        "components": {
+            "@doc": "Each component has two properties, type and config.",
+            "my_question": {
+                "type": "TemplateContainer",
+                "config": {
+                    "template": "<div>{{.component.textfield}} <br/> {{feedback}} <br/> {{actionbar}}</div>"
+                }
+            },
+            "selectquestion": {
+                "type": "SelectQuestion",
+                "config": {
+                    "question": { "_ref" : ".model.question1"},
+                    "@doc": "Optionally the question property may include the",
+                    "@doc": "full definition of the question.",
+                    "layout": "flow"
+                }
+            },
+            "textfield": {
+                "type": "TextFieldQuestion",
+                "config": {
+                    "question": { "_ref" : ".model.question2"},
+                    "layout": "flow"
+                }
+            },
+            "actionbar": {
+                "type": "ActionBar",
+                "config": {
+                    "items": [
+                        "submit"
+                    ]
+                }
+            },
+            "feedback": {
+                "type": "Feedback",
+                "config": {
+                    "display": "list",
+                    "@doc": "In the client-side player, this is the path",
+                    "@doc": "to the store (Redux)",
+                    "messageRef": "_aggregate_.feedback"
+                }
+            }
+        }
+    },
+
+    "@doc": "This section defines the default policy which can be overriden",
+    "@doc": "by runtime environment",
+    "defaultPolicy": {
+        "maxAttempts": 3,
+        "@doc": "Optional - if present, each attempt will be timed in seconds",
+        "timed": 10,
+        "@doc": "If timed is present, following action takes place when time is over",
+        "onTimeOver": "autosubmit"
+    },
+
+    "@doc": "This section defines custom actions.",
+    "@doc": "WARNING: Specification of this section is not final.",
+    "actions": {
+        "solution": "2 * 2 = 4; also -2 * -2 = 4",
+        "@doc": "hints is an array in the order that is shown per attempt failure",
+        "hints": [
+            "What multiplied twice gives 4?",
+            "Remember that multiplying two negatives yields positive."
+        ]
+    }
+}

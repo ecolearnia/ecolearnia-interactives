@@ -26,6 +26,20 @@ INTERACTIVES v0.0.2 {{
     var interactives = require('interactives');
 
     var contentSpec = {
+        "variableDeclarations": {
+            "num1": {
+                "baseType": "number",
+                "value": 12,
+                "minVal": 1,
+                "maxVal": 100,
+            },
+            "num2": {
+                "baseType": "number",
+                "value": 33,
+                "minVal": 1,
+                "maxVal": 100,
+            }
+        },
         "@doc": "This section declares participant's input fields (submission)",
         "responseDeclarations": {
             "field1": {
@@ -34,7 +48,7 @@ INTERACTIVES v0.0.2 {{
                 "@doc": "correctAnswer is optional and must be stripped out prior sending to client",
                 "@doc": "If it is not defined, the responseProcessing should include scoring evaluation",
                 "correctAnswer": {
-                    "field1": {"regex": "2"},
+                    "field1": {"regex": "2"}
                 }
             },
             "field2": {
@@ -46,25 +60,15 @@ INTERACTIVES v0.0.2 {{
             }
         },
 
-        "@doc": "This section declares fields returned back to the participant",
-        "@doc": "The values are set in the responseProcessing section ",
         "outcomeDeclarations": {
             "@doc": "The following is a ",
             "score": {
                 "cardinality": "single",
                 "baseType": "number",
                 "@doc": "This data must be stripped out",
-                "defaultValue": 0,
-            },
-            "@doc": "Following default fields are available:",
-            "@doc": "{number:0..1} _aggregate_.score - aggregate score/correctness",
-            "@doc": "{string} _aggregate_.feedback -aggregate feedback",
-            "@doc": "{number:0..1} <componentId>.score - Component score/correctness",
-            "@doc": "{string} <componentId>.feedback - Component feedback"
+                "defaultValue": 0
+            }
         },
-
-        "@doc": "This section defines model used by the components.",
-        "@doc": "The model can reference fields in the responseDeclarations",
         "modelDefinition": {
             "question1": {
                 "prompt": "What is 5 x 3",
@@ -94,10 +98,10 @@ INTERACTIVES v0.0.2 {{
                             }
                         ]
                     }
-                ],
+                ]
             },
             "question2": {
-                "prompt": "What is 9 x 2",
+                "prompt": "What is <%=num1%> + <%=num2%>",
                 "fields": [
                     {
                         "responseId": "field2"
@@ -146,12 +150,12 @@ INTERACTIVES v0.0.2 {{
                     }
                 },
                 {
-                    "case": "$field2_value == 9 * 2",
+                    "case": "$field2_value == $var_num1 + $var_num2",
                     "then": {
                         "field2.score": 1,
                         "field2.feedback": "NUMBER Just right!!"
                     }
-                },
+                }
             ]
         },
 
@@ -230,15 +234,10 @@ INTERACTIVES v0.0.2 {{
     settings.componentNamespace = 'interactives';
     settings.pubsub = new interactives.PubSub();
 
-    //var evaluator = new interactives.LocalEvaluator(settings);
-    //interactives.evaluation.registerEvalEngines(evaluator);
-
     var itemPlayer = new interactives.ItemPlayer(settings);
-    //evaluator.registerItem(itemPlayer);
 
     var el = document.getElementById('placeholder');
     itemPlayer.load(el);
-    // itemPlayer.renderComponent('my_question', el);
 
 </script>
 

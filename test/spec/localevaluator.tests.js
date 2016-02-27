@@ -3,7 +3,7 @@ var sinon = require('sinon');
 var lodash = require('lodash');
 
 import LocalEvaluator from '../../src/core/localevaluator';
-
+var testContent = require('../data/content.test.json');
 
 describe('LocalEvaluator', function () {
 
@@ -99,6 +99,41 @@ describe('LocalEvaluator', function () {
 				done();
 			});
 
+		});
+
+		it('should combineSubmissionData', function () {
+			evaluator = new LocalEvaluator();
+			var mockItemPlayer = {
+				getAssociationId: function() { return '123' },
+		        // The response processing rule
+		        getContent: function() {
+					return testContent;
+				}
+			}
+			evaluator.registerItemPlayer(mockItemPlayer);
+
+			var data = {
+				field1: {
+					key: "two",
+					value: 2,
+				},
+				field2: 3
+			};
+
+			var result = evaluator.combineSubmissionData_(data);
+
+			var expected = {
+				field1: {
+					key: "two",
+					value: 2,
+				},
+				field2: 3,
+				"field1_key": "two",
+				"field1_value": 2,
+				"var_num1": 11,
+				"var_data2": "test-data"
+			};
+			expect(result).to.deep.equal(expected)
 		});
 	});
 

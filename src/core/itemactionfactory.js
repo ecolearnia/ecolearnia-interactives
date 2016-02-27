@@ -100,15 +100,9 @@ export default class ItemActionFactory
             for (var componentId in componentStates) {
                 itemState = _.assignIn(itemState, componentStates[componentId]);
             }
-            // add flatten nested objects,
-            // eg. field1: {key, value} into field1_key and field1_value
-            let itemState2 = {};
-            _.assign(itemState2, itemState, dehydrate(itemState, null, '_'));
-
-            console.log(itemState2);
-
+            
             // Evaluator can be either local or remote proxy
-            return self.evaluator_.evaluate(associationId, itemState2)
+            return self.evaluator_.evaluate(associationId, itemState)
                 .then(
                     (evalResult) => {
                         // @todo - obtain the componentId from the fieldName

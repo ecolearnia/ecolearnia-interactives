@@ -19,8 +19,9 @@
 
 var _ = require('lodash');
 
-//var logger = require('../../libs/common/logger');
+var logger = require('../../libs/common/logger');
 var promiseutils = require('../../libs/common/promiseutils');
+import {dehydrate} from '../../libs/common/utils';
 import WhenHandler from '../evaluation/whenhandler';
 
 
@@ -50,7 +51,7 @@ export default class LocalEvaluator
         /**
          * The logger
          */
-        //this.logger_ = logger.getLogger('Evaluator');
+        this.logger_ = logger.getLogger('Evaluator');
 
         //this.pubsub = settings.pubsub;
 
@@ -70,6 +71,11 @@ export default class LocalEvaluator
          * @private
          */
         this.rules_ = {};
+
+        /**
+         * Variables
+         */
+        this.variables_ = {}
 
         // Subscribe to the submission action event
         if (this.pubsub) {
@@ -101,6 +107,7 @@ export default class LocalEvaluator
         // The response processing rule
         var rule = itemPlayer.getContent().responseProcessing;
         this.rules_[associationId] = rule;
+        this.variables_ = itemPlayer.getContent().variableDeclarations || {};
     }
 
     /**
@@ -137,8 +144,37 @@ export default class LocalEvaluator
     evaluate(associationId, submissionData)
     {
         var rule = this.rules_[associationId];
-        return this.evaluateLocal_(rule, submissionData);
+
+        let combinedSubmissionData  = this.combineSubmissionData_(submissionData);
+
+        //console.log(combinedSubmissionData);
+
+        return this.evaluateLocal_(rule, combinedSubmissionData);
     }
+
+    /**
+     * Combine submission data with:
+     * 1. flattened nested values of itself
+     * 2. variables from the content
+     */
+    combineSubmissionData_(submissionData)
+    {
+        let combinedSubmissionData = {};
+
+        // add values from flattened nested objects,
+        // eg. field1: {key, value} into field1_key and field1_value
+        _.assign(combinedSubmissionData, submissionData, dehydrate(submissionData, null, '_'));
+
+        // Add variables with 'var_' prefix
+        let vars = {};
+        for(let varName in this.variables_)
+        {
+            vars['var_' + varName] = this.variables_[varName].value;
+        }
+        _.assign(combinedSubmissionData, vars);
+        return combinedSubmissionData;
+    }
+
 
     /**
      * Evaluate the student submission against the provided rule

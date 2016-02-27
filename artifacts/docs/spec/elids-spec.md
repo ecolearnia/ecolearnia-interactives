@@ -6,6 +6,26 @@ Sample:
 
 
     {
+        "@doc": "This section declares variables that is assigned with a value",
+        "@doc": "at the moment of content instantiation, e.g. before sending to",
+        "@doc": "the client. The variables can only be of primitive type.",
+        "@doc": "Variables are useful way to reuse content to yielding different",
+        "@doc": "questions.",
+        "@doc": "In the evaluation expression, it is accessed as var_<varname>.",
+        "variableDeclarations": {
+            "num1": {
+                "baseType": "number",
+                "value": 12,
+                "minVal": 0,
+                "maxVal": 20
+            },
+            "num2": {
+                "baseType": "number",
+                "value": 33,
+                "minVal": 0,
+                "maxVal": 100
+            }
+        },
         "@doc": "This section declares participant's input fields (submission)",
         "responseDeclarations": {
             "field1": {
@@ -14,7 +34,7 @@ Sample:
                 "@doc": "correctAnswer is optional and must be stripped out prior sending to client",
                 "@doc": "If it is not defined, the responseProcessing should include scoring evaluation",
                 "correctAnswer": {
-                    "field1": {"regex": "2"},
+                    "field1": {"regex": "2"}
                 }
             },
             "field1": {
@@ -34,7 +54,7 @@ Sample:
                 "cardinality": "single",
                 "baseType": "number",
                 "@doc": "This data must be stripped out",
-                "defaultValue": 0,
+                "defaultValue": 0
             }
             "@doc": "Following default fields are available:",
             "@doc": "{number:0..1} _aggregate_.score - aggregate score/correctness",
@@ -46,7 +66,16 @@ Sample:
         "@doc": "This section defines model used by the components.",
         "@doc": "The model can reference fields in the responseDeclarations",
         "modelDefinition": {
+            "question2": {
+                "@type": "question"
+                "prompt": "What is ${num1} + ${num2}?",
+                "fields": [
+                    {
+                        "responseId": "field2",
+                    }
+                    ]
             "question1": {
+                "@type": "question"
                 "prompt": "What are all the possible answers for square root of 4?",
                 "fields": [
                     {
@@ -84,7 +113,7 @@ Sample:
                             }
                         ]
                     }
-                ],
+                ]
             }
         },
 
@@ -136,12 +165,6 @@ Sample:
                     "then": {
                         "field2.score": 1,
                         "field2.feedback": "Correct"
-                    }
-                },
-                {
-                    "case": { "condition": "timeout"},
-                    "outcomes": {
-                        "_aggregate_.feedback": "Sorry, timed out"
                     }
                 },
                 {

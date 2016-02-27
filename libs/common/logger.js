@@ -20,7 +20,7 @@ var internals = {};
 
 internals.logRegistry = {};
 
-internals.console = (global.console = global.console || {});
+internals.console = (global.console || {});
 
 // From http://stackoverflow.com/questions/3326650/console-is-undefined-error-for-internet-explorer
 (function() {
