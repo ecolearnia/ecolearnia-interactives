@@ -41,8 +41,6 @@ export default class Removtevaluator
          */
         //this.logger_ = logger.getLogger('Evaluator');
 
-        //this.pubsub = settings.pubsub;
-
         /**
          * Evaluation handlers
          * @type {{}}

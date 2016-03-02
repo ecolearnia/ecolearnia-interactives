@@ -1,7 +1,8 @@
-
-- select question: Improve usability of
-- variables
-- [AssignmentPlayer]
+PENDING list
+- select question: Improve usability
+- [AssignmentPlayer] ItemLoader strategy
+- [Assignment] StatsModel
+- [Question] State restoration
+- [Timer]
 - Sound (text to speech using Google)
 - [NumberLineComponent]
-- [Timer]

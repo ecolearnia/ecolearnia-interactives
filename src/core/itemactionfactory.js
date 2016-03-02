@@ -21,8 +21,59 @@ var _ = require('lodash');
 import {dehydrate} from '../../libs/common/utils';
 //var logger = require('../../libs/common/logger');
 
-import PubSub from '../../libs/common/pubsub';
+var namespace = {};
+/**
+ * @typedef {{
+ *    <field0>: {
+ *      key: (string | number),
+ *      value: (string | number | boolean | array),
+ *    },
+ *    <field1>: {
+ *      key: (string | number),
+ *      value: (string | number | boolean | array),
+ *    },...
+ *  }} ComponentState
+ */
+namespace.ComponentState;
 
+/**
+ * @typedef {{
+ *    submission: {
+ *      timestamp: (Date),
+ *      "fields": {
+ *        "field1": {
+ *          "key": (string | number),
+ *          "value": (string | number),
+ *        }
+ *      }
+ *    },
+ *    evalResult: {
+ *      "field1": {
+ *        "score": (number),
+ *        "feedback": (string),
+ *      }
+ *    }
+ *  }} EvalDetails
+ *
+ *  Example:
+ *    "submission": {
+ *      "timestamp": "20160213T13:25:00.23",
+ *      "fields": {
+ *        "field1": {
+ *          "key": "ans1",
+ *          "value": "Earth",
+ *        }
+ *      }
+ *    },
+ *    "evalResult": {
+ *      "field1": {
+ *        "score": 1,
+ *        "feedback": "You are correct!",
+ *      }
+ *    }
+ *  }
+ */
+namespace.EvalDetails;
 
 /**
  * @class ItemActionFactory
@@ -44,6 +95,11 @@ export default class ItemActionFactory
         this.evaluator_ = evaluator;
     }
 
+    /**
+     * Returns action for append message
+     *
+     * @param {string} message  - the message to be displayed
+     */
     appendMessage(message)
     {
         return {
@@ -51,11 +107,12 @@ export default class ItemActionFactory
             message: message
         };
     }
+
     /**
      * Returns action for update state
      *
      * @param {string} componentId  - the ID of the component to update
-     * @param {Object} state  - the state of the component
+     * @param {ComponentState} state  - the state of the component
      */
     updateState(componentId, state)
     {
@@ -69,7 +126,8 @@ export default class ItemActionFactory
     /**
      * Returns action for update Evaluation result
      *
-     * @param {Object} evalDetails  - the result of the evaluation
+     * @param {EvalDetails} evalDetails  - the result of the evaluation
+     *
      */
     appendEvalDetails(evalDetails)
     {
@@ -100,7 +158,7 @@ export default class ItemActionFactory
             for (var componentId in componentStates) {
                 itemState = _.assignIn(itemState, componentStates[componentId]);
             }
-            
+
             // Evaluator can be either local or remote proxy
             return self.evaluator_.evaluate(associationId, itemState)
                 .then(
@@ -116,11 +174,12 @@ export default class ItemActionFactory
                         return dispatch(self.appendEvalDetails(evalDetails))
                     }
                 )
+                /* Defer the cath to the outter caller
                 .catch(
                     (error) => {
                         return dispatch(self.appendMessage({type: 'Error', associationId, error}))
                     }
-                );
+                )*/;
         };
     }
 }

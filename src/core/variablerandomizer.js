@@ -44,12 +44,19 @@ export default class VariableRandomizer
     /**
      * Returns a new object with intantiated variables
      */
-    apply(content) {
+    apply(content, params) {
+        let multiplier = (params && params.multiplier) ? params.multiplier : 1;
         let contentClone = JSON.parse(JSON.stringify(content));
-
-        for(let varName in contentClone.variableDeclarations)
+        let vars = contentClone.variableDeclarations;
+        for(let varName in vars)
         {
-            vars[varName] = ;
+            if (vars[varName].baseType.toLowerCase() == 'number') {
+                let minVal = (vars[varName].minVal) ? vars[varName].minVal : 0;
+                let maxVal = (vars[varName].maxVal) ? vars[varName].maxVal : 100;
+                vars[varName].value = Math.floor(Math.random() * maxVal * multiplier) + minVal  ;
+            } else if (vars[varName].baseType.toLowerCase() == 'boolean') {
+                vars[varName].value = Math.floor(Math.random() * 2) == 1 ? true : false ;
+            }
         }
 
         return contentClone;

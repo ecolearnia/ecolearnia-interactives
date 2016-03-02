@@ -11,7 +11,12 @@ describe('StoreFacade', function () {
 	});
 
 	function testReducer (state = {}, action) {
-		return state;
+		switch(action.type) {
+			case 'test':
+				state['data'] = action.data;
+			default:
+				return state;
+		}
 	}
     describe('Initialize', function () {
         let store = new StoreFacade(testReducer);
@@ -21,11 +26,27 @@ describe('StoreFacade', function () {
 		});
 
 	});
+
 	describe('dispatch', function () {
 		let store = new StoreFacade(testReducer);
 		it('should dispatch', function () {
 			var result = store.dispatch({type: 'test', data:'test-data'});
+			var state = store.getState();
 			expect(result).to.deep.equals({type: 'test', data:'test-data'});
+			console.log('State:' + JSON.stringify(state));
+			expect(state, 'Invalid state!').to.deep.equals({data:'test-data'});
+		});
+	});
+
+	describe('reset', function () {
+		let store = new StoreFacade(testReducer);
+		it('should reset', function () {
+			var result = store.dispatch({type: 'test', data:'test-data'});
+			var state = store.getState();
+			expect(state).to.deep.equals({data:'test-data'});
+			store.reset();
+			state = store.getState();
+			expect(state).to.deep.equals({});
 		});
 	});
 

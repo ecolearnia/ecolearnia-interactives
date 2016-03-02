@@ -20,7 +20,7 @@
 
 var PubSub = require('../libs/common/pubsub').PubSub;
 //var itemcontext = require('./core/itemcontext');
-var ItemPlayer = require('./core/itemplayer').ItemPlayer;
+var ItemPlayer = require('./core/itemplayer').default;
 
 // Interactive Components.
 var ActionBar = require('./components/actionbar.jsx').ActionBarComponent;
@@ -30,8 +30,16 @@ var TextFieldQuestion = require('./components/questions/textfieldquestion.jsx').
 var TemplateContainer = require('./components/templatecontainer').TemplateContainerComponent;
 
 // @note - this can be externalized to another js bundle
-var LocalEvaluator = require('./core/localevaluator').LocalEvaluator;
+var LocalEvaluator = require('./core/localevaluator').default;
 var evaluation = require('./evaluation/evaluation');
+
+var AssignmentPlayer = require('./core/assignmentplayer').default;
+var RandomVarSequencingStrategy = require('./core/randomvarsequencingstrategy').default;
+var VariableRandomizer = require('./core/variablerandomizer').default;
+
+module.exports.AssignmentPlayer = AssignmentPlayer;
+module.exports.RandomVarSequencingStrategy = RandomVarSequencingStrategy;
+module.exports.VariableRandomizer = VariableRandomizer;
 
 module.exports.LocalEvaluator = LocalEvaluator;
 module.exports.evaluation = evaluation;

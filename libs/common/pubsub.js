@@ -10,7 +10,7 @@
 var Rx = require('rx');
 
 /**
- * EcoLearnia v0.0.1
+ * EcoLearnia v0.0.2
  *
  * @fileoverview
  *  This file includes the definition of PubSub class.
@@ -34,11 +34,8 @@ function createName (name) {
  *  PubSub, the message bus.
  *  It wraps a third party subpub library.
  *
- * @todo - Implement!
- *
- * @constructor
  */
-export class PubSub
+export default class PubSub
 {
     constructor(props)
     {
@@ -86,23 +83,17 @@ export class PubSub
      * Publish message
      *
      * @param {string} topic
-     * @param {string} sourceItemId
-     * @param {string} sourceComponent
      * @param {object} payload
      */
-    publish (topic, sourceItemId, sourceComponentId, type, payload) {
-        var message = {
-            timestamp: new Date(),
-            source: {
-                itemId: sourceItemId,
-                componentId: sourceComponentId
-            },
-            type: type,
-            payload: payload
-        };
-        this.publishRaw(topic, message);
+    publish (topic, payload) {
+        // @todo clone object
+        payload['timestamp'] = new Date();
+        this.publishRaw(topic, payload);
     }
 
+    /**
+     * Release resources
+     */
     dispose() {
         var subjects = this.subjects;
         for (var prop in subjects) {

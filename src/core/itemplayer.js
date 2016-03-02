@@ -24,7 +24,6 @@ var ReactDOM = require('react-dom');
 import utils from '../../libs/common/utils';
 import logger from '../../libs/common/logger';
 import stringTemplate from '../../libs/contrib/templateengine';
-import PubSub from '../../libs/common/pubsub';
 
 import ComponentContext  from '../../src/components/componentcontext';
 import StoreFacade       from '../../src/core/storefacade';
@@ -52,7 +51,7 @@ import LocalEvaluator    from '../../src/core/localevaluator';
  * @param {object} config
  *
  */
-export class ItemPlayer
+export default class ItemPlayer
 {
     constructor(config)
     {
@@ -105,25 +104,31 @@ export class ItemPlayer
          * The server uses the retrieved LearnerAssignmentItem to evaluate the
          * submission and append the result (activity).
          */
-        this.associationId_ = config.associationId || (Math.floor((Math.random() * 1000) + 1)).toString();
+        this.associationId_;
 
-        this.setContent(config.content); // the content body
+        /**
+         * The content which this context is operating on
+         * @type {Object}
+         */
+        this.content_;
 
         /**
          * Flux Store
          */
         this.store_ = new StoreFacade(itemReducers);
 
-        var evaluator = null;
-        if (config.evaluator && config.evaluator === 'remote') {
-            evaluator = new RemoteEvaluator();
-        } else {
-            evaluator = new LocalEvaluator();
-            evaluator.registerItemPlayer(this);
-        }
+        // Evaluator is needed for the ItemActionFactory
+        var evaluator = config.evaluator;
 
+        // @todo change fallback to RemoteEvaluator when available
+        evaluator = evaluator || new LocalEvaluator();
+
+        /**
+         * The dispatcher instance
+         */
         this.dispatcher_ = new ItemDispatcher({
-            actionFactory: new ItemActionFactory(evaluator)
+            actionFactory: new ItemActionFactory(evaluator),
+            pubsub: this.pubsub
         });
         this.dispatcher_.setStore(this.store_);
 
@@ -133,6 +138,10 @@ export class ItemPlayer
          */
         this.componentReferences_ = {};
 
+        if (config.content) {
+            let associationId = config.associationId || (Math.floor((Math.random() * 1000) + 1)).toString();
+            this.setContent(associationId, config.content); // the content body
+        }
     };
 
     /*** Static methods ***/
@@ -186,36 +195,39 @@ export class ItemPlayer
      *
      * @todo - Trigger re-rendering
      *
-     * @param {object} content
+     * @param {string} associationId - the content instance ID
+     * @param {object} content - the actual content
      */
-    setContent(content)
+    setContent(associationId, content)
     {
-        /**
-         * The content which this context is operating on
-         * @type {Object}
-         */
+        if (this.associationId_ === associationId) {
+            // Trying to set same content. othing to do.
+            return;
+        }
+
+        this.associationId_ = associationId;
         this.content_ = content;
+        this.componentReferences_ = {};
 
         // Convert component spec from array to Object map for efficient
         // retrieval.
         // the components are already in form of map
-        this.componentSpecs_ = content.item.components;
+        this.componentSpecs_ = (content && content.item) ? content.item.components : null;
 
-        this.logger_.debug('Component set.');
+        // New content was set, reset the store and trigger render
+        this.store_.reset();
+
+        this.logger_.debug('Content assigned.');
 
     }
 
     /**
-     * getValue
+     * renderTemplateString
      *
-     * If the parameter is a primitive value return it, if the paremeter
-     * is an object with reference (_ref) property, which is
-     * a fully qualified name (fqn) of a model object or component object
-     * return the resolved object.
+     * Renders a string with variable placeholders. The variable place holders
+     * are replaced by the actual variable values in the content.
      *
-     * @param {object} param  - the parameter which could be the value itself
-     *      or may be an object which contains "_ref" denoting a local fully
-     *      qualified name to where the actual value is.
+     * @param {string} template  - the template string
      */
     renderTemplateString(template)
     {

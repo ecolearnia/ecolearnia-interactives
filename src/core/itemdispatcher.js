@@ -18,7 +18,6 @@
  */
 
 //import { logger } from '../../libs/common/logger';
-import { PubSub } from '../../libs/common/pubsub';
 import ItemActionFactory from './itemactionfactory';
 
 /**
@@ -50,6 +49,11 @@ export default class ItemDispatcher
         } else {
             throw new Exception('actionFactory not provided')
         }
+
+        /**
+         * @type {PubSub} for eventing
+         */
+        this.pubsub = (config && config.pubsub) ? config.pubsub : null;
     }
 
     /**
@@ -74,9 +78,22 @@ export default class ItemDispatcher
 
     evaluate(associationId)
     {
+        let self = this;
         return this.store_.dispatch(
             this.actionFactory_.evaluate(associationId)
-        );
+        ).then(function(data){
+            console.log("yay!" + JSON.stringify(data));
+            if (self.pubsub && data.type == 'ITEM_APPEND_EVALDETAILS') {
+                // publish event
+                // @todo - change string literals to constants
+                self.pubsub.publish('submission-responded', {
+                    associationId: associationId,
+                    data: data.evalDetails
+                });
+            }
+            // Re-return
+            return data;
+        });
     }
 
     appendMessage(message)

@@ -29,8 +29,8 @@ import Immutable from 'immutable';
  * @desc
  *  Redux item reducer function for component.
  *  This reducer keeps the component state in the following structure:
- *  Immutable.Map.<{string} componentName, {object} state >
- *  Exampole:
+ *  Immutable.Map.<{string} componentName, {itemactionfactory.ComponentState} state >
+ *  Example:
  *  "question1": {
  *    "field1": {
  *      "key": "ans1",
@@ -44,9 +44,9 @@ function componentReducer(state = Immutable.Map(), action) {
         case 'ITEM_UPDATE_STATE':
             //console.log('state (pre)=' + JSON.stringify(state));
             var currState = state.get(action.componentId) || {};
-            console.log('currState (pre)=' + JSON.stringify(currState));
+            //console.log('currState (pre)=' + JSON.stringify(currState));
             _.assign(currState, action.state);
-            console.log('currState (post)=' + JSON.stringify(currState));
+            //console.log('currState (post)=' + JSON.stringify(currState));
 
             let newState = state.set(action.componentId, currState);
             //console.log('state (post)=' + JSON.stringify(newState));
@@ -65,25 +65,7 @@ function componentReducer(state = Immutable.Map(), action) {
  *  Redux item reducer function for evaluations (aka response processing)
  *  resulting from submission.
  *  This reducer keeps the evaluation details in the following structure:
- *  Immutable.List.<{object} evalDetails> }.
- *  Exampole:
- *  [{
- *    "submission": {
- *      "timestamp": "20160213T13:25:00.23",
- *      "fields": {
- *        "field1": {
- *          "key": "ans1",
- *          "value": "Earth",
- *        }
- *      }
- *    },
- *    "evalResult": {
- *      "field1": {
- *        "score": 1,
- *        "feedback": "You are correct!",
- *      }
- *    }
- *  }]
+ *  Immutable.List.<{itemactionfactory.EvalDetails}> }.
  *
  */
 function evaluationReducer(state = Immutable.List(), action) {

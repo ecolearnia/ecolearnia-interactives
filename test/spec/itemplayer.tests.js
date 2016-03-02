@@ -25,7 +25,7 @@ describe('ItemPlayer', function () {
 
 		it('should renderTemplateString', function () {
             let result = itemPlayer.renderTemplateString("<%=num1%> <%=data2%>");
-            expect(result).to.equal("11 test-data");
+            expect(result).to.equal("-1 test-data");
 		});
 	});
 

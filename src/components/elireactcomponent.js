@@ -35,6 +35,10 @@ export class EliReactComponent extends React.Component
     {
         super(props);
 
+        /**
+         * Unsubscription function.
+         */
+        this.unsubscribe;
         //this.itemAssociationId_ = props.itemAssociationId;
         //this.componentId_ = props.componentId;
     }
@@ -42,8 +46,8 @@ export class EliReactComponent extends React.Component
     subscribeToStateChange()
     {
         var self = this;
-        this.props.store.subscribe(function() {
-            console.log('state updated!');
+        this.unsubscribe = this.props.store.subscribe(function() {
+            console.log('state updated! ' + JSON.stringify(self.props.store.getState('components')));
             self.forceUpdate();
         });
     }
@@ -53,9 +57,19 @@ export class EliReactComponent extends React.Component
      */
     componentDidMount()
     {
-        // IF this is a main component, then subscribe to state change
+        // If this is a main component, then subscribe to state change
         // this.props.context.
         this.subscribeToStateChange();
+    }
+
+    /**
+     * React component about to unmounting
+     */
+    componentWillUnmount()
+    {
+        if (this.unsubscribe) {
+            this.unsubscribe();
+        }
     }
 
 }

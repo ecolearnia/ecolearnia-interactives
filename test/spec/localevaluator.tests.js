@@ -103,14 +103,17 @@ describe('LocalEvaluator', function () {
 
 		it('should combineSubmissionData', function () {
 			evaluator = new LocalEvaluator();
+
+			var testAssociationId = '123';
 			var mockItemPlayer = {
-				getAssociationId: function() { return '123' },
+				getAssociationId: function() { return testAssociationId },
 		        // The response processing rule
 		        getContent: function() {
 					return testContent;
 				}
-			}
-			evaluator.registerItemPlayer(mockItemPlayer);
+			};
+
+			evaluator.registerContent(testAssociationId, testContent);
 
 			var data = {
 				field1: {
@@ -120,7 +123,7 @@ describe('LocalEvaluator', function () {
 				field2: 3
 			};
 
-			var result = evaluator.combineSubmissionData_(data);
+			var result = evaluator.combineSubmissionData_(testAssociationId, data);
 
 			var expected = {
 				field1: {
@@ -130,7 +133,7 @@ describe('LocalEvaluator', function () {
 				field2: 3,
 				"field1_key": "two",
 				"field1_value": 2,
-				"var_num1": 11,
+				"var_num1": -1,
 				"var_data2": "test-data"
 			};
 			expect(result).to.deep.equal(expected)

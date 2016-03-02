@@ -18,7 +18,6 @@
  */
 
 var _ = require('lodash');
-import { PubSub } from '../../libs/common/pubsub';
 import { createStore, applyMiddleware, combineReducers, compose} from 'redux'
 import thunk from 'redux-thunk';
 
@@ -42,11 +41,24 @@ export default class StoreFacade
         const rootReducer = _.isFunction(reducers) ?
             reducers : combineReducers(reducers);
 
+        // Wrapper around ther reducers to handle
+        // _RESET_ action
+        // @see: http://stackoverflow.com/questions/35622588/how-to-reset-the-state-of-a-redux-store/35641992#35641992
+        const resettableReducer = (state, action) => {
+            if (action.type === '_RESET_') {
+                state = undefined;
+            }
+            return rootReducer(state, action)
+        };
+
         this.store_ = createStore(
-            rootReducer,
+            resettableReducer,
             compose(
                 applyMiddleware(thunk),
-                (typeof window !== 'undefined' && window.devToolsExtension) ? window.devToolsExtension() : f => f
+                // window.devToolsExtension is the Redux Chrome DevTools
+                // @see https://developer.chrome.com/devtools
+                (typeof window !== 'undefined' && window.devToolsExtension)
+                    ? window.devToolsExtension() : f => f
             )
         );
 
@@ -54,6 +66,11 @@ export default class StoreFacade
 
     /**
      * Registers dispatcher
+     * A dispatcher is an object with convinence methods that issues
+     * different actions. It basically generates action objects and calls
+     * store's dispach() method.
+     *
+     * @param {Dispatcher} dispatcher
      */
     registerDispatcher(dispatcher)
     {
@@ -69,6 +86,20 @@ export default class StoreFacade
         return this.dispatcher_[name];
     }
 
+    /**
+     * Reset store
+     */
+    reset()
+    {
+        return this.dispatch({
+            type: '_RESET_'
+        });
+    }
+
+    /**
+     * subscribe to store change
+     * @param {function} listener
+     */
     subscribe(listener)
     {
         return this.store_.subscribe(listener);
@@ -93,13 +124,18 @@ export default class StoreFacade
     }
 
     /**
-     * Dipspatches the action
+     * Dispatches an action
+     * @param {object} action - the action to dispatch.
+     *      At minimum the action contains type property.
      */
     dispatch(action)
     {
         return this.store_.dispatch(action);
     }
 
+    /**
+     * disposes this store
+     */
     dispose()
     {
         //this.store.dispose();

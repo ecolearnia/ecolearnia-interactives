@@ -56,7 +56,7 @@ module.exports.startsWith = startsWith;
  *
  * @param {object} obj  - The object to be accessed
  * @param {string} is  - The dot notation string
- * @param {*|undefined}  - if provided, this call is a setting call, otherwise getting call
+ * @param {*|undefined} value - if provided, this call is a setting call, otherwise getting call
  *
  * @return {*}   - The value
  */
@@ -64,14 +64,18 @@ function dotAccess (obj, is, value)
 {
     if (typeof is == 'string')
         return dotAccess(obj, is.split('.'), value);
-    else if (is.length == 1 && value !==undefined)
+    else if (is.length == 1 && value !== undefined)
         return obj[is[0]] = value;
     else if (is.length == 0)
         return obj;
     else {
-        // Create nested property it it is setting mode and path not exists
-        if (obj[is[0]] === undefined && value !== undefined) {
-            obj[is[0]] = {};
+        // Create nested property if it is setting mode and path not exists
+        if (obj[is[0]] === undefined) {
+            if (value !== undefined) {
+                obj[is[0]] = {};
+            } else {
+                return undefined;
+            }
         }
         return dotAccess(obj[is[0]], is.slice(1), value);
     }

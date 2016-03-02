@@ -57,18 +57,25 @@ describe('ItemDispatcher', function () {
 			store.getState().components = Immutable.Map({
 				id1 : { mystate: 123 }
 			});
-			const expectedEvalResults = {
-				"id1":{
-					"descr":"test eval result","itemId":"id1","itemState":{"mystate":123}
-				}
-			};
 
 			dispatcher.evaluate('id1', {answer:123})
 			.then(function(result){
-				//console.log('result2=' + JSON.stringify(result));
-				//console.log('state2=' + JSON.stringify(store.getState()));
-				expect(result).to.deep.equals({"type":"ITEM_UPDATE_EVALRESULT","componentId":"id1","evalResult":{"descr": "test eval result", "itemId":"id1","itemState":{"mystate":123}}});
-				expect(store.getState().evalResults.toObject()).to.deep.equals(expectedEvalResults);
+				console.log('result2=' + JSON.stringify(result));
+				//console.log('state2=' + JSON.stringify(store.getState().evaluations.toObject(), null, 2));
+
+                let expectedEvalDetails = {
+                    "submission":{"fields":{"mystate":123}, timestamp: result.evalDetails.submission.timestamp},
+                    "evalResult":{"descr": "test eval result", "itemId":"id1","itemState":{"mystate":123}}
+                }
+
+				expect(result).to.deep.equals({
+                    "type":"ITEM_APPEND_EVALDETAILS",
+                    "evalDetails": expectedEvalDetails
+                });
+
+                const expectedEvaluations = expectedEvalDetails;
+
+				expect(store.getState().evaluations.toObject()[0]).to.deep.equals(expectedEvaluations);
 				done();
 			})
 			.catch(function(error){

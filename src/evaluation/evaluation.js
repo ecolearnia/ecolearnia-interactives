@@ -25,6 +25,7 @@ var MultiMatch = require('./multimatch').MultiMatch;
 var internals = {};
 
 /**
+ * @deprecated
  * Registers evaluation engines to the evaluator
  */
 internals.registerEvalEngines = function(evaluator)
@@ -39,6 +40,3 @@ internals.registerEvalEngines = function(evaluator)
 
 
 module.exports.registerEvalEngines = internals.registerEvalEngines;
-
-
-

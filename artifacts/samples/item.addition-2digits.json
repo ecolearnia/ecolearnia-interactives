@@ -2,11 +2,15 @@
     "variableDeclarations": {
         "num1": {
             "baseType": "number",
-            "value": -1
+            "value": 12,
+            "minVal": 0,
+            "maxVal": 10
         },
-        "data2": {
-            "baseType": "string",
-            "value": "test-data"
+        "num2": {
+            "baseType": "number",
+            "value": 33,
+            "minVal": 10,
+            "maxVal": 30
         }
     },
     "@doc": "This section declares participant's input fields (submission)",
@@ -39,41 +43,12 @@
         }
     },
     "modelDefinition": {
+
         "question1": {
-            "prompt": "What is 5 x 3",
+            "prompt": "What is <%=num1%> + <%=num2%>",
             "fields": [
                 {
-                    "responseId": "field1",
-                    "options": [
-                        {
-                            "key": 12,
-                            "value": "12"
-                        },
-                        {
-                            "key": 15,
-                            "value": "15"
-                        },
-                        {
-                            "key": 18,
-                            "value": "18"
-                        },
-                        {
-                            "key": 20,
-                            "value": "20"
-                        },
-                        {
-                            "key": 25,
-                            "value": "25"
-                        }
-                    ]
-                }
-            ]
-        },
-        "question2": {
-            "prompt": "What is 9 x 2",
-            "fields": [
-                {
-                    "responseId": "field2"
+                    "responseId": "field1"
                 }
             ]
         }
@@ -91,9 +66,7 @@
                 "case": "true",
                 "then": {
                     "field1.score": 0,
-                    "field1.feedback": "Incorrect",
-                    "field2.score": 0,
-                    "field2.feedback": "Incorrect"
+                    "field1.feedback": "Incorrect"
                 }
             },
             {
@@ -105,24 +78,24 @@
                 }
             },
             {
-                "case": "$field1_key > 5 * 3",
+                "case": "$field1_value > $var_num1 + $var_num2",
                 "then": {
                     "field1.score": 0,
                     "field1.feedback": "NUMBER TOO BIG"
                 }
             },
             {
-                "case": "$field1_key < 5 * 3",
+                "case": "$field1_value < $var_num1 + $var_num2",
                 "then": {
                     "field1.score": 0,
                     "field1.feedback": "NUMBER TOO SMALL"
                 }
             },
             {
-                "case": "$field2_value == 9 * 2",
+                "case": "$field1_value == $var_num1 + $var_num2",
                 "then": {
-                    "field2.score": 1,
-                    "field2.feedback": "NUMBER Just right!!"
+                    "field1.score": 1,
+                    "field1.feedback": "NUMBER Just right!!"
                 }
             }
         ]
@@ -151,7 +124,7 @@
             "textfield": {
                 "type": "TextFieldQuestion",
                 "config": {
-                    "question": { "_ref" : ".model.question2"},
+                    "question": { "_ref" : ".model.question1"},
                     "layout": "flow"
                 }
             },

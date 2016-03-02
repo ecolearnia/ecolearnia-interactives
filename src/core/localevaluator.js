@@ -53,8 +53,6 @@ export default class LocalEvaluator
          */
         this.logger_ = logger.getLogger('Evaluator');
 
-        //this.pubsub = settings.pubsub;
-
         /**
          * Evaluation handlers
          * @type {{}}
@@ -77,12 +75,6 @@ export default class LocalEvaluator
          */
         this.variables_ = {}
 
-        // Subscribe to the submission action event
-        if (this.pubsub) {
-            this.pubsub.subscribe(Events.ANSWER_EVALUATE,
-                this.handleEvaluateEvent_.bind(this)
-            );
-        }
     }
 
     /**
@@ -100,14 +92,13 @@ export default class LocalEvaluator
      * Applicable for in-memory evaluation (e.g. non remote)
      *
      * @param {ItemPlayer} itemPlayer - The id associated with item (one per itemPlayer)
+     * @param {ItemPlayer} itemPlayer - The id associated with item (one per itemPlayer)
      */
-    registerItemPlayer(itemPlayer)
+    registerContent(associationId, content)
     {
-        var associationId = itemPlayer.getAssociationId();
         // The response processing rule
-        var rule = itemPlayer.getContent().responseProcessing;
-        this.rules_[associationId] = rule;
-        this.variables_ = itemPlayer.getContent().variableDeclarations || {};
+        this.rules_[associationId] = content.responseProcessing;
+        this.variables_[associationId] = content.variableDeclarations || {};
     }
 
     /**
@@ -145,7 +136,7 @@ export default class LocalEvaluator
     {
         var rule = this.rules_[associationId];
 
-        let combinedSubmissionData  = this.combineSubmissionData_(submissionData);
+        let combinedSubmissionData  = this.combineSubmissionData_(associationId, submissionData);
 
         //console.log(combinedSubmissionData);
 
@@ -157,7 +148,7 @@ export default class LocalEvaluator
      * 1. flattened nested values of itself
      * 2. variables from the content
      */
-    combineSubmissionData_(submissionData)
+    combineSubmissionData_(associationId, submissionData)
     {
         let combinedSubmissionData = {};
 
@@ -167,9 +158,9 @@ export default class LocalEvaluator
 
         // Add variables with 'var_' prefix
         let vars = {};
-        for(let varName in this.variables_)
+        for(let varName in this.variables_[associationId])
         {
-            vars['var_' + varName] = this.variables_[varName].value;
+            vars['var_' + varName] = this.variables_[associationId][varName].value;
         }
         _.assign(combinedSubmissionData, vars);
         return combinedSubmissionData;
@@ -189,6 +180,8 @@ export default class LocalEvaluator
      */
     evaluateLocal_(rule, submissionData)
     {
+        //return Promise.reject("Testing static reject");
+
         var promise = promiseutils.createPromise( function(resolve, reject) {
             var outcomes = {};
 
@@ -213,31 +206,5 @@ export default class LocalEvaluator
         }.bind(this));
 
         return promise;
-    }
-
-
-    /**
-     * PubSub Event subscription handler
-     *
-     * @param message
-     * @private
-     */
-    handleEvaluateEvent_(message)
-    {
-        var associationId = message.source.associationId;
-        this.evaluate(message.payload)
-            .then( function(result){
-                this.pubsub.publish(
-                    Events.ANSWER_EVALUATED,
-                    associationId,
-                    'evaluator',
-                    'evaluation',
-                    /** @type core.AnswerSubmission */ (result)
-                );
-                this.logger_.info({associationId: associationId}, 'Evaluation:published');
-            }.bind(this))
-            .catch( function (error) {
-                this.logger_.info({associationId: associationId, error: error}, 'Evaluation:error');
-            }.bind(this));
     }
 }

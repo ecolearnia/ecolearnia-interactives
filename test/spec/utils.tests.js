@@ -2,16 +2,85 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var lodash = require('lodash');
 
-import {hydrate,  dehydrate} from '../../libs/common/utils';
+import {dotAccess, hydrate, dehydrate} from '../../libs/common/utils';
 
-describe('utils', function () {
+describe('utils', function () {;
+
+	var testObj = {
+	   "foo": {
+		 "bar": {
+		   "baz1": "baz-val1",
+		   "baz2": "baz-val2"
+		 }
+	   }
+   };
 
 	before(function(){
 	});
 
-	function testReducer (state = {}, action) {
-		return state;
-	}
+	describe('dotAccess', function () {
+		it('should get value', function () {
+			var result = dotAccess(testObj, 'foo.bar.baz1');
+			expect (result).to.equal("baz-val1");
+		});
+
+		it('should get undefined value for non-existent property', function () {
+			var result = dotAccess(testObj, 'foo.NONEXISTENT');
+			expect (result).to.equal(undefined);
+		});
+
+		it('should get undefined value for non-existent nested property', function () {
+			var result = dotAccess(testObj, 'foo.NONEXISTENT.NONEXISTENT2');
+			expect (result).to.equal(undefined);
+		});
+
+		it('should set property', function () {
+			var obj = JSON.parse(JSON.stringify(testObj));
+			dotAccess(obj, 'foo.bar.baz1', 'newbaz1');
+			var expectedObj = {
+			   "foo": {
+				 "bar": {
+				   "baz1": "newbaz1",
+				   "baz2": "baz-val2"
+				 }
+			   }
+			}
+			expect (obj).to.deep.equal(expectedObj);
+		});
+
+		it('should add new property', function () {
+			var obj = JSON.parse(JSON.stringify(testObj));
+			dotAccess(obj, 'foo.bar.baz3', 'baz-val3');
+			var expectedObj = {
+			   "foo": {
+				 "bar": {
+				   "baz1": "baz-val1",
+				   "baz2": "baz-val2",
+				   "baz3": "baz-val3"
+				 }
+			   }
+			}
+			expect (obj).to.deep.equal(expectedObj);
+		});
+
+		it('should add new nested property ', function () {
+			var obj = JSON.parse(JSON.stringify(testObj));
+			dotAccess(obj, 'foo.bar2.baz3', 'baz-val3');
+			var expectedObj = {
+			   "foo": {
+				 "bar": {
+				   "baz1": "baz-val1",
+				   "baz2": "baz-val2"
+			   	 },
+				 "bar2": {
+  				   "baz3": "baz-val3"
+				 }
+			   }
+			}
+			expect (obj).to.deep.equal(expectedObj);
+		});
+	});
+
     describe('hydrate', function () {
 
 		it('should hydrate', function () {
