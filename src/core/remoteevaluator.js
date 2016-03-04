@@ -90,11 +90,9 @@ export default class Removtevaluator
      */
     evaluateLocal_(associationId, submissionData)
     {
-        var promise = promiseutils.createPromise( function(resolve, reject) {
+        return promiseutils.createPromise( function(resolve, reject) {
             // @todo - implement
 
         }.bind(this));
-
-        return promise;
     }
 }

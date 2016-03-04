@@ -17,7 +17,11 @@
  * @date 2/10/2016
  */
 
+var _ = require('lodash');
+
 //import { logger } from '../../libs/common/logger';
+var promiseutils = require('../../libs/common/promiseutils');
+
 import ItemActionFactory from './itemactionfactory';
 
 /**
@@ -44,10 +48,27 @@ export default class ItemDispatcher
      */
     constructor(config)
     {
-        if (config && config.actionFactory) {
-            this.actionFactory_ = config.actionFactory;
-        } else {
-            throw new Exception('actionFactory not provided')
+        /**
+         * @type actionFactory
+         */
+        this.actionFactory_;
+
+        /**
+         * @type Evaluator
+         */
+        this.evaluator_;
+
+        if (config) {
+            if(config.actionFactory) {
+                this.actionFactory_ = config.actionFactory;
+            } else {
+                throw new Exception('actionFactory not provided')
+            }
+            if(config.evaluator) {
+                this.evaluator_ = config.evaluator;
+            } else {
+                throw new Exception('evaluator not provided')
+            }
         }
 
         /**
@@ -68,15 +89,79 @@ export default class ItemDispatcher
 
     /**
      * updates state of a component
+     *
+     * @param {string} associationId -
+     * @param {string} componentId -
+     * @param {Object} componentState  - the component state
      */
-    updateState(componentId, state)
+    updateState(associationId, componentId, componentState)
     {
-        return this.store_.dispatch(
-            this.actionFactory_.updateState(componentId, state)
-        );
+        let self = this;
+        return promiseutils.createPromise( function(resolve, reject) {
+            // @todo - implement
+            let retval = this.store_.dispatch(
+                this.actionFactory_.updateState(componentId, componentState)
+            );
+            // Add mechanism to update state in the system of records
+            resolve(retval);
+        }.bind(this));
     }
 
+    /**
+     * Evaluate the current state
+     *
+     * @param {string} associationId  - the nodeId
+     */
     evaluate(associationId)
+    {
+        let self = this;
+
+        let submissionTimestamp = new Date();
+
+        // components states are Immutablejs
+        let componentStates = this.store_.getState('components');
+
+        // merge states of all the components into one single KV Object
+        // This will become th student's submission object
+        var itemState = {};
+        for (var componentId in componentStates) {
+            itemState = _.assignIn(itemState, componentStates[componentId]);
+        }
+
+        // Evaluator can be either local or remote proxy
+        return self.evaluator_.evaluate(associationId, itemState)
+        .then( function(evalResult) {
+            // @todo - obtain the componentId from the fieldName
+            let evalDetails = {
+                submission: {
+                    timestamp: submissionTimestamp,
+                    fields: itemState
+                },
+                evalResult: evalResult
+            }
+            var dispResult = self.store_.dispatch(self.actionFactory_.appendEvalDetails(evalDetails));
+            console.log('dispResult: ' + JSON.stringify(dispResult));
+            return evalDetails;
+        })
+        .then(function(evalDetails) {
+            console.log("yay!" + JSON.stringify(evalDetails));
+            if (self.pubsub) {
+                // publish event
+                // @todo - change string literals to constants
+                self.pubsub.publish('submission-responded', {
+                    associationId: associationId,
+                    data: evalDetails
+                });
+            }
+            // Re-return
+            return evalDetails;
+        });
+    }
+
+    /**
+     * @deprecated
+     */
+    evaluate1(associationId)
     {
         let self = this;
         return this.store_.dispatch(
@@ -96,6 +181,9 @@ export default class ItemDispatcher
         });
     }
 
+    /**
+     * Adds a message
+     */
     appendMessage(message)
     {
         return this.store_.dispatch(

@@ -127,7 +127,8 @@ export default class ItemPlayer
          * The dispatcher instance
          */
         this.dispatcher_ = new ItemDispatcher({
-            actionFactory: new ItemActionFactory(evaluator),
+            evaluator: evaluator,
+            actionFactory: new ItemActionFactory(),
             pubsub: this.pubsub
         });
         this.dispatcher_.setStore(this.store_);

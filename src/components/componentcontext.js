@@ -55,7 +55,7 @@ export default class ComponentContext
              */
             updateState: function (state)
             {
-                return dispatcher.updateState(componentId, state);
+                return dispatcher.updateState(associationId, componentId, state);
             },
 
             evaluate: function ()

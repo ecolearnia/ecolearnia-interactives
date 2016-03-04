@@ -30,27 +30,35 @@ describe('ItemDispatcher', function () {
 			store.dispose();
 		});
 
-		it('should updateState', function () {
+		it('should updateState', function (done) {
 			let dispatcher = new ItemDispatcher({
-				actionFactory: new ItemActionFactory(mockEvaluator)
+                evaluator: mockEvaluator,
+				actionFactory: new ItemActionFactory()
 			});
             dispatcher.setStore(store);
 
-			var result = dispatcher.updateState('id1', {answer:123});
+            // @todo updateState will be changed to Promise
+			dispatcher.updateState('assocId1', 'id1', {answer:123})
+            .then(function(result){
 
-			const expectedStateItems = {
-					"id1":{"answer":123}
-			};
-			//console.log('state/updateState=' + JSON.stringify(store.getState()));
-			expect(result).to.deep.equals({"type":"ITEM_UPDATE_STATE","componentId":"id1","state":{"answer":123}});
+                const expectedStateItems = {
+    					"id1":{"answer":123}
+    			};
+    			//console.log('state/updateState=' + JSON.stringify(store.getState()));
+    			expect(result).to.deep.equals({"type":"ITEM_UPDATE_STATE","componentId":"id1","state":{"answer":123}});
 
-			// getState().items is of type Immutable
-			expect(store.getState().components.toObject()).to.deep.equals(expectedStateItems);
+    			// getState().items is of type Immutable
+    			expect(store.getState().components.toObject()).to.deep.equals(expectedStateItems);
+
+                done();
+            });
+
 		});
 
 		it('should evaluate', function (done) {
 			let dispatcher = new ItemDispatcher({
-				actionFactory: new ItemActionFactory(mockEvaluator)
+                evaluator: mockEvaluator,
+				actionFactory: new ItemActionFactory()
 			});
             dispatcher.setStore(store);
 
@@ -58,20 +66,21 @@ describe('ItemDispatcher', function () {
 				id1 : { mystate: 123 }
 			});
 
-			dispatcher.evaluate('id1', {answer:123})
+			dispatcher.evaluate('id1')
 			.then(function(result){
 				console.log('result2=' + JSON.stringify(result));
 				//console.log('state2=' + JSON.stringify(store.getState().evaluations.toObject(), null, 2));
 
                 let expectedEvalDetails = {
-                    "submission":{"fields":{"mystate":123}, timestamp: result.evalDetails.submission.timestamp},
+                    "submission":{"fields":{"mystate":123}, timestamp: result.submission.timestamp},
                     "evalResult":{"descr": "test eval result", "itemId":"id1","itemState":{"mystate":123}}
                 }
 
-				expect(result).to.deep.equals({
+				/*expect(result).to.deep.equals({
                     "type":"ITEM_APPEND_EVALDETAILS",
                     "evalDetails": expectedEvalDetails
-                });
+                });*/
+                expect(result).to.deep.equals(expectedEvalDetails);
 
                 const expectedEvaluations = expectedEvalDetails;
 

@@ -90,9 +90,9 @@ export default class ItemActionFactory
      * constructor
      * @param {Object} evaluator - Reference to the evaluator object.
      */
-    constructor(evaluator)
+    constructor()
     {
-        this.evaluator_ = evaluator;
+        //this.evaluator_ = evaluator;
     }
 
     /**
@@ -139,6 +139,7 @@ export default class ItemActionFactory
 
 
     /**
+     * @deprecated The ItemDispatcher is handling the evaluation
      * Asynchronous evaluation of an item's state (submission)
      *
      * @param {string} associationId  - ID of the item that is currently being played

@@ -1,6 +1,8 @@
 PENDING list
 - select question: Improve usability
-- [AssignmentPlayer] ItemLoader strategy
+- [AssignmentPlayer]
+- [LocalNodeSysRec]
+- [NodeProvider]
 - [Assignment] StatsModel
 - [Question] State restoration
 - [Timer]
