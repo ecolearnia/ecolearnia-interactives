@@ -30,16 +30,24 @@ Assignment {{
 <script type="text/javascript">
     var interactives = require('interactives');
 
+    // Provides local node system of records
+    var localSysRec = new interactives.LocalNodeSysRec();
+
     var sequencingConfig = {
+        sysRecords: localSysRec,
         resourceUrl: 'item.addition-2digits.json'
     };
-    var evaluator = new interactives.LocalEvaluator();
+
+    var nodeProvider = new interactives.LocalNodeProvider({sysRecords: localSysRec});
+    var evaluator = new interactives.LocalEvaluator({sysRecords: localSysRec});
     var assignemntPlayerConfig = {
+        nodeProvider: nodeProvider,
         evaluator: evaluator,
-        sequencingStrategy: new interactives.RandomVarSequencingStrategy(sequencingConfig)
+        sequencingStrategy: new interactives.LocalRandomVarSequencingStrategy(sequencingConfig)
     };
 
     var assignmentPlayer = new interactives.AssignmentPlayer(assignemntPlayerConfig);
+    /*
     assignmentPlayer.subscribe('next-node-retrieved', function(node){
         // New node has been retrieved (in this case generated),
         // register it to the LocalEvaluator
@@ -49,6 +57,7 @@ Assignment {{
             alert('End of assignment');
         }
     });
+    */
 
     var el = document.getElementById('placeholder');
 

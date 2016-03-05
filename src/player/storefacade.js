@@ -24,7 +24,7 @@ import thunk from 'redux-thunk';
 /**
  * @class StateFacade
  *
- * @module interactives/core
+ * @module interactives/player
  *
  * @classdesc
  *  StoreFacade is a wrapper around Redux Store.

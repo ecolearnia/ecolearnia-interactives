@@ -67,6 +67,7 @@ export default class AssignmentPlayer
 
         // Item Player Config
         var itemPlayerConfig = {
+            nodeProvider: config.nodeProvider,
             evaluator: config.evaluator,
             componentNamespace: 'interactives',
             pubsub: this.pubsub_
@@ -93,7 +94,8 @@ export default class AssignmentPlayer
     }
 
     /**
-     * loads the next item in the sequene
+     * loads the next item in the sequence
+     * Next item involves intantiation of a new node
      */
     loadNextItem()
     {
@@ -101,38 +103,43 @@ export default class AssignmentPlayer
         // Not sure to pass the courseContext, learningContext or assignmentContext,
         var context = {};
         return this.sequenceStrategy_.retrieveNextNode(context)
-        .then(function(node){
-            this.pubsub_.publishRaw('next-node-retrieved', node);
-            this.loadItem_(node);
+        .then(function(nodeDescriptor){
+            this.pubsub_.publishRaw('next-node-retrieved', nodeDescriptor);
+            this.loadContentAndRender_(nodeDescriptor);
         }.bind(this));
     }
 
     /**
-     * loads the next item in the sequene
+     * loads an previously intantiated item in the sequene
      */
-    loadItem(index)
+    loadItemByIndex(index)
     {
         // @todo - set properly the assignmentContext
         // Not sure to pass the courseContext, learningContext or assignmentContext,
         return this.sequenceStrategy_.retrieveNode(index)
-        .then(function(node){
+        .then(function(nodeDescriptor){
             this.pubsub_.publish('node-retrieved', node);
-            this.loadItem_(node);
+
+            this.loadContentAndRender_(nodeDescriptor);
         }.bind(this));
     }
 
     /**
-     * Load an item with the ItemPlayer
-     *
-     * @param {DOM} el - the DOM element to render the item
-     * @param {string} associationId - the associationId
-     * @param {Object} content - the EliContent object
+     * Loads an item content and render it
      */
-    loadItem_(node)
+    loadContentAndRender_(nodeDescriptor)
     {
-        this.itemPlayer_.setContent(node.associationId, node.content);
-        this.itemPlayer_.load(this.itemEl_);
+        this.itemPlayer_.loadContent(nodeDescriptor)
+        .then(function(){
+            this.itemPlayer_.render(this.itemEl_);
+        }.bind(this));
+        /**
+        this.itemPlayer_.fetchNode(nodeDescriptor.id);
+        this.itemPlayer_.setContent(nodeDescriptor.id, nodeDescriptor.content);
+        */
+
     }
+
 
     /**
      * subscribe to events from the assignment player

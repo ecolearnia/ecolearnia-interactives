@@ -59,7 +59,7 @@ function componentReducer(state = Immutable.Map(), action) {
 /**
  * evalResultReducer
  *
- * @module interactives/player
+ * @module interactives/player/item
  *
  * @desc
  *  Redux item reducer function for evaluations (aka response processing)

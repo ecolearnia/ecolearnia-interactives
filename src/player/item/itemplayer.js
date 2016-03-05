@@ -30,6 +30,8 @@ import StoreFacade       from '../storefacade';
 import ItemDispatcher    from './itemdispatcher';
 import ItemActionFactory from './itemactionfactory';
 import itemReducers      from './itemreducers';
+
+// @todo - change to RemoteEvaluator when ready
 import LocalEvaluator    from '../localevaluator';
 
 /**
@@ -45,7 +47,6 @@ import LocalEvaluator    from '../localevaluator';
  *  Besides the components, it also has the references to the dispatcher.
  *
  *  The object of this class is created using the factory method createItemPlayer().
- *
  *
  */
 export default class ItemPlayer
@@ -86,7 +87,7 @@ export default class ItemPlayer
 
         /**
          * The content which this context is operating on
-         * @type {Object}
+         * @type {ContentDefinition}
          */
         this.content_ = null;
 
@@ -97,20 +98,19 @@ export default class ItemPlayer
          */
         this.componentSpecs_ = {};
 
-
         /**
          * ID used to retrieve the LearnerAssignmentItem, the content instance
          * with associated user/course.
          * The server uses the retrieved LearnerAssignmentItem to evaluate the
          * submission and append the result (activity).
+         * @todo - change to nodeId
          */
         this.associationId_;
 
         /**
-         * The content which this context is operating on
-         * @type {Object}
+         * @type {NodeProvider} object that provides node
          */
-        this.content_;
+        this.nodeProvider_ = config.nodeProvider;
 
         /**
          * Flux Store
@@ -119,9 +119,8 @@ export default class ItemPlayer
 
         // Evaluator is needed for the ItemActionFactory
         var evaluator = config.evaluator;
-
         // @todo change fallback to RemoteEvaluator when available
-        evaluator = evaluator || new LocalEvaluator();
+        evaluator = evaluator || new LocalEvaluator({});
 
         /**
          * The dispatcher instance
@@ -316,7 +315,7 @@ export default class ItemPlayer
      * @param {object} spec  - The specification of the components
      * @param {string} componentId  - id of the component
      *
-     * @return {object}  The component instance (a React element)
+     * @return {player.Component}  The component instance (a React element)
      */
     createComponent(componentId)
     {
@@ -356,7 +355,7 @@ export default class ItemPlayer
      *
      * @param {string} id - The component Id
      *
-     * @return {object} The component instance (a React element)
+     * @return {player.Component} The component instance (a React element)
      */
     getComponent(id) {
         if (!(id in this.componentReferences_)) {
@@ -390,12 +389,10 @@ export default class ItemPlayer
         // React provides componentKind() method through mixin
         var componentKind = (component.componentKind) ? component.componentKind() : component.type.prototype.componentKind();
 
-        // @todo - Implement strategy pattern to handle different componentKinds
         if (componentKind === 'react') {
             ReactDOM.render(component, el);
         } else {
-            component.render();
-            el.appendChild(component.el);
+            throw new Error('Only component of kind React is supported');
         }
 
         return el;
@@ -410,8 +407,9 @@ export default class ItemPlayer
      *
      * @returns {DOM}
      */
-    render()
+    render(el)
     {
+        this.el_ = el;
         if (!this.content_ || !this.content_.item.mainComponent) {
             throw new Error('No component was specified');
         }
@@ -419,14 +417,18 @@ export default class ItemPlayer
         return this.renderComponent(mainComponentId, this.el_);
     }
 
-    load(el) {
-        this.el_ = el;
-        this.render();
-
+    /**
+     * LoadsContent
+     * Fetches the content from System of records and set the content
+     */
+    loadContent(nodeDescriptor)
+    {
         let self = this;
-        var mainComponent = this.getComponent(this.content_.item.mainComponent);
-
-        //this.storeUnsubscribe_ = this.store_.subscribe(() => this.render());
+        return this.nodeProvider_.fetch(nodeDescriptor.id)
+        .then(function(nodeDetails){
+            self.setContent(nodeDescriptor.id, nodeDetails.content);
+            return;
+        });
     }
 
 }

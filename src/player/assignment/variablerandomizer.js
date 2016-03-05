@@ -45,7 +45,7 @@ export default class VariableRandomizer
 
     /**
      * Returns a new object with intantiated variables
-     * @param {ContentDefinition} content
+     * @param {player.ContentDefinition} content
      * @param {Object} params
      */
     apply(content, params) {

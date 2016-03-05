@@ -2,6 +2,9 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var lodash = require('lodash');
 
+import LocalNodeSysRec from '../../src/player/localnodesysrec';
+
+// Component Under Test
 import LocalEvaluator from '../../src/player/localevaluator';
 var testContent = require('../data/content.test.json');
 
@@ -38,9 +41,19 @@ describe('LocalEvaluator', function () {
 				}
 			]
 		};
+		var localSysRec;
+		beforeEach(function(){
+			localSysRec = new LocalNodeSysRec();
+			localSysRec.add(
+				{
+					id: 'testContent',
+					content: testContent
+				}
+			);
+		});
 
 		it('should evaluate to correct', function (done) {
-			evaluator = new LocalEvaluator();
+			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
 
 			var data = {
 				field1: 2,
@@ -57,7 +70,7 @@ describe('LocalEvaluator', function () {
 		});
 
 		it('should evaluate to incorrect', function (done) {
-			evaluator = new LocalEvaluator();
+			evaluator = new LocalEvaluator({});
 
 			var data = {
 				field1: 3,
@@ -74,7 +87,7 @@ describe('LocalEvaluator', function () {
 		});
 
 		it('should throw error ', function (done) {
-			evaluator = new LocalEvaluator();
+			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
 
 			var data = {
 				_field1: 3,
@@ -102,9 +115,8 @@ describe('LocalEvaluator', function () {
 		});
 
 		it('should combineSubmissionData', function () {
-			evaluator = new LocalEvaluator();
+			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
 
-			var testAssociationId = '123';
 			var mockItemPlayer = {
 				getAssociationId: function() { return testAssociationId },
 		        // The response processing rule
@@ -113,7 +125,7 @@ describe('LocalEvaluator', function () {
 				}
 			};
 
-			evaluator.registerContent(testAssociationId, testContent);
+			//evaluator.registerContent(testAssociationId, testContent);
 
 			var data = {
 				field1: {
@@ -123,7 +135,7 @@ describe('LocalEvaluator', function () {
 				field2: 3
 			};
 
-			var result = evaluator.combineSubmissionData_(testAssociationId, data);
+			var result = evaluator.combineSubmissionData_(testContent.variableDeclarations, data);
 
 			var expected = {
 				field1: {

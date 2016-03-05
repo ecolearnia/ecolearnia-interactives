@@ -25,7 +25,7 @@ var promiseutils = require('../../libs/common/promiseutils');
 /**
  * @class RemoteEvaluator
  *
- * @module interactives/core
+ * @module interactives/player
  *
  * @classdesc
  *  An object of this class is handles the submission data by calling a remote

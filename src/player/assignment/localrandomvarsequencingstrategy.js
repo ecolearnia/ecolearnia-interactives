@@ -35,7 +35,7 @@ import VariableRandomizer from './variablerandomizer.js';
   * retrieveNode(index) -> Promise.resolve(SequenceNode)
   * retrieveNextNode() -> Promise.resolve(SequenceNode)
   */
-export default class RandomVarSequencingStrategy
+export default class LocalRandomVarSequencingStrategy
 {
     /**
      * @param {Object} config - the config
@@ -59,10 +59,17 @@ export default class RandomVarSequencingStrategy
         }
 
         /**
-         * Array of instantiated contents
-         * @type Array<SequenceNodes>
+         * Array of node descriptors
+         * @type Array<player.NodeDescriptors>
          */
-        this.nodes_ = [];
+        this.nodeDescriptors_ = [];
+
+        /**
+         * The local system of records.
+         * This is used to add content
+         * @type {LocalNodeSysRec}
+         */
+        this.sysRecords_ = config.sysRecords;
 
         /**
          * Index of the current node;
@@ -93,11 +100,12 @@ export default class RandomVarSequencingStrategy
 
     /**
      * Gets the node in the sequence history
+     * @return {player.NodeDescriptor}
      */
     retrieveNode(index)
     {
-        if (index < this.nodes_.length) {
-            return Promise.resolve(this.nodes_[index]);
+        if (index < this.nodeDescriptors_.length()) {
+            return Promise.resolve(this.nodeDescriptors_[index]);
         } else {
             return Promise.reject("Index out of bounds");
         }
@@ -105,6 +113,7 @@ export default class RandomVarSequencingStrategy
 
     /**
      * Get next node
+     * @param {player.assignent.LearningContext} the learning context
      * @return {promise} - On success the next sequenceNode (object containing associationId, item content)
      */
     retrieveNextNode(assignmentContext)
@@ -112,7 +121,7 @@ export default class RandomVarSequencingStrategy
         let self = this;
         let numItemInstances = dotAccess(assignmentContext, 'assemblySettings.numItemInstances');
         numItemInstances = numItemInstances || 10;
-        if (self.nodes_.length >= numItemInstances)
+        if (self.nodeDescriptors_.length >= numItemInstances)
         {
             // Reached end of assignment item.
             return Promise.resolve(null);
@@ -120,14 +129,25 @@ export default class RandomVarSequencingStrategy
 
         return self.getTemplateContent_()
         .then(function(content){
+
+            // The following is supposed to happen in the server side:
             var randomizer = new VariableRandomizer();
-            let newNode = {
-                // Create a random number for the associationId                // @todo -
-                associationId: (Math.floor((Math.random() * 1000) + 1)).toString(),
+            let newNodeDetails = {
+                // Create a random number for the associationId
+                userId: 'test-user',
                 content: randomizer.apply(content)
             };
-            self.nodes_.push(newNode);
-            return newNode;
+            return self.sysRecords_.add(newNodeDetails)
+            .then(function(nodeId) {
+                let newNodeDescriptor = {
+                    id: nodeId,
+                    playerName: 'ItemPlayer',
+                    userId: newNodeDetails.userId,
+                };
+                self.nodeDescriptors_.push(newNodeDescriptor);
+
+                return newNodeDescriptor;
+            });
         });
     }
 

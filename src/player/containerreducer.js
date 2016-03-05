@@ -23,7 +23,7 @@ import Immutable from 'immutable';
 /**
  * containerReducer
  *
- * @module interactives/core
+ * @module interactives/player
  *
  * @desc
  *  Redux item reducer function

@@ -26,15 +26,6 @@ import WhenHandler from './evaluation/whenhandler';
 
 
 /**
- * @typedef {{
- *      timeSpent: (number),
- *      fields: (Array<core.AnswerField>)
- * }} core.AnswerSubmission
- *
- */
-
-
-/**
  * @class Evaluator
  *
  * @module interactives/player
@@ -46,7 +37,7 @@ import WhenHandler from './evaluation/whenhandler';
  */
 export default class LocalEvaluator
 {
-    constructor(settings)
+    constructor(config)
     {
         /**
          * The logger
@@ -56,24 +47,17 @@ export default class LocalEvaluator
         /**
          * Evaluation handlers
          * @type {{}}
-         * @private
+         */
+        this.sysRecords_ = config.sysRecords;
+
+        /**
+         * Evaluation handlers
+         * @type {{}}
          */
         this.handlers_ = {};
 
         // Register the default handler
         this.registerHandler(new WhenHandler());
-
-        /**
-         * evalRules per item
-         * @type {Object}
-         * @private
-         */
-        this.rules_ = {};
-
-        /**
-         * Variables
-         */
-        this.variables_ = {}
 
     }
 
@@ -93,32 +77,26 @@ export default class LocalEvaluator
      *
      * @param {ItemPlayer} itemPlayer - The id associated with item (one per itemPlayer)
      * @param {ItemPlayer} itemPlayer - The id associated with item (one per itemPlayer)
-     */
-    registerContent(associationId, content)
+    registerContent(nodeId, content)
     {
         // The response processing rule
-        this.rules_[associationId] = content.responseProcessing;
-        this.variables_[associationId] = content.variableDeclarations || {};
+        this.rules_[nodeId] = content.responseProcessing;
+        this.variables_[nodeId] = content.variableDeclarations || {};
     }
+    */
 
     /**
      * Retrieves a rule
-     * @param associationId
+     * @param nodeId
      * @returns {Promise}
      */
-    retrieveRule(associationId)
+    retrieveRule(nodeId)
     {
-        var promise = promiseutils.createPromise( function(resolve, reject) {
-            if (associationId in this.rules_)
-            {
-                resolve(this.rules_[associationId]);
-            } else {
-                reject({error:'Eval rule for item ' + associationId + ' not found.'});
-            }
-
-        }.bind(this));
-
-        return promise;
+        return this.sysRecords_.get(nodeId)
+        .then(function(nodeDetails){
+            return (nodeDetails.content.responseProcessing);
+            //resolve(this.rules_[nodeId]);
+        });
     }
 
     /**
@@ -126,29 +104,31 @@ export default class LocalEvaluator
      * For php implementation, use
      * http://symfony.com/doc/current/components/expression_language/syntax.html
      *
-     * @param {string} associationId  -  The instance ID that the item is associated to
+     * @param {string} nodeId  -  The instance ID that the item is associated to
      * @param {Array.<{fieldId, answered}>} answer - student submission
      *
      * @returns {Promise}
      *      On Succss: Returns outcome (Object) in key-value pairs
      */
-    evaluate(associationId, submissionData)
+    evaluate(nodeId, submissionData)
     {
-        var rule = this.rules_[associationId];
-
-        let combinedSubmissionData  = this.combineSubmissionData_(associationId, submissionData);
-
-        //console.log(combinedSubmissionData);
-
-        return this.evaluateLocal_(rule, combinedSubmissionData);
+        return this.sysRecords_.get(nodeId)
+        .then(function(nodeDetails) {
+            let itemVars = nodeDetails.content.variableDeclarations || {};
+            let combinedSubmissionData  = this.combineSubmissionData_(itemVars, submissionData);
+            //console.log(combinedSubmissionData);
+            return this.evaluateLocal_(nodeDetails.content.responseProcessing, combinedSubmissionData);
+        }.bind(this));
     }
 
     /**
      * Combine submission data with:
-     * 1. flattened nested values of itself
-     * 2. variables from the content
+     * 1. variables from the content. This is used for comparison.
+     * 2. flattened nested values of itself
+     * @param{Object} vars - The item's variableDeclarations
+     * @param{Object} submissionData - the data that the student has submitted
      */
-    combineSubmissionData_(associationId, submissionData)
+    combineSubmissionData_(variableDeclarations, submissionData)
     {
         let combinedSubmissionData = {};
 
@@ -158,9 +138,9 @@ export default class LocalEvaluator
 
         // Add variables with 'var_' prefix
         let vars = {};
-        for(let varName in this.variables_[associationId])
+        for(let varName in variableDeclarations)
         {
-            vars['var_' + varName] = this.variables_[associationId][varName].value;
+            vars['var_' + varName] = variableDeclarations[varName].value;
         }
         _.assign(combinedSubmissionData, vars);
         return combinedSubmissionData;
@@ -182,7 +162,7 @@ export default class LocalEvaluator
     {
         //return Promise.reject("Testing static reject");
 
-        var promise = promiseutils.createPromise( function(resolve, reject) {
+        return promiseutils.createPromise( function(resolve, reject) {
             var outcomes = {};
 
             for (var statementKey in rule) {
@@ -205,6 +185,5 @@ export default class LocalEvaluator
 
         }.bind(this));
 
-        return promise;
     }
 }

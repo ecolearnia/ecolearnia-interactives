@@ -1,6 +1,6 @@
 {
   "name": "ecolearnia-interactives",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "EcoLearnia's interactives (UI) library",
   "main": "el-interactives.js",
   "scripts": {
