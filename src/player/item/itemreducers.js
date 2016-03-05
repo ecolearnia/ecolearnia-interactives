@@ -24,7 +24,7 @@ import Immutable from 'immutable';
 /**
  * componentReducer
  *
- * @module interactives/core
+ * @module interactives/player/item
  *
  * @desc
  *  Redux item reducer function for component.
@@ -59,7 +59,7 @@ function componentReducer(state = Immutable.Map(), action) {
 /**
  * evalResultReducer
  *
- * @module interactives/core
+ * @module interactives/player
  *
  * @desc
  *  Redux item reducer function for evaluations (aka response processing)

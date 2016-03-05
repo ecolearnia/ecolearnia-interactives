@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var lodash = require('lodash');
 
-import RandomVarSequencingStrategy from '../../src/core/Randomvarsequencingstrategy';
+import RandomVarSequencingStrategy from '../../src/player/assignment/randomvarsequencingstrategy';
 
 var testContent = require('../data/content.test.json');
 

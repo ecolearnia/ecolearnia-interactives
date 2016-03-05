@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var lodash = require('lodash');
 
-import ItemPlayer from '../../src/core/itemplayer';
+import ItemPlayer from '../../src/player/item/itemplayer';
 var testContent = require('../data/content.test.json');
 
 describe('ItemPlayer', function () {

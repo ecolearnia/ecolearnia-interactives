@@ -19,30 +19,34 @@
 
 var _ = require('lodash');
 
-import utils from '../../libs/common/utils';
-import logger from '../../libs/common/logger';
+import utils from '../../../libs/common/utils';
+import logger from '../../../libs/common/logger';
 
 /**
  * @class VariableRandomizer
  *
- * @module interactives/core
+ * @module interactives/player/assignment
  *
  * @classdesc
  *  VariableRandomizer produces a new insance of a content with variable randomized
  *
- * @constructor
- *
- * @param {object} config
- *
  */
 export default class VariableRandomizer
 {
+    /**
+     * @constructor
+     *
+     * @param {object} config
+     *
+     */
     constructor(config)
     {
     }
 
     /**
      * Returns a new object with intantiated variables
+     * @param {ContentDefinition} content
+     * @param {Object} params
      */
     apply(content, params) {
         let multiplier = (params && params.multiplier) ? params.multiplier : 1;

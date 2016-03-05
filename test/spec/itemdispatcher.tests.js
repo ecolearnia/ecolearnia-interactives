@@ -2,10 +2,10 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var lodash = require('lodash');
 
-import StoreFacade from '../../src/core/storefacade';
-import ItemDispatcher from '../../src/core/itemdispatcher';
-import ItemActionFactory from '../../src/core/itemactionfactory';
-import itemReducers from '../../src/core/itemreducers';
+import StoreFacade from '../../src/player/storefacade';
+import ItemDispatcher from '../../src/player/item/itemdispatcher';
+import ItemActionFactory from '../../src/player/item/itemactionfactory';
+import itemReducers from '../../src/player/item/itemreducers';
 import Immutable from 'immutable';
 
 describe('ItemDispatcher', function () {

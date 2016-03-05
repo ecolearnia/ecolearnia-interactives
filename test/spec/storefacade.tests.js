@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var lodash = require('lodash');
 
-import StoreFacade from '../../src/core/storefacade';
+import StoreFacade from '../../src/player/storefacade';
 
 
 describe('StoreFacade', function () {

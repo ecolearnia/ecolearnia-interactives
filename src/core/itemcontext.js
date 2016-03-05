@@ -35,7 +35,7 @@ var internals = {};
  * @deprecated Use ItemPlayer instead
  * @class ItemContext
  *
- * @module interactives/core
+ * @module interactives/player
  *
  * @classdesc
  *  Item Context manages the overall lifecycle and interaction of the

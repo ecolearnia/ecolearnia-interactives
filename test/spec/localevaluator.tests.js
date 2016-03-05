@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var lodash = require('lodash');
 
-import LocalEvaluator from '../../src/core/localevaluator';
+import LocalEvaluator from '../../src/player/localevaluator';
 var testContent = require('../data/content.test.json');
 
 describe('LocalEvaluator', function () {

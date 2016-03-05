@@ -9,7 +9,7 @@
 
 
 /**
- * EcoLearnia v0.0.1
+ * EcoLearnia v0.0.2
  *
  * @fileoverview
  *  This file includes references to all interactive components and core dependencies.
@@ -19,38 +19,40 @@
  */
 
 var PubSub = require('../libs/common/pubsub').PubSub;
-//var itemcontext = require('./core/itemcontext');
-var ItemPlayer = require('./core/itemplayer').default;
+module.exports.PubSub = PubSub;
 
-// Interactive Components.
+/**
+ * Interactive Components:
+ * The interactive components must be exported, otherwise the CoreContext will
+ * not be able to instantiate.
+ */
 var ActionBar = require('./components/actionbar.jsx').ActionBarComponent;
 var Feedback = require('./components/feedback.jsx').FeedbackComponent;
 var SelectQuestion = require('./components/questions/selectquestion.jsx').SelectQuestionComponent;
 var TextFieldQuestion = require('./components/questions/textfieldquestion.jsx').TextFieldQuestionComponent;
 var TemplateContainer = require('./components/templatecontainer').TemplateContainerComponent;
-
-// @note - this can be externalized to another js bundle
-var LocalEvaluator = require('./core/localevaluator').default;
-var evaluation = require('./evaluation/evaluation');
-
-var AssignmentPlayer = require('./core/assignmentplayer').default;
-var RandomVarSequencingStrategy = require('./core/randomvarsequencingstrategy').default;
-var VariableRandomizer = require('./core/variablerandomizer').default;
-
-module.exports.AssignmentPlayer = AssignmentPlayer;
-module.exports.RandomVarSequencingStrategy = RandomVarSequencingStrategy;
-module.exports.VariableRandomizer = VariableRandomizer;
-
-module.exports.LocalEvaluator = LocalEvaluator;
-module.exports.evaluation = evaluation;
-
-module.exports.PubSub = PubSub;
-module.exports.ItemPlayer = ItemPlayer;
-
-// The interactive components must be exported, otherwise the CoreContext will
-// not be able to instantiate.
 module.exports.ActionBar = ActionBar;
 module.exports.Feedback = Feedback;
 module.exports.SelectQuestion = SelectQuestion;
 module.exports.TextFieldQuestion = TextFieldQuestion;
 module.exports.TemplateContainer = TemplateContainer;
+
+/**
+ * Players and their auxiliaries:
+ * These can be bundled in different file
+ */
+var ItemPlayer = require('./player/item/itemplayer').default;
+var AssignmentPlayer = require('./player/assignment/assignmentplayer').default;
+module.exports.ItemPlayer = ItemPlayer;
+module.exports.AssignmentPlayer = AssignmentPlayer;
+
+/**
+ * Modules for fully local operation
+ * @todo - Externalized into a different js bundle so it can be opted out
+ */
+var RandomVarSequencingStrategy = require('./player/assignment/randomvarsequencingstrategy').default;
+var VariableRandomizer = require('./player/assignment/variablerandomizer').default;
+var LocalEvaluator = require('./player/localevaluator').default;
+module.exports.RandomVarSequencingStrategy = RandomVarSequencingStrategy;
+module.exports.VariableRandomizer = VariableRandomizer;
+module.exports.LocalEvaluator = LocalEvaluator;

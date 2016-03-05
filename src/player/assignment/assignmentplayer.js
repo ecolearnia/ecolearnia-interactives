@@ -21,17 +21,17 @@ var _ = require('lodash');
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-import utils from '../../libs/common/utils';
-import logger from '../../libs/common/logger';
-import PubSub from '../../libs/common/pubsub';
+import utils from '../../../libs/common/utils';
+import logger from '../../../libs/common/logger';
+import PubSub from '../../../libs/common/pubsub';
 
-import ItemPlayer from './itemplayer';
+import ItemPlayer from '../item/itemplayer';
 
 
 /**
  * @class AssignmentPlayer
  *
- * @module interactives/core
+ * @module interactives/player/assignment
  *
  * @classdesc
  *  Item Context manages the overall lifecycle and interaction of the
@@ -45,11 +45,10 @@ import ItemPlayer from './itemplayer';
  */
 export default class AssignmentPlayer
 {
-    /*
+    /**
      * @constructor
      *
      * @param {object} config
-     *
      */
     constructor(config)
     {
