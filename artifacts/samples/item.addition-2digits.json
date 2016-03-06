@@ -109,7 +109,7 @@
             "my_question": {
                 "type": "TemplateContainer",
                 "config": {
-                    "template": "<div>{{.component.textfield}} <br/> {{feedback}} <br/> {{actionbar}}</div>"
+                    "template": "<div>{{.component.textfield}}  {{actionbar}}</div>"
                 }
             },
             "selectquestion": {

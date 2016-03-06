@@ -49,37 +49,49 @@ export default class ItemDispatcher
     constructor(config)
     {
         /**
-         * @type actionFactory
+         * @type {PubSub} for eventing
+         */
+        this.pubsub = (config && config.pubsub) ? config.pubsub : null;
+
+        /**
+         * @type {StoreFacade}
+         * Set by the setState() method
+         */
+        this.store_;
+
+        /**
+         * @type {NodeProvider}
+         */
+        this.nodeProvider_;
+
+        /**
+         * @type {ActionFactory}
          */
         this.actionFactory_;
 
         /**
-         * @type Evaluator
+         * @type {Evaluator}
          */
         this.evaluator_;
 
-        if (config) {
-            if(config.actionFactory) {
-                this.actionFactory_ = config.actionFactory;
-            } else {
-                throw new Exception('actionFactory not provided')
-            }
-            if(config.evaluator) {
-                this.evaluator_ = config.evaluator;
-            } else {
-                throw new Exception('evaluator not provided')
-            }
+        if(config && config.nodeProvider) {
+            this.nodeProvider_ = config.nodeProvider;
         }
-
-        /**
-         * @type {PubSub} for eventing
-         */
-        this.pubsub = (config && config.pubsub) ? config.pubsub : null;
+        if(config && config.actionFactory) {
+            this.actionFactory_ = config.actionFactory;
+        } else {
+            throw new Exception('actionFactory not provided')
+        }
+        if(config && config.evaluator) {
+            this.evaluator_ = config.evaluator;
+        } else {
+            throw new Exception('evaluator not provided')
+        }
     }
 
     /**
      * Sets the Store reference
-     *
+     * @param {StoreFacade} store;
      */
     setStore(store)
     {
@@ -88,13 +100,13 @@ export default class ItemDispatcher
 
 
     /**
-     * updates state of a component
+     * Updates state of a component
      *
-     * @param {string} associationId -
+     * @param {string} nodeId -
      * @param {string} componentId -
-     * @param {Object} componentState  - the component state
+     * @param {player.FieldCollection} componentState  - the component state
      */
-    updateState(associationId, componentId, componentState)
+    updateState(nodeId, componentId, componentState, skipSave)
     {
         let self = this;
         return promiseutils.createPromise( function(resolve, reject) {
@@ -102,7 +114,12 @@ export default class ItemDispatcher
             let retval = this.store_.dispatch(
                 this.actionFactory_.updateState(componentId, componentState)
             );
-            // Add mechanism to update state in the system of records
+
+            let itemState = this.store_.getState('components');
+            if (!skipSave && this.nodeProvider_) {
+                // Save the item state in the system of records
+                this.nodeProvider_.saveState(nodeId, itemState);
+            }
             resolve(retval);
         }.bind(this));
     }
@@ -110,13 +127,12 @@ export default class ItemDispatcher
     /**
      * Evaluate the current state
      *
-     * @param {string} associationId  - the nodeId
+     * @param {string} nodeId  - the nodeId
+     * @return {player.EvalDetails}
      */
-    evaluate(associationId)
+    evaluate(nodeId)
     {
         let self = this;
-
-        let submissionTimestamp = new Date();
 
         // components states are Immutablejs
         let componentStates = this.store_.getState('components');
@@ -128,19 +144,27 @@ export default class ItemDispatcher
             itemState = _.assignIn(itemState, componentStates[componentId]);
         }
 
+        var submissionDetails = {
+            timestamp: new Date(),
+            fields: itemState
+        };
+
+        self.pubsub && self.pubsub.publish('submission:beforeProcess', {
+            nodeId: nodeId,
+            data: itemState
+        });
+
         // Evaluator can be either local or remote proxy
-        return self.evaluator_.evaluate(associationId, itemState)
+        // The evaluator is expected to save node state with the evalResult
+        return self.evaluator_.evaluate(nodeId, submissionDetails)
         .then( function(evalResult) {
             // @todo - obtain the componentId from the fieldName
             let evalDetails = {
-                submission: {
-                    timestamp: submissionTimestamp,
-                    fields: itemState
-                },
+                submission: submissionDetails,
                 evalResult: evalResult
-            }
-            var dispResult = self.store_.dispatch(self.actionFactory_.appendEvalDetails(evalDetails));
-            console.log('dispResult: ' + JSON.stringify(dispResult));
+            };
+            var dispatchResult = self.appendEvalDetails(evalDetails);
+            //console.log('dispatchResult: ' + JSON.stringify(dispResult));
             return evalDetails;
         })
         .then(function(evalDetails) {
@@ -148,8 +172,8 @@ export default class ItemDispatcher
             if (self.pubsub) {
                 // publish event
                 // @todo - change string literals to constants
-                self.pubsub.publish('submission-responded', {
-                    associationId: associationId,
+                self.pubsub.publish('submission:responded', {
+                    nodeId: nodeId,
                     data: evalDetails
                 });
             }
@@ -159,27 +183,16 @@ export default class ItemDispatcher
     }
 
     /**
-     * @deprecated
+     * Adds evaluation details
+     * This method is called exclusively by the state restoration process
      */
-    evaluate1(associationId)
+    appendEvalDetails(evalDetails)
     {
-        let self = this;
         return this.store_.dispatch(
-            this.actionFactory_.evaluate(associationId)
-        ).then(function(data){
-            console.log("yay!" + JSON.stringify(data));
-            if (self.pubsub && data.type == 'ITEM_APPEND_EVALDETAILS') {
-                // publish event
-                // @todo - change string literals to constants
-                self.pubsub.publish('submission-responded', {
-                    associationId: associationId,
-                    data: data.evalDetails
-                });
-            }
-            // Re-return
-            return data;
-        });
+            this.actionFactory_.appendEvalDetails(evalDetails)
+        );
     }
+
 
     /**
      * Adds a message

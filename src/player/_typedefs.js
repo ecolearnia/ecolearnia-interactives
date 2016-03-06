@@ -21,22 +21,83 @@
 // Declaration of the namespace
 var player = {};
 
+
 /**
- * @todo - Need update
  * @typedef {{
- *      timeSpent: (number),
- *      fields: (Array<core.AnswerField>)
- * }} player.AnswerSubmission
+ *   <fieldId>: {
+ *     "key": (string | number),
+ *     "value": (string | number | boolean | Array),
+ *   }
+ * }} player.FieldCollection
  */
-player.AnswerSubmission;
+player.FieldCollection;
+
+
+/**
+ * @typedef {{
+ *   <componentId0>: (FieldCollection),
+ *   <componentId1>: (FieldCollection), ...
+ * }} ItemState
+ * NOTE: The itemState is no longer grouped into componentId.
+ *       Only one sigle "fields" property is used for all components.
+ */
+player.ItemState;
+
+
+/**
+ * @typedef {{
+ *   <field0>: {
+ *     "score": (number),
+ *     "feedback": (string),
+ *   },
+ *   <field1>: {
+ *     "score": (number),
+ *     "feedback": (string),
+ *   },
+ * }} player.EvalResult
+ */
+player.EvalResult;
+
+
+/**
+ * @typedef {{
+ *    submission: {
+ *      timestamp: (Date),
+ *      "fields": (player.FieldCollection)
+ *    },
+ *    evalResult: (player.EvalResult)
+ *  }} EvalDetails
+ *
+ *  Example:
+ *    "submission": {
+ *      "timestamp": "20160213T13:25:00.23",
+ *      "fields": {
+ *        "field1": {
+ *          "key": "ans1",
+ *          "value": "Earth",
+ *        }
+ *      }
+ *    },
+ *    "evalResult": {
+ *      "field1": {
+ *        "score": 1,
+ *        "feedback": "You are correct!",
+ *      }
+ *    }
+ *  }
+ */
+namespace.EvalDetails;
+
 
 /**
  * @typedef {React} player.Component
  */
 player.Component;
 
+
 /**
  * @typedef {Content} player.ContentDefinition
+ * This is the definition of the content that complies to the specification
  */
 player.ContentDefinition;
 
@@ -46,16 +107,17 @@ player.ContentDefinition;
   *   id: (string), // the node id (uuid)
   *   userId: (string),
   *   playerName: (string), // The name of the (item) player
-  * }} NodeDescriptor
+  * }} player.NodeDescriptor
   */
 player.NodeDescriptor;
 
+
 /**
  * Superset of NodeDescriptor
- * @typedef {
+ * @typedef {{
  * player.NodeDescriptor extend {
- *   content: (ItemDescription),
- *   itemState: (ItemDescription),
- * }} NodeDetails
+ *   content: (player.ContentDefinition),
+ *   itemState: (player.ItemState),
+ * }} player.NodeDetails
  */
 player.NodeDetails;

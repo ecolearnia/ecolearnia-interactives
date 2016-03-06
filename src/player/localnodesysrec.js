@@ -37,6 +37,7 @@ function cloneObject(obj) {
  {
     constructor(config)
     {
+        this.currId_ = 0;
         this.nodes_ = {};
     }
 
@@ -57,11 +58,11 @@ function cloneObject(obj) {
     add(nodeDetails)
     {
         return promiseutils.createPromise( function(resolve, reject) {
-            let nodeId = nodeDetails.id ? nodeDetails.id : (Math.floor((Math.random() * 1000) + 1)).toString();
+            let nodeId = nodeDetails.id ? nodeDetails.id : this.getNextId();
             nodeDetails.id = nodeId;
             this.nodes_[nodeId] = cloneObject(nodeDetails);
 
-            resolve(nodeId);
+            return resolve(nodeId);
         }.bind(this));
     }
 
@@ -72,29 +73,40 @@ function cloneObject(obj) {
      */
     get(id)
     {
-        return promiseutils.createPromise( function(resolve, reject) {
+        var promise = promiseutils.createPromise( function(resolve, reject) {
             if (!id in this.nodes_)
             {
                 return reject('Unexistent ID');
             }
-            return resolve(this.nodes_[id]);
+            let match = this.nodes_[id];
+            return resolve(match);
         }.bind(this));
+
+        return promise;
     }
 
     /**
      * Saves an node item's state
+     * @param {string} id  - the nodeId
+     * @param {player.ItemState}  itemState - the item state
      * @return Promise.resolve({string}) On success resolves state id (uuid)
      */
-    saveState(id, state)
+    saveState(id, itemState)
     {
         return promiseutils.createPromise( function(resolve, reject) {
             if (!this.nodes_[id]) {
                 return reject('Unexistent ID');
             }
             // @todo - use array instead, and resolve a uuid
-            this.nodes_[id].itemState = cloneObject(state);
+            this.nodes_[id].itemState = cloneObject(itemState);
             return resolve();
         }.bind(this));
+    }
+
+    getNextId()
+    {
+        //(Math.floor((Math.random() * 1000) + 1)).toString()
+        return 'LOCAL-' + (this.currId_++).toString();
     }
 
 }

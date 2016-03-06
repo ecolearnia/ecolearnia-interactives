@@ -25,6 +25,7 @@ import utils from '../../../libs/common/utils';
 import logger from '../../../libs/common/logger';
 import PubSub from '../../../libs/common/pubsub';
 
+import PerformanceData from './performancedata';
 import ItemPlayer from '../item/itemplayer';
 
 
@@ -64,6 +65,11 @@ export default class AssignmentPlayer
         this.pubsub_ = new PubSub();
 
         this.subscribeToEvents_();
+
+        /**
+         * Performance data
+         */
+        this.performanceData_ = new PerformanceData();
 
         // Item Player Config
         var itemPlayerConfig = {
@@ -105,7 +111,22 @@ export default class AssignmentPlayer
         return this.sequenceStrategy_.retrieveNextNode(context)
         .then(function(nodeDescriptor){
             this.pubsub_.publishRaw('next-node-retrieved', nodeDescriptor);
-            this.loadContentAndRender_(nodeDescriptor);
+            return this.fetchItemAndRender_(nodeDescriptor);
+        }.bind(this));
+    }
+
+    /**
+     * loads an previously intantiated item in the sequene
+     */
+    loadItemByNodeId(nodeId)
+    {
+        // @todo - set properly the assignmentContext
+        // Not sure to pass the courseContext, learningContext or assignmentContext,
+        return this.sequenceStrategy_.retrieveNode(nodeId)
+        .then(function(nodeDescriptor){
+            this.pubsub_.publish('node-retrieved', nodeDescriptor);
+
+            return this.fetchItemAndRender_(nodeDescriptor);
         }.bind(this));
     }
 
@@ -116,22 +137,24 @@ export default class AssignmentPlayer
     {
         // @todo - set properly the assignmentContext
         // Not sure to pass the courseContext, learningContext or assignmentContext,
-        return this.sequenceStrategy_.retrieveNode(index)
+        return this.sequenceStrategy_.retrieveNodeByIndex(index)
         .then(function(nodeDescriptor){
-            this.pubsub_.publish('node-retrieved', node);
+            this.pubsub_.publish('node-retrieved', nodeDescriptor);
 
-            this.loadContentAndRender_(nodeDescriptor);
+            return this.fetchItemAndRender_(nodeDescriptor);
         }.bind(this));
     }
+
 
     /**
      * Loads an item content and render it
      */
-    loadContentAndRender_(nodeDescriptor)
+    fetchItemAndRender_(nodeDescriptor)
     {
-        this.itemPlayer_.loadContent(nodeDescriptor)
+        return this.itemPlayer_.fetchItem(nodeDescriptor)
         .then(function(){
             this.itemPlayer_.render(this.itemEl_);
+            return;
         }.bind(this));
         /**
         this.itemPlayer_.fetchNode(nodeDescriptor.id);
@@ -165,7 +188,19 @@ export default class AssignmentPlayer
          *   data: {Object} - evalDetails
          * }
          */
-        this.subscribe('submission-responded', function(message) {
+        this.subscribe('submission:beforeRequest', function(message) {
+            this.handleSubmissionBeforeRequestEvent_(message);
+        }.bind(this));
+
+        /*
+         * Item's submission has been responded
+         * Message structure:
+         * {
+         *   associationId: {string} - the item's association' ID
+         *   data: {Object} - evalDetails
+         * }
+         */
+        this.subscribe('submission:responded', function(message) {
             this.handleSubmissionRespondedEvent_(message);
         }.bind(this));
 
@@ -186,7 +221,18 @@ export default class AssignmentPlayer
     }
 
     /**
+     * Function to handle submission before request
+     * This event is useful when the assignment UI needs to disable the
+     * submission button.
+     */
+    handleSubmissionBeforeRequestEvent_(message)
+    {
+        console.log('handleSubmissionBeforeRequestEvent_:' + JSON.stringify(message));
+    }
+
+    /**
      * Function to handle submission
+     * This event is useful when the assignment UI needs to respond to feedback.
      */
     handleSubmissionRespondedEvent_(message)
     {

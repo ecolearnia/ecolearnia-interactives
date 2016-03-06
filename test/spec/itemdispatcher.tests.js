@@ -14,11 +14,11 @@ describe('ItemDispatcher', function () {
 
 		let store = null;
 		let mockEvaluator = {
-			evaluate: (itemId, itemState) =>
+			evaluate: (nodeId, submissionDetails) =>
 			{
 				//console.log(itemId, itemState);
 				// for the
-				return Promise.resolve({descr: 'test eval result', itemId, itemState});
+				return Promise.resolve({descr: 'test eval result', nodeId, submissionDetails});
 			}
 		};
 
@@ -42,7 +42,7 @@ describe('ItemDispatcher', function () {
             .then(function(result){
 
                 const expectedStateItems = {
-    					"id1":{"answer":123}
+    				"fields":{"answer":123}
     			};
     			//console.log('state/updateState=' + JSON.stringify(store.getState()));
     			expect(result).to.deep.equals({"type":"ITEM_UPDATE_STATE","componentId":"id1","state":{"answer":123}});
@@ -73,18 +73,18 @@ describe('ItemDispatcher', function () {
 
                 let expectedEvalDetails = {
                     "submission":{"fields":{"mystate":123}, timestamp: result.submission.timestamp},
-                    "evalResult":{"descr": "test eval result", "itemId":"id1","itemState":{"mystate":123}}
+                    "evalResult":{"descr": "test eval result", "nodeId":"id1","submissionDetails":{"fields": {"mystate":123}, "timestamp": result.submission.timestamp}}
                 }
 
 				/*expect(result).to.deep.equals({
                     "type":"ITEM_APPEND_EVALDETAILS",
                     "evalDetails": expectedEvalDetails
                 });*/
-                expect(result).to.deep.equals(expectedEvalDetails);
+                expect(result, 'result do not match').to.deep.equals(expectedEvalDetails);
 
                 const expectedEvaluations = expectedEvalDetails;
 
-				expect(store.getState().evaluations.toObject()[0]).to.deep.equals(expectedEvaluations);
+				expect(store.getState().evaluations.toObject()[0], 'store.evaluations do not match').to.deep.equals(expectedEvaluations);
 				done();
 			})
 			.catch(function(error){

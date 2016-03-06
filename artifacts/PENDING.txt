@@ -1,10 +1,11 @@
 PENDING list
 - select question: Improve usability
-- [AssignmentPlayer]
-- [LocalNodeSysRec]
-- [NodeProvider]
+- Restore State
+    - ItemPlayer restore state
+    - [SelectQuestion] State restoration
+    -> state restores but the text field cannot be changed (React)
+    -> The submission's state is in aggregated form (not per component)
 - [Assignment] StatsModel
-- [Question] State restoration
 - [Timer]
 - Sound (text to speech using Google)
 - [NumberLineComponent]

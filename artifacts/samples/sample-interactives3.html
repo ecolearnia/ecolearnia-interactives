@@ -22,7 +22,7 @@
 <body>
 
 Assignment {{
-    <button onClick="navigatePrev()">Prev</button>
+    <select id="nodeSelector"></select>
     <button onClick="navigateNext()">Next</button>
 <div id="placeholder"></div>
 }}
@@ -47,17 +47,19 @@ Assignment {{
     };
 
     var assignmentPlayer = new interactives.AssignmentPlayer(assignemntPlayerConfig);
-    /*
-    assignmentPlayer.subscribe('next-node-retrieved', function(node){
-        // New node has been retrieved (in this case generated),
-        // register it to the LocalEvaluator
-        if (node) {
-            evaluator.registerContent(node.associationId, node.content);
+    assignmentPlayer.subscribe('next-node-retrieved', function(nodeDescriptor){
+        // New node has been retrieved (in this case generated), add a new entry in the drop down
+        if (nodeDescriptor) {
+            $("#nodeSelector").append(
+                $("<option></option>")
+                .attr("value", nodeDescriptor.id)
+                .text(nodeDescriptor.id)
+                .prop('selected', true)
+             );
         } else {
             alert('End of assignment');
         }
     });
-    */
 
     var el = document.getElementById('placeholder');
 
@@ -72,6 +74,10 @@ Assignment {{
     {
         assignmentPlayer.handleNavigateEvent_({param: "next"});
     }
+
+    $("#nodeSelector").change(function(event) {
+        assignmentPlayer.loadItemByNodeId(event.target.value);
+    });
 
 </script>
 

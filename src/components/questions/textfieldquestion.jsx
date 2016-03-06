@@ -36,23 +36,55 @@ export class TextFieldQuestionComponent extends AbstractQuestionComponent
     {
         super(props);
 
-        this.bind_('handleChange_');
+        this.bind_('handleBlur_');
+
+        /**
+         * References used for state restoration
+         * @type{Object.<DOM>}
+         */
+        this.inputs_ = {};
     }
 
     /**
-     * Handle click
+     * React lifecycle.
+     * Invoked immediately after the component's updates are flushed to the DOM.
+     * This method is not called for the initial render.
+     * @see https://facebook.github.io/react/docs/component-specs.html#updating-componentdidupdate
      */
-    handleChange_(fieldId, event)
+    componentDidUpdate(prevProps, prevState)
     {
-        let value = this.props.context.castFieldValue(fieldId, event.target.value);
+        // Set the value with the restored state
+        let question = this.props.context.getConfigVal('question');
+        for (var i=0; i < question.fields.length; i++) {
+            let element = question.fields[i];
+            let fieldState = this.props.context.getFieldState(element.responseId);
+            let fieldVal = fieldState ? fieldState.value : '';
+            this.inputs_[element.responseId].value = fieldVal;
+        }
+    }
+
+    /**
+     * Handle blur: update Item state
+     * @param {string} fieldName - the fieldName
+     * @param {DOMEvent} event - the DOM's event
+     */
+    handleBlur_(fieldName, event)
+    {
+        let value = this.props.context.castFieldValue(fieldName, event.target.value);
+
+        // Skip state update if the value has not changed
+        let prevVal = this.props.context.getFieldValue(fieldName);
+        if (prevVal === value) {
+            return;
+        }
 
         let componentState = {};
         if (event.target.value) {
-            componentState[fieldId] = {
+            componentState[fieldName] = {
                 value: value
             };
         } else {
-            componentState[fieldId] = {};
+            componentState[fieldName] = {};
         }
 
         this.props.context.dispatcher.updateState(componentState);
@@ -70,7 +102,13 @@ export class TextFieldQuestionComponent extends AbstractQuestionComponent
 
         var fieldList = [];
         // For each of the fields
-        question.fields.forEach( function(element, index){
+        question.fields.forEach( function(element, index) {
+
+            // fill state is available
+            // the field state
+            let fieldState = this.props.context.getFieldState(element.responseId);
+            let fieldVal = fieldState ? fieldState.value : undefined;
+            //let temp = this.state[element.responseId];
 
             let optionLabel = '';
             let isCorrect = false;
@@ -86,7 +124,10 @@ export class TextFieldQuestionComponent extends AbstractQuestionComponent
 
             fieldList.push(
                 <div>
-                    <input type="text" name={element.responseId} onChange={this.handleChange_.bind(this, element.responseId)} />
+                    <input type="text" name={element.responseId}
+                        ref={(c) => this.inputs_[element.responseId] = c}
+                        onBlur={this.handleBlur_.bind(this, element.responseId)}
+                     />
                     <span style={labelStyle}> {optionLabel}</span>
                 </div>);
         }.bind(this));

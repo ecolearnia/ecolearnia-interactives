@@ -102,13 +102,22 @@ export default class LocalRandomVarSequencingStrategy
      * Gets the node in the sequence history
      * @return {player.NodeDescriptor}
      */
-    retrieveNode(index)
+    retrieveNodeByIndex(index)
     {
         if (index < this.nodeDescriptors_.length()) {
             return Promise.resolve(this.nodeDescriptors_[index]);
         } else {
             return Promise.reject("Index out of bounds");
         }
+    }
+
+    /**
+     * Gets the node in the sequence history
+     * @return {player.NodeDescriptor}
+     */
+    retrieveNode(id)
+    {
+        return this.sysRecords_.get(id);
     }
 
     /**

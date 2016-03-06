@@ -101,6 +101,7 @@ export default class LocalEvaluator
 
     /**
      * Evaluate the student submission against the provided rule
+     * Upon successful evaluation process, save state to the system of records.
      * For php implementation, use
      * http://symfony.com/doc/current/components/expression_language/syntax.html
      *
@@ -110,14 +111,26 @@ export default class LocalEvaluator
      * @returns {Promise}
      *      On Succss: Returns outcome (Object) in key-value pairs
      */
-    evaluate(nodeId, submissionData)
+    evaluate(nodeId, submissionDetails)
     {
         return this.sysRecords_.get(nodeId)
         .then(function(nodeDetails) {
             let itemVars = nodeDetails.content.variableDeclarations || {};
-            let combinedSubmissionData  = this.combineSubmissionData_(itemVars, submissionData);
+            let combinedSubmissionData  = this.combineSubmissionData_(itemVars, submissionDetails.fields);
             //console.log(combinedSubmissionData);
             return this.evaluateLocal_(nodeDetails.content.responseProcessing, combinedSubmissionData);
+        }.bind(this))
+        .then(function(evalResult){
+
+            let stateEntry = {
+                "@type": "evaluation",
+                data: {
+                    submission: submissionDetails,
+                    evalResult: evalResult
+                }
+            }
+            this.sysRecords_.saveState(nodeId, stateEntry);
+            return evalResult;
         }.bind(this));
     }
 
@@ -125,8 +138,9 @@ export default class LocalEvaluator
      * Combine submission data with:
      * 1. variables from the content. This is used for comparison.
      * 2. flattened nested values of itself
-     * @param{Object} vars - The item's variableDeclarations
-     * @param{Object} submissionData - the data that the student has submitted
+     * @param {Object} vars - The item's variableDeclarations
+     * @param {Object} submissionData - the data that the student has submitted
+     * @return Promise
      */
     combineSubmissionData_(variableDeclarations, submissionData)
     {

@@ -177,6 +177,7 @@ Sample:
         },
 
         "@doc": "This section is defines the structure of this item.",
+        "@doc": "Todo: change the name from item to something else.",
         "item": {
             "mainComponent": "my_question",
             "components": {

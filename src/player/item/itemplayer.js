@@ -126,9 +126,10 @@ export default class ItemPlayer
          * The dispatcher instance
          */
         this.dispatcher_ = new ItemDispatcher({
-            evaluator: evaluator,
+            pubsub: this.pubsub,
             actionFactory: new ItemActionFactory(),
-            pubsub: this.pubsub
+            nodeProvider: this.nodeProvider_,
+            evaluator: evaluator
         });
         this.dispatcher_.setStore(this.store_);
 
@@ -168,6 +169,14 @@ export default class ItemPlayer
     }
 
     /*** Member methods ***/
+
+    /**
+     * getStore
+     */
+    getStore()
+    {
+        return this.store_;
+    }
 
     /**
      * Gets the item association Id (aka itemId).
@@ -218,7 +227,6 @@ export default class ItemPlayer
         this.store_.reset();
 
         this.logger_.debug('Content assigned.');
-
     }
 
     /**
@@ -418,15 +426,39 @@ export default class ItemPlayer
     }
 
     /**
-     * LoadsContent
+     * fetchItem & restores state
      * Fetches the content from System of records and set the content
+     * @param {NodeDescriptor} nodeDescriptor
      */
-    loadContent(nodeDescriptor)
+    fetchItem(nodeDescriptor)
     {
         let self = this;
         return this.nodeProvider_.fetch(nodeDescriptor.id)
         .then(function(nodeDetails){
-            self.setContent(nodeDescriptor.id, nodeDetails.content);
+            self.setContent(nodeDetails.id, nodeDetails.content);
+
+            if (nodeDetails.itemState) {
+                // @todo - later it will change to array of states, array tail
+                // being the last state
+                let isEvaluation = (nodeDetails.itemState['@type'] === 'evaluation');
+
+                let stateData = isEvaluation ? nodeDetails.itemState.data.submission.fields : nodeDetails.itemState.data.fields;
+
+                // Calling an asyc method, but not need to return
+                // Promise warning can safely be ignored
+                self.dispatcher_.updateState(
+                    nodeDetails.id,
+                    "fields",
+                    stateData,
+                    true // Skip saving to the system or records
+                );
+
+                if (isEvaluation)
+                {
+                    // This state is a submission
+                    self.dispatcher_.appendEvalDetails(nodeDetails.itemState.data);
+                }
+            }
             return;
         });
     }

@@ -29,7 +29,7 @@ import Immutable from 'immutable';
  * @desc
  *  Redux item reducer function for component.
  *  This reducer keeps the component state in the following structure:
- *  Immutable.Map.<{string} componentName, {itemactionfactory.ComponentState} state >
+ *  Immutable.Map.<{string} componentName, {player.FieldCollection} state >
  *  Example:
  *  "question1": {
  *    "field1": {
@@ -43,12 +43,12 @@ function componentReducer(state = Immutable.Map(), action) {
     switch (action.type) {
         case 'ITEM_UPDATE_STATE':
             //console.log('state (pre)=' + JSON.stringify(state));
-            var currState = state.get(action.componentId) || {};
+            var currState = state.get('fields') || {};
             //console.log('currState (pre)=' + JSON.stringify(currState));
             _.assign(currState, action.state);
             //console.log('currState (post)=' + JSON.stringify(currState));
 
-            let newState = state.set(action.componentId, currState);
+            let newState = state.set('fields', currState);
             //console.log('state (post)=' + JSON.stringify(newState));
             return newState;
         default:
@@ -65,7 +65,7 @@ function componentReducer(state = Immutable.Map(), action) {
  *  Redux item reducer function for evaluations (aka response processing)
  *  resulting from submission.
  *  This reducer keeps the evaluation details in the following structure:
- *  Immutable.List.<{itemactionfactory.EvalDetails}> }.
+ *  Immutable.List.<{player.EvalDetails}> }.
  *
  */
 function evaluationReducer(state = Immutable.List(), action) {

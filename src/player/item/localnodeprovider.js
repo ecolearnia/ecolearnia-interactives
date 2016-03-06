@@ -17,6 +17,11 @@
  * @date 3/04/2016
  */
 
+ // Quick JSON clone function
+ function cloneObject(obj) {
+     return JSON.parse(JSON.stringify(obj));
+ }
+
  /**
   * @class LocalNodeProvider
   *
@@ -54,11 +59,18 @@
 
      /**
       * Saves an node item's state
+      * @param {string} id  - the node Id
+      * @param {player.ItemState | player.EvalDetails} state
+      * @param {string} type - Either 'submission' or 'interaction'
       * @return {Promise.resolve({string})} On success resolves state id (uuid)
       */
      saveState(id, state)
      {
-         return this.sysRecords_.saveState(id, state);
+         let stateEntry = {
+             "@type": 'interaction',
+             data: cloneObject(state)
+         }
+         return this.sysRecords_.saveState(id, stateEntry);
      }
 
 

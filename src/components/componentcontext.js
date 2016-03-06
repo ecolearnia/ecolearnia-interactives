@@ -88,6 +88,43 @@ export default class ComponentContext
     }
 
     /**
+     * Add field answers to staging.
+     *
+     * The answeredKey is applicable for inputs which has association key,
+     * E.g. select.
+     *
+     * @param {string} fieldName    - the config property field name in dot notation
+     * @param {Object} defaultVal   - the key that student answered.
+     */
+    getFieldState(fieldName)
+    {
+        let componentStates = this.itemPlayer.getStore().getState('components');
+        let componentFields = componentStates ? componentStates['fields']: undefined;
+        let fieldState = componentFields ? componentFields[fieldName] : undefined;
+        return fieldState;
+    }
+
+    /**
+     * return the field's key
+     * @param {string} fieldName    - the config property field name in dot notation
+     */
+    getFieldKey(fieldName)
+    {
+        let fieldState = this.getFieldState(fieldName);
+        return  fieldState ? fieldState.key : undefined;
+    }
+
+    /**
+     * return the field's value
+     * @param {string} fieldName    - the config property field name in dot notation
+     */
+    getFieldValue(fieldName)
+    {
+        let fieldState = this.getFieldState(fieldName);
+        return  fieldState ? fieldState.value : undefined;
+    }
+
+    /**
      * Casts the field value to appropriated type (either number of string)
      */
     castFieldValue(fieldName, val)

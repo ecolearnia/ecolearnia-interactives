@@ -37,45 +37,6 @@ var namespace = {};
 namespace.ComponentState;
 
 /**
- * @typedef {{
- *    submission: {
- *      timestamp: (Date),
- *      "fields": {
- *        "field1": {
- *          "key": (string | number),
- *          "value": (string | number),
- *        }
- *      }
- *    },
- *    evalResult: {
- *      "field1": {
- *        "score": (number),
- *        "feedback": (string),
- *      }
- *    }
- *  }} EvalDetails
- *
- *  Example:
- *    "submission": {
- *      "timestamp": "20160213T13:25:00.23",
- *      "fields": {
- *        "field1": {
- *          "key": "ans1",
- *          "value": "Earth",
- *        }
- *      }
- *    },
- *    "evalResult": {
- *      "field1": {
- *        "score": 1,
- *        "feedback": "You are correct!",
- *      }
- *    }
- *  }
- */
-namespace.EvalDetails;
-
-/**
  * @class ItemActionFactory
  *
  * @module interactives/player/item
