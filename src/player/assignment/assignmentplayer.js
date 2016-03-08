@@ -236,6 +236,8 @@ export default class AssignmentPlayer
      */
     handleSubmissionRespondedEvent_(message)
     {
+        message.nodeId;
+        message.data.evalResult;
         console.log('handleSubmissionRespondedEvent_:' + JSON.stringify(message));
     }
 

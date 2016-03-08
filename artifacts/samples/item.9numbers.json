@@ -1,0 +1,198 @@
+{
+    "variableDeclarations": {
+        "num1": {
+            "@doc": "the first number to find (two of this)",
+            "baseType": "number",
+            "value": 2,
+            "minVal": 0,
+            "maxVal": 10
+        },
+        "num2": {
+            "@doc": "the second number to find",
+            "hidden": true,
+            "baseType": "number",
+            "value": 4,
+            "minVal": 10,
+            "maxVal": 30
+        },
+        "num3": {
+            "@doc": "the given number",
+            "hidden": true,
+            "baseType": "number",
+            "value": 9,
+            "minVal": 0,
+            "maxVal": 10
+        }
+    },
+    "@doc": "This section declares participant's input fields (submission)",
+    "responseDeclarations": {
+        "field1a": {
+            "@doc": "The first number",
+            "cardinality": "multiple",
+            "baseType": "number",
+            "correctAnswer": {
+                "eq": "$num2"
+            }
+        },
+        "field1b": {
+            "@doc": "The first number (duplicate)",
+            "cardinality": "multiple",
+            "baseType": "number",
+            "correctAnswer": {
+                "eq": "$num2"
+            }
+        },
+        "field2": {
+            "@doc": "The second number",
+            "cardinality": "single",
+            "baseType": "number",
+            "correctAnswer": {
+                "eq": "$num3"
+            }
+        },
+        "fieldSum": {
+            "@doc": "The summation: num1 + (2*num2) + num3",
+            "cardinality": "single",
+            "baseType": "number"
+        }
+    },
+
+    "outcomeDeclarations": {
+        "@doc": "The following is a ",
+        "score": {
+            "cardinality": "single",
+            "baseType": "number",
+            "@doc": "This data must be stripped out",
+            "defaultValue": 0
+        }
+    },
+    "modelDefinition": {
+
+        "question1": {
+            "prompt": "Find the numbers",
+            "fields": [
+                {
+                    "responseId": "field1a"
+                },
+                {
+                    "responseId": "field1b"
+                },
+                {
+                    "responseId": "field2"
+                },
+                {
+                    "responseId": "fieldSum"
+                }
+            ]
+        }
+    },
+
+    "@doc": "This section handles the submission of the participant.",
+    "@doc": "It computes and assigns value to the fields in outcomeDeclarations",
+    "responseProcessing": {
+
+        "@doc": "Next block is a 'when' statement. The player is responsible",
+        "@doc": "of implementing the statement evaluator",
+        "when": [
+            {
+                "@doc": "For the meantime, this is the method for init",
+                "case": "true",
+                "then": {
+                    "field1a.score": 0,
+                    "field1a.feedback": "Incorrect",
+                    "field1b.score": 0,
+                    "field1b.feedback": "Incorrect",
+                    "field2.score": 0,
+                    "field2.feedback": "Incorrect",
+                    "fieldSum.score": 0,
+                    "fieldSum.feedback": "Incorrect"
+                }
+            },
+            {
+                "case": "$field1a_value == $var_num1",
+                "then": {
+                    "field1a.score": 1,
+                    "field1a.feedback": "Correct"
+                }
+            },
+            {
+                "case": "$field1b_value == $var_num1",
+                "then": {
+                    "field1b.score": 1,
+                    "field1b.feedback": "Correct"
+                }
+            },
+            {
+                "case": "$field2_value == $var_num2",
+                "then": {
+                    "field2.score": 1,
+                    "field2.feedback": "Correct"
+                }
+            },
+            {
+                "case": "$fieldSum_value == (2 * $var_num1) + $var_num2 + var_num3",
+                "then": {
+                    "fieldSum.score": 1,
+                    "fieldSum.feedback": "Total summation is correct!"
+                }
+            }
+        ]
+    },
+
+    "@doc": "This section is defines the structure of this item.",
+    "item": {
+        "mainComponent": "my_question",
+        "components": {
+            "my_question": {
+                "type": "TemplateContainer",
+                "config": {
+                    "template": "<div>{{.component.numberquestion}}  {{actionbar}} {{feedback}}</div>"
+                }
+            },
+            "numberquestion": {
+                "type": "NineNumbersQuestion",
+                "config": {
+                    "question": { "_ref" : ".model.question1"}
+                }
+            },
+            "actionbar": {
+                "type": "ActionBar",
+                "config": {
+                    "items": [
+                        "submit"
+                    ]
+                }
+            },
+            "feedback": {
+                "type": "Feedback",
+                "config": {
+                    "display": "list",
+                    "@doc": "In the client-side player, this is the path",
+                    "@doc": "to the store (Redux)",
+                    "messageRef": "_aggregate_.feedback"
+                }
+            }
+        }
+    },
+
+    "@doc": "This section defines the default policy which can be overriden",
+    "@doc": "by runtime environment",
+    "defaultPolicy": {
+        "maxAttempts": 3,
+        "@doc": "Optional - if present, each attempt will be timed in seconds",
+        "timed": 10,
+        "@doc": "If timed is present, following action takes place when time is over",
+        "onTimeOver": "autosubmit"
+    },
+
+    "@doc": "This section defines custom actions.",
+    "@doc": "WARNING: Specification of this section is not final.",
+    "actions": {
+        "solution": "2 * 2 = 4; also -2 * -2 = 4",
+        "@doc": "hints is an array in the order that is shown per attempt failure",
+        "hints": [
+            "What multiplied twice gives 4?",
+            "Remember that multiplying two negatives yields positive."
+        ]
+    }
+}

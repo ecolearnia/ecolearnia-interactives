@@ -1,11 +1,12 @@
 PENDING list
-- select question: Improve usability
 - Restore State
-    - ItemPlayer restore state
     - [SelectQuestion] State restoration
-    -> state restores but the text field cannot be changed (React)
     -> The submission's state is in aggregated form (not per component)
-- [Assignment] StatsModel
+- [Assignment] PerformanceData
+- [Item] Disable button when correct or attempt completed.
 - [Timer]
+- [TextField] validator based on data type
+- Text question: Improve aesthetic
+- Select question: Improve usability
 - Sound (text to speech using Google)
 - [NumberLineComponent]

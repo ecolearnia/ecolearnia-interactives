@@ -289,11 +289,17 @@ export default class ItemPlayer
 
         if (utils.startsWith(fqn, '.'))
         {
-            // if it starts with '.model' returns the JSON object,
+            // if it starts with '.model' returns the model's object,
             if (utils.startsWith(fqn, '.model'))
             {
                 var refPath = fqn.substring('.model.'.length );
                 retval = utils.dotAccess(this.content_.modelDefinition, refPath);
+            }
+            // if it starts with '.variable' returns the varable's object
+            else if (utils.startsWith(fqn, '.variable.'))
+            {
+                var refPath = fqn.substring('.variable.'.length );
+                retval = utils.dotAccess(this.content_.variableDeclarations, refPath);
             }
 
             // if it starts with '.component' returns the Component object\
@@ -368,7 +374,7 @@ export default class ItemPlayer
     getComponent(id) {
         if (!(id in this.componentReferences_)) {
             if (!(id in this.componentSpecs_)) {
-                throw new Error('Component ID not found');
+                throw new Error('Component with id:' + id + ' not found');
             }
             this.componentReferences_[id] = this.createComponent(id);
         }

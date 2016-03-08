@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var lodash = require('lodash');
 
-import {dotAccess, hydrate, dehydrate} from '../../libs/common/utils';
+import {dotAccess, hydrate, dehydrate, shuffleArray} from '../../libs/common/utils';
 
 describe('utils', function () {;
 
@@ -161,6 +161,22 @@ describe('utils', function () {;
 			expect(result).to.deep.equals(expected);
 		});
 
+	});
+
+	describe('shuffleArray', function () {
+
+		it.only('should shuffleArray', function () {
+			var fieldPositions = [
+	            [0,0], [0,1], [1,0], [1,1], [2,1], [1,2]
+	        ];
+			let shuffle = JSON.parse(JSON.stringify(fieldPositions));
+			let result = shuffleArray(shuffle);
+
+			//console.log("original:" + JSON.stringify(fieldPositions));
+			console.log("shuffled:" + JSON.stringify(result));
+
+			expect(result, 'Shuffle resulted same').to.not.deep.equal(fieldPositions);
+		});
 	});
 
 });
