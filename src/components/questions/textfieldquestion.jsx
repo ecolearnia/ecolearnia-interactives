@@ -37,12 +37,7 @@ export class TextFieldQuestionComponent extends AbstractQuestionComponent
         super(props);
 
         this.bind_('handleBlur_');
-
-        /**
-         * References used for state restoration
-         * @type{Object.<DOM>}
-         */
-        this.inputs_ = {};
+        
     }
 
     /**
@@ -70,24 +65,7 @@ export class TextFieldQuestionComponent extends AbstractQuestionComponent
      */
     handleBlur_(fieldName, event)
     {
-        let value = this.props.context.castFieldValue(fieldName, event.target.value);
-
-        // Skip state update if the value has not changed
-        let prevVal = this.props.context.getFieldValue(fieldName);
-        if (prevVal === value) {
-            return;
-        }
-
-        let componentState = {};
-        if (event.target.value) {
-            componentState[fieldName] = {
-                value: value
-            };
-        } else {
-            componentState[fieldName] = {};
-        }
-
-        this.props.context.dispatcher.updateState(componentState);
+        this.props.context.setFieldValue(fieldName, event.target.value);
     }
 
     render()

@@ -45,7 +45,15 @@ export class AbstractQuestionComponent extends EliReactComponent
             this.handleEvaluatedEvent_.bind(this)
         );*/
 
-
+        /**
+         * References used for state restoration
+         * All inputs generated in the derived components should include
+         * ref={(c) => this.inputs_[element.responseId] = c}
+         * for proper initialization.
+         *
+         * @type{Object.<DOM>}
+         */
+        this.inputs_ = {};
     }
 
     handleEvaluatedEvent_(message)
@@ -76,4 +84,7 @@ export class AbstractQuestionComponent extends EliReactComponent
         });
         return option.value;
     }
+
+
+
 }

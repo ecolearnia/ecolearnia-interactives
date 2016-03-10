@@ -125,6 +125,35 @@ export default class ComponentContext
     }
 
     /**
+     * Set's an DOM input's value
+     *
+     * @param {string} fieldName
+     * @param {string | number | boolean} value
+     */
+    setFieldValue(fieldName, strValue)
+    {
+        let value = this.castFieldValue(fieldName, strValue);
+
+        // Skip state update if the value has not changed
+        let prevVal = this.getFieldValue(fieldName);
+        if (prevVal === value) {
+            return;
+        }
+
+        let componentState = {};
+        if (value) {
+            componentState[fieldName] = {
+                value: value
+            };
+        } else {
+            componentState[fieldName] = {};
+        }
+
+        this.dispatcher.updateState(componentState);
+    }
+
+
+    /**
      * Casts the field value to appropriated type (either number of string)
      */
     castFieldValue(fieldName, val)
@@ -136,6 +165,9 @@ export default class ComponentContext
             return val;
         }
         else if (fieldType === 'number') {
+            if (isNaN(val) || val.trim().length == 0) {
+                return undefined;
+            }
             return Number(val);
         }
         else if (fieldType === 'boolean') {

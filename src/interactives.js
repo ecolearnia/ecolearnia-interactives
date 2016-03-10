@@ -18,7 +18,7 @@
  * @date 5/14/15
  */
 
-var PubSub = require('../libs/common/pubsub').PubSub;
+var PubSub = require('../libs/common/pubsub').default;
 module.exports.PubSub = PubSub;
 
 /**

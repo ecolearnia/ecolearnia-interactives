@@ -180,3 +180,26 @@ function shuffleArray(array) {
 }
 
 module.exports.shuffleArray = shuffleArray;
+
+function permutate(inputArr) {
+  var results = [];
+
+  function permutate(arr, memo) {
+    var cur, memo = memo || [];
+
+    for (var i = 0; i < arr.length; i++) {
+      cur = arr.splice(i, 1);
+      if (arr.length === 0) {
+        results.push(memo.concat(cur));
+      }
+      permutate(arr.slice(), memo.concat(cur));
+      arr.splice(i, 0, cur[0]);
+    }
+
+    return results;
+  }
+
+  return permutate(inputArr);
+}
+
+module.exports.permutate = permutate;

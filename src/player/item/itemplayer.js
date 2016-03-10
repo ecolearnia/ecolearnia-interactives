@@ -139,10 +139,11 @@ export default class ItemPlayer
          */
         this.componentReferences_ = {};
 
+        /* Disable manual setting
         if (config.content) {
             let associationId = config.associationId || (Math.floor((Math.random() * 1000) + 1)).toString();
             this.setContent(associationId, config.content); // the content body
-        }
+        }*/
     };
 
     /*** Static methods ***/

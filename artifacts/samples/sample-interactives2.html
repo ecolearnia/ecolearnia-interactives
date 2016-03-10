@@ -230,19 +230,32 @@ INTERACTIVES v0.0.2 {{
         }
     };
 
-    var settings = {};
+    // Provides local node system of records
+    var localSysRec = new interactives.LocalNodeSysRec();
+    localSysRec.add({
+        id: 'test-node',
+        content: contentSpec
+    });
+    var evaluator = new interactives.LocalEvaluator({sysRecords: localSysRec});
+    var nodeProvider = new interactives.LocalNodeProvider({sysRecords: localSysRec});
+    var settings = {
+        evaluator,
+        nodeProvider
+    };
 
     var randomizer = new interactives.VariableRandomizer();
 
-    settings.content = randomizer.apply(contentSpec);
     // The package name as specified when building the library
     settings.componentNamespace = 'interactives';
     settings.pubsub = new interactives.PubSub();
 
     var itemPlayer = new interactives.ItemPlayer(settings);
+    itemPlayer.fetchItem({id: 'test-node'})
+    .then(function(){
+        var el = document.getElementById('placeholder');
+        itemPlayer.render(el);
+    });
 
-    var el = document.getElementById('placeholder');
-    itemPlayer.load(el);
 
 </script>
 

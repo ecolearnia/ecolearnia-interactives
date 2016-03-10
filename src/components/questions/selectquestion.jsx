@@ -97,7 +97,9 @@ export class SelectQuestionComponent extends AbstractQuestionComponent
 
                 return (
                     <li className="eli-question-option">
-                        <input type="radio" name={element.responseId} onChange={this.handleChange_.bind(this, element.responseId, option.key)} value={option.value} />
+                        <input type="radio" name={element.responseId}
+                            ref={(c) => this.inputs_[element.responseId] = c}
+                            onChange={this.handleChange_.bind(this, element.responseId, option.key)} value={option.value} />
                         {option.value}
                         <span style={labelStyle}> {optionLabel}</span>
                     </li>

@@ -38,27 +38,8 @@ export class FeedbackComponent extends EliReactComponent
     constructor(props)
     {
         super(props);
-        this.bind_('handleEvaluatedEvent_');
-
-        this.state = {
-            evaluation: {}
-        };
-
-        /*
-        this.props.itemContext.pubsub.subscribe(
-            Events.ANSWER_EVALUATED,
-            this.handleEvaluatedEvent_.bind(this)
-        );
-        */
     }
 
-    handleEvaluatedEvent_(message)
-    {
-        if(message.source.itemId === this.itemAssociationId())
-        {
-            this.setState({evaluation: message.payload});
-        }
-    }
 
     render()
     {
@@ -67,13 +48,14 @@ export class FeedbackComponent extends EliReactComponent
         let lastEval = (evalsState && evalsState.length > 0) ? evalsState[evalsState.length-1] : null;
 
         var evalDump = lastEval ? JSON.stringify(lastEval.evalResult): null;
+
         /*
         <audio controls autoplay>
           <source src="http://www.w3schools.com/tags/horse.ogg" type="audio/ogg">
           Your browser does not support the audio element.
         </audio>
-
         */
+
         return (
             <div className="eli-feedback">
                 {evalDump}

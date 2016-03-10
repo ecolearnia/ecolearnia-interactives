@@ -43,11 +43,6 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
 
         this.bind_('handleBlur_');
 
-        /**
-         * References used for state restoration
-         * @type{Object.<DOM>}
-         */
-        this.inputs_ = {};
     }
 
     /**
@@ -75,24 +70,7 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
      */
     handleBlur_(fieldName, event)
     {
-        let value = this.props.context.castFieldValue(fieldName, event.target.value);
-
-        // Skip state update if the value has not changed
-        let prevVal = this.props.context.getFieldValue(fieldName);
-        if (prevVal === value) {
-            return;
-        }
-
-        let componentState = {};
-        if (event.target.value) {
-            componentState[fieldName] = {
-                value: value
-            };
-        } else {
-            componentState[fieldName] = {};
-        }
-
-        this.props.context.dispatcher.updateState(componentState);
+        this.props.context.setFieldValue(fieldName, event.target.value);
     }
 
     render()
@@ -117,11 +95,13 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
             matrixCells.push(cols);
         }
 
+        let patternIndex = this.props.context.itemPlayer.resolveObject('.variable.patternIndex.value');
         // Shuffle the positions to place the fields
         var fieldPositions = [
             [0,0], [0,1], [1,0], [1,1]
         ];
-        utils.shuffleArray(fieldPositions);
+        let permutations = utils.permutate(fieldPositions);
+        fieldPositions = permutations[patternIndex];
 
         let nums = [];
         nums.push( this.props.context.itemPlayer.resolveObject('.variable.num1.value') );
@@ -136,10 +116,13 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
             pos = fieldPositions.pop();
             let element = question.fields[fidx];
 
-            // varVal is the actual answer
+            let style = {
+                backgroundColor: fidx == 2 ?  'LightSalmon' : 'LightSkyBlue'
+            };
+            // nums[fidx] is the actual answer
             matrixData[pos[0]][pos[1]] = nums[fidx];
             matrixCells[pos[0]][pos[1]] = <input type="text" title={nums[fidx]}
-                name={element.responseId}
+                name={element.responseId} style={style}
                 ref={(c) => this.inputs_[element.responseId] = c}
                 onBlur={this.handleBlur_.bind(this, element.responseId)}
                 placeholder={element.responseId}
@@ -204,4 +187,5 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
             </div>
         );
     }
+
 }

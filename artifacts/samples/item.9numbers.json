@@ -22,6 +22,14 @@
             "value": 9,
             "minVal": 0,
             "maxVal": 10
+        },
+        "patternIndex": {
+            "@doc": "the positioning pattern index in the permuation. 24 is the num of permuatations",
+            "hidden": true,
+            "baseType": "number",
+            "value": 9,
+            "minVal": 0,
+            "maxVal": 24
         }
     },
     "@doc": "This section declares participant's input fields (submission)",
