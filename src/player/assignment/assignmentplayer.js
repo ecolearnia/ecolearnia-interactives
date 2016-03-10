@@ -21,13 +21,15 @@ var _ = require('lodash');
 var React = require('react');
 var ReactDOM = require('react-dom');
 
-import utils from '../../../libs/common/utils';
+import utils  from '../../../libs/common/utils';
 import logger from '../../../libs/common/logger';
 import PubSub from '../../../libs/common/pubsub';
 
-import PerformanceData from './performancedata';
+import StoreFacade       from '../storefacade';
+import assignmentReducers  from './assignmentreducers';
 import ItemPlayer from '../item/itemplayer';
 
+import ScoreBoardComponent from './components/scoreboard.jsx';
 
 /**
  * @class AssignmentPlayer
@@ -54,22 +56,16 @@ export default class AssignmentPlayer
     constructor(config)
     {
         /**
-         * DOM element to render the assignment item
+         * DOM element placeholders to render the assignment item
          * Assigned by the load() method
+         * @type{Mapp.<{string} placeholderName, {DOM} el}
          */
-        this.el_ = config.el;
+        this.placeholders_;
 
         /**
          * Eventing
          */
         this.pubsub_ = new PubSub();
-
-        this.subscribeToEvents_();
-
-        /**
-         * Performance data
-         */
-        this.performanceData_ = new PerformanceData();
 
         // Item Player Config
         var itemPlayerConfig = {
@@ -89,15 +85,31 @@ export default class AssignmentPlayer
          *    has operations: get(index), and getNext()
          */
         this.sequenceStrategy_ = config.sequencingStrategy;
+
+        /**
+         * Flux Store
+         */
+        this.store_ = new StoreFacade(assignmentReducers);
+
+
+        // Start listening to events
+        this.subscribeToEvents_();
     }
 
-    load(el)
+    render(placeholders)
     {
-        this.el_ = el;
+        this.placeholders_ = placeholders;
         // @todo - select the element for item
-        this.itemEl_ = el;
+        this.itemEl_ = placeholders.content;
+
+
+        if (placeholders.scoreboard) {
+            ReactDOM.render(<ScoreBoardComponent store={this.store_} context={null} />, placeholders.scoreboard);
+        }
+
         this.loadNextItem();
     }
+
 
     /**
      * loads the next item in the sequence
@@ -146,22 +158,6 @@ export default class AssignmentPlayer
     }
 
 
-    /**
-     * Loads an item content and render it
-     */
-    fetchItemAndRender_(nodeDescriptor)
-    {
-        return this.itemPlayer_.fetchItem(nodeDescriptor)
-        .then(function(){
-            this.itemPlayer_.render(this.itemEl_);
-            return;
-        }.bind(this));
-        /**
-        this.itemPlayer_.fetchNode(nodeDescriptor.id);
-        this.itemPlayer_.setContent(nodeDescriptor.id, nodeDescriptor.content);
-        */
-
-    }
 
 
     /**
@@ -174,6 +170,26 @@ export default class AssignmentPlayer
     {
         this.pubsub_.subscribe(topic, listener);
     }
+
+
+
+    /*************************
+     * private functions
+     */
+
+
+     /**
+      * Loads an item content and render it
+      */
+     fetchItemAndRender_(nodeDescriptor)
+     {
+         return this.itemPlayer_.fetchItem(nodeDescriptor)
+         .then(function(){
+             this.itemPlayer_.render(this.itemEl_);
+             return;
+         }.bind(this));
+
+     }
 
     /**
      * Subscribe to various events
@@ -220,6 +236,17 @@ export default class AssignmentPlayer
         }.bind(this));
     }
 
+    isOverallCorrect(evalResult)
+    {
+        for(var fieldName in evalResult)
+        {
+            if (evalResult[fieldName].score < 1) {
+                return false;
+            }
+        }
+        return true;
+    }
+
     /**
      * Function to handle submission before request
      * This event is useful when the assignment UI needs to disable the
@@ -238,6 +265,15 @@ export default class AssignmentPlayer
     {
         message.nodeId;
         message.data.evalResult;
+
+        // calculare overall correctness
+        let isCorrect = this.isOverallCorrect(message.data.evalResult);
+        if (isCorrect) {
+            this.store_.dispatch({type: "STATS_INC_CORRECT"});
+        } else {
+            this.store_.dispatch({type: "STATS_INC_INCORRECT"});
+        }
+
         console.log('handleSubmissionRespondedEvent_:' + JSON.stringify(message));
     }
 

@@ -13,10 +13,11 @@ describe('ItemPlayer', function () {
 
 		beforeEach(function(){
             var settings = {};
-            settings.content = testContent;
+
             // The package name as specified when building the library
             settings.componentNamespace = 'interactives';
 	        itemPlayer = new ItemPlayer(settings);
+            itemPlayer.setContent('testNodeId', testContent);
 		});
 
 		afterEach(function(){

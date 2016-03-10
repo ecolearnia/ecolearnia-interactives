@@ -1,7 +1,6 @@
 PENDING list
 - Restore State
     - [SelectQuestion] State restoration
-    -> The submission's state is in aggregated form (not per component)
 - [Assignment] PerformanceData
 - [Item] Disable button when correct or attempt completed.
 - [Timer]

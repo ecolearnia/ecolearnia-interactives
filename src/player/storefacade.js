@@ -115,12 +115,12 @@ export default class StoreFacade
         var state;
         if (name != undefined){
             state = this.store_.getState()[name];
-            return this.store_.getState()[name].toJS();
+            //return this.store_.getState()[name].toJS();
         } else {
             state = this.store_.getState();
         }
         // If the state is of type Immutablejs, return the native java value.
-        return (state.toJS) ? state.toJS() : state;
+        return (state && state.toJS) ? state.toJS() : state;
     }
 
     /**

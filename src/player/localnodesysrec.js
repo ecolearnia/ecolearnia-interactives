@@ -33,8 +33,8 @@ function cloneObject(obj) {
   *  Local SequenceNode System of Records.
   *
   */
- export default class LocalNodeSysRec
- {
+export default class LocalNodeSysRec
+{
     constructor(config)
     {
         this.currId_ = 0;

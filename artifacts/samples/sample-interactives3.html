@@ -5,7 +5,7 @@
 <head lang="en">
     <meta charset="UTF-8" />
 
-    <link rel="stylesheet" href="css/app.css">
+    <link rel="stylesheet" href="sample.css">
 
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
@@ -21,10 +21,16 @@
 </head>
 <body>
 
+
 Assignment {{
-    <select id="nodeSelector"></select>
-    <button onClick="navigateNext()">Next</button>
-<div id="placeholder"></div>
+<div class="eli-assignent" />
+    <div><select id="nodeSelector"></select>
+        <button onClick="navigateNext()">Next</button>
+    </div>
+    <div class="eli-assignment-placeholder" id="placeholder-scoreboard" ></div>
+
+    <div class="eli-assignment-placeholder" id="placeholder-content"></div>
+</div>
 }}
 
 <script type="text/javascript">
@@ -62,9 +68,13 @@ Assignment {{
         }
     });
 
-    var el = document.getElementById('placeholder');
+    var placeholders = {
+        content: document.getElementById('placeholder-content'),
+        scoreboard: document.getElementById('placeholder-scoreboard')
+    }
 
-    assignmentPlayer.load(el);
+
+    assignmentPlayer.render(placeholders);
 
     function navigatePrev()
     {

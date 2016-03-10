@@ -107,6 +107,7 @@ player.ContentDefinition;
   *   id: (string), // the node id (uuid)
   *   userId: (string),
   *   playerName: (string), // The name of the (item) player
+  *   policy: (Object), // The policy
   * }} player.NodeDescriptor
   */
 player.NodeDescriptor;

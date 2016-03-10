@@ -58,14 +58,15 @@ export class AbstractQuestionComponent extends EliReactComponent
 
     handleEvaluatedEvent_(message)
     {
-        if(message.source.itemId === this.itemAssociationId())
+        if(message.source.itemId === this.props.context.getAssociationId())
         {
             // do something
         }
     }
 
     /**
-     * returns the option's value of a chosen field
+     * Returns the option's value of a chosen field
+     * Applicable for those inputs that has keys
      * @param question
      * @param fieldId
      * @param key

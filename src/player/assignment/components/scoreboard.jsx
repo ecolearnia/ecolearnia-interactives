@@ -16,7 +16,7 @@
  */
 
 import React from 'react';
-import EliReactComponent from './elireactcomponent').EliReactComponent;
+import {EliReactComponent} from '../../../components/elireactcomponent';
 
 /**
  * @class ScoreBoard
@@ -28,23 +28,24 @@ import EliReactComponent from './elireactcomponent').EliReactComponent;
  *
  * @todo - Implement!
  */
-export class FeedbackComponent extends React.Component
+export default class ScoreBoardComponent extends EliReactComponent
 {
     constructor(props)
     {
         super(props);
-        /this.bind_('handleEvaluatedEvent_');
-
+        //this.bind_('handleEvaluatedEvent_');
     }
 
     render()
     {
         // The "eli" prefix in the className stands for EcoLearnia Interactive
-        let score = this.props.store.getState('score');
+        let stats = this.props.store.getState('stats');
+
+        let statsDump = JSON.stringify(stats);
 
         return (
-            <div className="eli-feedback">
-                {evalDump}
+            <div className="eli-scoreboard">
+                Stats: {statsDump}
             </div>
         );
     }

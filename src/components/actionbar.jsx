@@ -46,13 +46,6 @@ export class ActionBarComponent extends EliReactComponent
     handleAction_(type, e)
     {
         // e.preventDefault();
-        /*
-        this.props.itemContext.pubsub.publish(
-            'action:' + type,
-            this.itemAssociationId(),
-            this.componentId(),
-            type);
-            */
         switch (type) {
             case 'submit': this.props.context.dispatcher.evaluate();
         }

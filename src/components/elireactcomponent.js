@@ -39,7 +39,7 @@ export class EliReactComponent extends React.Component
          * Unsubscription function.
          */
         this.unsubscribe;
-        //this.itemAssociationId_ = props.itemAssociationId;
+
         //this.componentId_ = props.componentId;
     }
 
@@ -57,8 +57,7 @@ export class EliReactComponent extends React.Component
      */
     componentDidMount()
     {
-        // If this is a main component, then subscribe to state change
-        // this.props.context.
+        // Subscribe to state change
         this.subscribeToStateChange();
     }
 
@@ -83,13 +82,6 @@ EliReactComponent.prototype.bind_ = function(...methods)
     methods.forEach( (method) => this[method] = this[method].bind(this) );
 };
 
-/**
- * Returns the ID of the item that this component pertains
- */
-EliReactComponent.prototype.itemAssociationId = function()
-{
-    return this.itemAssociationId_;
-};
 
 /**
  * Returns the ID of this component instance
