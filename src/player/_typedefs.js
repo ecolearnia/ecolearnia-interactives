@@ -46,6 +46,10 @@ player.ItemState;
 
 /**
  * @typedef {{
+ *   _aggregate_: {
+ *     "score": (number),
+ *     "feedback": (string),
+ *   },
  *   <field0>: {
  *     "score": (number),
  *     "feedback": (string),
@@ -119,6 +123,7 @@ player.NodeDescriptor;
  * player.NodeDescriptor extend {
  *   content: (player.ContentDefinition),
  *   itemState: (player.ItemState),
+ *   evalDetails: (player.EvalDetails)
  * }} player.NodeDetails
  */
 player.NodeDetails;

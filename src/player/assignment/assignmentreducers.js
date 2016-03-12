@@ -35,19 +35,20 @@ function statsReducer(state = Immutable.Map({}), action) {
     switch (action.type) {
         case 'STATS_ACCUMULATE':
             var score = state.get('score') || 0;
+            score += action.score;
             if (action.score == 1) {
                 // All Correct!
                 //console.log('state (pre)=' + JSON.stringify(state));
                 var corrects = state.get('corrects') || 0;
-                return state.set('corrects', ++corrects).set('score', score + action.score);
+                return state.set('corrects', ++corrects).set('score', score);
             } else if (action.score == 0) {
                 // All incorrect!
                 var incorrects = state.get('incorrects') || 0;
-                return state.set('incorrects', ++incorrects).set('score', score + action.score);
+                return state.set('incorrects', ++incorrects).set('score', score);
             } else {
                 // Partial correct
                 var semicorrects = state.get('semicorrects') || 0;
-                return state.set('semicorrects', ++semicorrects).set('score', score + action.score);
+                return state.set('semicorrects', ++semicorrects).set('score', score);
             }
 
             //console.log('state (post)=' + JSON.stringify(newState));

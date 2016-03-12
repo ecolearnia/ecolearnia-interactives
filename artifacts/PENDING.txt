@@ -1,11 +1,10 @@
 PENDING list
+- [Item] Disable button when correct or attempt completed.
 - Restore State
     - [SelectQuestion] State restoration
-- [Assignment] PerformanceData
-- [Item] Disable button when correct or attempt completed.
 - [Timer]
+- [Feedback] Nicer output
 - [TextField] validator based on data type
 - Text question: Improve aesthetic
 - Select question: Improve usability
 - Sound (text to speech using Google)
-- [NumberLineComponent]

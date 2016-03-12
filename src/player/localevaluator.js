@@ -118,17 +118,21 @@ export default class LocalEvaluator
             let itemVars = nodeDetails.content.variableDeclarations || {};
             let combinedSubmissionData  = this.combineSubmissionData_(itemVars, submissionDetails.fields);
             //console.log(combinedSubmissionData);
-            return this.evaluateLocal_(nodeDetails.content.responseProcessing, combinedSubmissionData);
+            return this.evaluateLocal_(nodeDetails.content.responseProcessing, combinedSubmissionData)
+            .then(function(evalResult){
+                let attemptNum = (nodeDetails.evalDetails) ? nodeDetails.evalDetails.length + 1 : 1;
+                return this.calculateAgregate_(evalResult, attemptNum);
+            }.bind(this));
         }.bind(this))
         .then(function(evalResult){
-
+            // Simulate saving to the system of records
             let stateEntry = {
                 "@type": "evaluation",
                 data: {
                     submission: submissionDetails,
                     evalResult: evalResult
                 }
-            }
+            };
             this.sysRecords_.saveState(nodeId, stateEntry);
             return evalResult;
         }.bind(this));
@@ -160,6 +164,32 @@ export default class LocalEvaluator
         return combinedSubmissionData;
     }
 
+    /**
+     * Calculate the aggregate score
+     * @param {player.EvalDetails} outcomes
+     * @param {number} attemptNum  - the number of attempt , score diminishing factor
+     */
+    calculateAgregate_(outcomes, attemptNum)
+    {
+        // Attempt
+        let _attemptNum = attemptNum || 1;
+        // Calculate the aggregate score
+        let total = 0;
+        for (var fieldName in outcomes) {
+            if (outcomes[fieldName].score) {
+                total += outcomes[fieldName].score;
+            }
+        }
+
+        // Round to two decimals
+        let aggregateScore = Math.round(total / Object.keys(outcomes).length / _attemptNum * 100) / 100;
+
+        if (!('_aggregate_' in outcomes)) {
+            outcomes['_aggregate_'] = {};
+        }
+        outcomes['_aggregate_'].score = aggregateScore  ;
+        return outcomes;
+    }
 
     /**
      * Evaluate the student submission against the provided rule
@@ -196,21 +226,6 @@ export default class LocalEvaluator
                     return reject(error);
                 }
             }
-
-            // Calculate the aggregate score
-            let total = 0;
-            for (var fieldName in outcomes) {
-                if (outcomes[fieldName].score) {
-                    total += outcomes[fieldName].score;
-                }
-            }
-            // round to two decimals
-            let aggregateScore = Math.round(total / Object.keys(outcomes).length * 100) / 100;
-
-            if (!('_aggregate_' in outcomes)) {
-                outcomes['_aggregate_'] = {};
-            }
-            outcomes['_aggregate_'].score = aggregateScore;
 
             //console.log('outcomes=' + JSON.stringify(outcomes));
             resolve(outcomes);

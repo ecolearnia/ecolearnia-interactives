@@ -99,6 +99,14 @@ export default class LocalNodeSysRec
             }
             // @todo - use array instead, and resolve a uuid
             this.nodes_[id].itemState = cloneObject(itemState);
+
+            // Add evalResult records
+            if (itemState['@type'] === 'evaluation') {
+                if (!('evalDetails' in this.nodes_[id])) {
+                    this.nodes_[id].evalDetails = [];
+                }
+                this.nodes_[id].evalDetails.push(cloneObject(itemState));
+            }
             return resolve();
         }.bind(this));
     }

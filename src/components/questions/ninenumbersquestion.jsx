@@ -32,7 +32,7 @@ var AbstractQuestionComponent = require('./question.jsx').AbstractQuestionCompon
  * ---+---+---
  *  B | C |sum
  * ---+---+---
- * sum|sum|total-sum
+ * sum|sum|total_sum
  *
  */
 export class NineNumbersQuestionComponent extends AbstractQuestionComponent
