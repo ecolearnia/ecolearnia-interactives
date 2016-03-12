@@ -141,7 +141,7 @@ export default class ComponentContext
         }
 
         let componentState = {};
-        if (value) {
+        if (value !== undefined) {
             componentState[fieldName] = {
                 value: value
             };

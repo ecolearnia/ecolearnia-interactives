@@ -1,4 +1,5 @@
 var expect = require('chai').expect;
+var assert = require('chai').assert;
 var sinon = require('sinon');
 var lodash = require('lodash');
 
@@ -16,27 +17,43 @@ describe('LocalEvaluator', function () {
     describe('evaluate', function () {
 		var evaluator;
 
+		// Correct answers: field1=2, field2=4
 		var responseProcessing = {
 			"when": [
 				{
+					"case": "true",
+					"then": {
+						"question1.score": 0,
+						"question2.score": 0,
+					}
+				},
+				{
 					"case": " $field1 > 2",
 					"then": {
-						"question1.correct": false,
+						"question1.score": 0,
 						"question1.feedback": "Number too large"
 					}
 				},
 				{
 					"case": "$field1 == $field2",
 					"then": {
-						"question1.correct": false,
+						"question1.score": 0,
+						"question2.score": 0,
 						"question1.feedback": "Fields cannot be same"
 					}
 				},
 				{
 					"case": "$field1 * $field1 == 4",
 					"then": {
-						"question1.correct": true,
+						"question1.score": 1,
 						"question1.feedback": "Correct"
+					}
+				},
+				{
+					"case": "$field2 * $field2 == 16",
+					"then": {
+						"question2.score": 1,
+						"question2.feedback": "Correct"
 					}
 				}
 			]
@@ -52,24 +69,28 @@ describe('LocalEvaluator', function () {
 			);
 		});
 
-		it('should evaluate to correct', function (done) {
+		it('should evaluate to correct', function () {
 			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
 
 			var data = {
 				field1: 2,
-				field2: 3
+				field2: 4
 			};
 
-			evaluator.evaluateLocal_(responseProcessing, data)
+			return evaluator.evaluateLocal_(responseProcessing, data)
 			.then(function (outcome) {
 				//console.log('outcome=' + JSON.stringify(outcome));
-				expect(outcome).to.deep.equals({"question1": {"correct":true, "feedback":"Correct"}});
-				done();
+				expect(outcome).to.deep.equals({
+					"_aggregate_": {"score": 1},
+					"question1": {"score":1, "feedback":"Correct"},
+					"question2": {"score":1, "feedback":"Correct"}
+				});
 			});
+
 
 		});
 
-		it('should evaluate to incorrect', function (done) {
+		it('should evaluate to incorrect', function () {
 			evaluator = new LocalEvaluator({});
 
 			var data = {
@@ -77,11 +98,34 @@ describe('LocalEvaluator', function () {
 				field2: 3
 			};
 
-			evaluator.evaluateLocal_(responseProcessing, data)
+			return evaluator.evaluateLocal_(responseProcessing, data)
 			.then(function (outcome){
 				//console.log('outcome:' + JSON.stringify(outcome));
-				expect(outcome).to.deep.equals({"question1": {"correct":false, "feedback":"Fields cannot be same"}});
-				done();
+				expect(outcome).to.deep.equals({
+					"_aggregate_": {"score": 0},
+					"question1": {"score":0, "feedback":"Fields cannot be same"},
+					"question2": {"score":0}
+				});
+			});
+
+		});
+
+		it('should evaluate to partial correct', function () {
+			evaluator = new LocalEvaluator({});
+
+			var data = {
+				field1: 3,
+				field2: 4
+			};
+
+			return evaluator.evaluateLocal_(responseProcessing, data)
+			.then(function (outcome){
+				//console.log('outcome:' + JSON.stringify(outcome));
+				expect(outcome).to.deep.equals({
+					"_aggregate_": {"score": 0.5},
+					"question1": {"score":0, "feedback":"Number too large"},
+					"question2": {"score":1, "feedback":"Correct"}
+				});
 			});
 
 		});
@@ -98,7 +142,7 @@ describe('LocalEvaluator', function () {
 					{
 						"case": " ${field1} > 2",
 						"then": {
-							"question1.correct": false,
+							"question1.score": 0,
 						}
 					}
 				]

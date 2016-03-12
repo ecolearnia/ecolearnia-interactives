@@ -267,12 +267,14 @@ export default class AssignmentPlayer
         message.data.evalResult;
 
         // calculare overall correctness
+        /*
         let isCorrect = this.isOverallCorrect(message.data.evalResult);
         if (isCorrect) {
             this.store_.dispatch({type: "STATS_INC_CORRECT"});
         } else {
             this.store_.dispatch({type: "STATS_INC_INCORRECT"});
-        }
+        }*/
+        this.store_.dispatch({type: "STATS_ACCUMULATE", score: message.data.evalResult._aggregate_.score});
 
         console.log('handleSubmissionRespondedEvent_:' + JSON.stringify(message));
     }

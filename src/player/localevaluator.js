@@ -109,7 +109,7 @@ export default class LocalEvaluator
      * @param {Array.<{fieldId, answered}>} answer - student submission
      *
      * @returns {Promise}
-     *      On Succss: Returns outcome (Object) in key-value pairs
+     *      On Succss: Returns outcome (player.EvalResult) in key-value pairs
      */
     evaluate(nodeId, submissionDetails)
     {
@@ -170,16 +170,19 @@ export default class LocalEvaluator
      * @param {Array.<{fieldId, answered}>} answer - student submission
      *
      * @returns {Promise}
-     *      On Succss: Returns outcome (Object) in key-value pairs
+     *      On Success: Returns outcome (player.EvalResult)
      */
     evaluateLocal_(rule, submissionData)
     {
         //return Promise.reject("Testing static reject");
 
         return promiseutils.createPromise( function(resolve, reject) {
+
+            // @type {player.EvalResult}
             var outcomes = {};
 
             for (var statementKey in rule) {
+                // Currently only 'whenHandler' is supported
                 var statementHandler = this.handlers_[statementKey];
 
                 try {
@@ -193,6 +196,21 @@ export default class LocalEvaluator
                     return reject(error);
                 }
             }
+
+            // Calculate the aggregate score
+            let total = 0;
+            for (var fieldName in outcomes) {
+                if (outcomes[fieldName].score) {
+                    total += outcomes[fieldName].score;
+                }
+            }
+            // round to two decimals
+            let aggregateScore = Math.round(total / Object.keys(outcomes).length * 100) / 100;
+
+            if (!('_aggregate_' in outcomes)) {
+                outcomes['_aggregate_'] = {};
+            }
+            outcomes['_aggregate_'].score = aggregateScore;
 
             //console.log('outcomes=' + JSON.stringify(outcomes));
             resolve(outcomes);

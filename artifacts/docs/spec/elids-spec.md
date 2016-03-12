@@ -72,6 +72,9 @@ Sample:
                 "fields": [
                     {
                         "responseId": "field2",
+                        "@doc": "All scoring weight should add up to 1",
+                        "@doc": "If not provided, all fields have same distributed weight",
+                        "scoringWeight": .5
                     }
                     ]
             "question1": {
@@ -80,6 +83,7 @@ Sample:
                 "fields": [
                     {
                         "responseId": "field1",
+                        "scoringWeight": .5
                         "options": [
                             {
                                 "key": "2",

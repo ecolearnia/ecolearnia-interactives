@@ -15,19 +15,18 @@ describe('LocalRandomVarSequencingStrategy', function () {
 
 		let sequencingStrategy;
 
-		it.skip('(FIXME) should retrieveNextNode', function (done) {
+		it.skip('(FIXME) should retrieveNextNode', function () {
 			var config = {
 				templateContent: testContent
 			}
 			sequencingStrategy = new RandomVarSequencingStrategy(config);
 
 			let assignmentContext = {};
-			sequencingStrategy.retrieveNextNode(assignmentContext)
+			return sequencingStrategy.retrieveNextNode(assignmentContext)
 			.then(function(data) {
 				expect(data.associationId).to.not.null;
 				expect(data.content).to.not.null;
 				expect(data.content.variableDeclarations.num1.value > 1).to.be.true;
-				done();
 			});
 
 		});

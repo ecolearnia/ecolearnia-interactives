@@ -33,6 +33,25 @@ import Immutable from 'immutable';
  */
 function statsReducer(state = Immutable.Map({}), action) {
     switch (action.type) {
+        case 'STATS_ACCUMULATE':
+            var score = state.get('score') || 0;
+            if (action.score == 1) {
+                // All Correct!
+                //console.log('state (pre)=' + JSON.stringify(state));
+                var corrects = state.get('corrects') || 0;
+                return state.set('corrects', ++corrects).set('score', score + action.score);
+            } else if (action.score == 0) {
+                // All incorrect!
+                var incorrects = state.get('incorrects') || 0;
+                return state.set('incorrects', ++incorrects).set('score', score + action.score);
+            } else {
+                // Partial correct
+                var semicorrects = state.get('semicorrects') || 0;
+                return state.set('semicorrects', ++semicorrects).set('score', score + action.score);
+            }
+
+            //console.log('state (post)=' + JSON.stringify(newState));
+            //return state.set('corrects', ++corrects);
         case 'STATS_INC_CORRECT':
             //console.log('state (pre)=' + JSON.stringify(state));
             var corrects = state.get('corrects') || 0;

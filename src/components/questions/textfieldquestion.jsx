@@ -37,7 +37,7 @@ export class TextFieldQuestionComponent extends AbstractQuestionComponent
         super(props);
 
         this.bind_('handleBlur_');
-        
+
     }
 
     /**
@@ -48,14 +48,7 @@ export class TextFieldQuestionComponent extends AbstractQuestionComponent
      */
     componentDidUpdate(prevProps, prevState)
     {
-        // Set the value with the restored state
-        let question = this.props.context.getConfigVal('question');
-        for (var i=0; i < question.fields.length; i++) {
-            let element = question.fields[i];
-            let fieldState = this.props.context.getFieldState(element.responseId);
-            let fieldVal = fieldState ? fieldState.value : '';
-            this.inputs_[element.responseId].value = fieldVal;
-        }
+        this.restoreInputValues();
     }
 
     /**

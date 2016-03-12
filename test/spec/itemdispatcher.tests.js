@@ -30,7 +30,7 @@ describe('ItemDispatcher', function () {
 			store.dispose();
 		});
 
-		it('should updateState', function (done) {
+		it('should updateState', function () {
 			let dispatcher = new ItemDispatcher({
                 evaluator: mockEvaluator,
 				actionFactory: new ItemActionFactory()
@@ -38,7 +38,7 @@ describe('ItemDispatcher', function () {
             dispatcher.setStore(store);
 
             // @todo updateState will be changed to Promise
-			dispatcher.updateState('assocId1', 'id1', {answer:123})
+			return dispatcher.updateState('assocId1', 'id1', {answer:123})
             .then(function(result){
 
                 const expectedStateItems = {
@@ -49,13 +49,11 @@ describe('ItemDispatcher', function () {
 
     			// getState().items is of type Immutable
     			expect(store.getState().components.toObject()).to.deep.equals(expectedStateItems);
-
-                done();
             });
 
 		});
 
-		it('should evaluate', function (done) {
+		it('should evaluate', function () {
 			let dispatcher = new ItemDispatcher({
                 evaluator: mockEvaluator,
 				actionFactory: new ItemActionFactory()
@@ -66,7 +64,7 @@ describe('ItemDispatcher', function () {
 				id1 : { mystate: 123 }
 			});
 
-			dispatcher.evaluate('id1')
+			return dispatcher.evaluate('id1')
 			.then(function(result){
 				console.log('result2=' + JSON.stringify(result));
 				//console.log('state2=' + JSON.stringify(store.getState().evaluations.toObject(), null, 2));
@@ -85,10 +83,6 @@ describe('ItemDispatcher', function () {
                 const expectedEvaluations = expectedEvalDetails;
 
 				expect(store.getState().evaluations.toObject()[0], 'store.evaluations do not match').to.deep.equals(expectedEvaluations);
-				done();
-			})
-			.catch(function(error){
-				done(error);
 			});
 
 		});
