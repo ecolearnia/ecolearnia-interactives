@@ -86,7 +86,7 @@ export class SelectQuestionComponent extends AbstractQuestionComponent
                 if (lastEval) {
                     // if field exists, and submission key is same as current option key
                     if (lastEval.submission.fields[element.responseId] && lastEval.submission.fields[element.responseId].key == option.key) {
-                        isCorrect = (lastEval && lastEval.evalResult[element.responseId].score == 1);
+                        isCorrect = (lastEval && lastEval.evalResult.fields[element.responseId].score == 1);
                         optionLabel = (isCorrect) ? 'Correct' : 'Wrong!!';
                     }
                 }

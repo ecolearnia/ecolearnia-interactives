@@ -179,6 +179,14 @@ export default class ItemDispatcher
             }
             // Re-return
             return evalDetails;
+        })
+        .catch(function(error) {
+            // @todo
+            self.pubsub && self.pubsub.publish('error', {
+                nodeId: nodeId,
+                error: error
+            });
+            alert(error);
         });
     }
 

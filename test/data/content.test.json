@@ -85,34 +85,35 @@
 
         "@doc": "Next block is a 'when' statement. The player is responsible",
         "@doc": "of implementing the statement evaluator",
+        "@doc": "Answers: field1_value = 15, field2_value = 18",
         "when": [
             {
                 "@doc": "For the meantime, this is the method for init",
                 "case": "true",
                 "then": {
                     "field1.score": 0,
-                    "field1.feedback": "Incorrect",
+                    "field1.feedback": "Incorrect1",
                     "field2.score": 0,
-                    "field2.feedback": "Incorrect"
+                    "field2.feedback": "Incorrect2"
                 }
             },
             {
                 "@doc": "The following is same as { expression: '$field1_value > 2'}",
-                "case": "$field1_key == 5 * 3",
+                "case": "$field1_value == 5 * 3",
                 "then": {
                     "field1.score": 1,
-                    "field1.feedback": "NUMBER Just right!!"
+                    "field1.feedback": "Correct!"
                 }
             },
             {
-                "case": "$field1_key > 5 * 3",
+                "case": "$field1_value > 5 * 3",
                 "then": {
                     "field1.score": 0,
                     "field1.feedback": "NUMBER TOO BIG"
                 }
             },
             {
-                "case": "$field1_key < 5 * 3",
+                "case": "$field1_value < 5 * 3",
                 "then": {
                     "field1.score": 0,
                     "field1.feedback": "NUMBER TOO SMALL"
@@ -122,7 +123,7 @@
                 "case": "$field2_value == 9 * 2",
                 "then": {
                     "field2.score": 1,
-                    "field2.feedback": "NUMBER Just right!!"
+                    "field2.feedback": "Correct2"
                 }
             }
         ]

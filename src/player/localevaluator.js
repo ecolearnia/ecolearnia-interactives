@@ -106,7 +106,7 @@ export default class LocalEvaluator
      * http://symfony.com/doc/current/components/expression_language/syntax.html
      *
      * @param {string} nodeId  -  The instance ID that the item is associated to
-     * @param {Array.<{fieldId, answered}>} answer - student submission
+     * @param {player.SubmissionDetails} submissionDetails - student submission
      *
      * @returns {Promise}
      *      On Succss: Returns outcome (player.EvalResult) in key-value pairs
@@ -117,11 +117,22 @@ export default class LocalEvaluator
         .then(function(nodeDetails) {
             let itemVars = nodeDetails.content.variableDeclarations || {};
             let combinedSubmissionData  = this.combineSubmissionData_(itemVars, submissionDetails.fields);
-            //console.log(combinedSubmissionData);
-            return this.evaluateLocal_(nodeDetails.content.responseProcessing, combinedSubmissionData)
-            .then(function(evalResult){
-                let attemptNum = (nodeDetails.evalDetails) ? nodeDetails.evalDetails.length + 1 : 1;
-                return this.calculateAgregate_(evalResult, attemptNum);
+            console.log('combinedSubmissionData: ' + JSON.stringify(combinedSubmissionData));
+
+            let attempts = this.calculateAttempts(nodeDetails);
+            console.log('** attemptsLeft=' + attempts.attemptsLeft);
+            if (attempts.attemptsLeft == 0)
+            {
+                throw new Error("NoMoreAttempts");
+            }
+
+            return this.evaluateFields_(nodeDetails.content.responseProcessing, combinedSubmissionData)
+            .then(function(fieldEvals){
+                let evalResult = {
+                    fields: fieldEvals
+                }
+                evalResult.attemptsLeft = attempts.attemptsLeft - 1;
+                return this.calculateAgregate_(evalResult, attempts.numAttempted + 1);
             }.bind(this));
         }.bind(this))
         .then(function(evalResult){
@@ -136,6 +147,22 @@ export default class LocalEvaluator
             this.sysRecords_.saveState(nodeId, stateEntry);
             return evalResult;
         }.bind(this));
+    }
+
+    /**
+     * Calculates the number of attempts lesft before this submission.
+     */
+    calculateAttempts(nodeDetails)
+    {
+        let numAttempted = (nodeDetails.evalDetails) ? nodeDetails.evalDetails.length: 0;
+        let maxAttempts = 3;
+        if (nodeDetails.policy) {
+            maxAttempts = nodeDetails.policy.maxAttempts || maxAttempts;
+        }
+        return {
+            numAttempted: numAttempted,
+            attemptsLeft: maxAttempts - numAttempted
+        };
     }
 
     /**
@@ -169,26 +196,28 @@ export default class LocalEvaluator
      * @param {player.EvalDetails} outcomes
      * @param {number} attemptNum  - the number of attempt , score diminishing factor
      */
-    calculateAgregate_(outcomes, attemptNum)
+    calculateAgregate_(evalResult, attemptNum)
     {
         // Attempt
         let _attemptNum = attemptNum || 1;
         // Calculate the aggregate score
-        let total = 0;
-        for (var fieldName in outcomes) {
-            if (outcomes[fieldName].score) {
-                total += outcomes[fieldName].score;
+        let sum = 0;
+        for (var fieldName in evalResult.fields) {
+            if (evalResult.fields[fieldName].score) {
+                sum += evalResult.fields[fieldName].score;
             }
         }
+        console.log('*sum:' + sum);
+        console.log('*evalResult.fields:' + JSON.stringify(evalResult.fields));
 
         // Round to two decimals
-        let aggregateScore = Math.round(total / Object.keys(outcomes).length / _attemptNum * 100) / 100;
+        let aggregateScore = Math.round(sum / Object.keys(evalResult.fields).length / _attemptNum * 100) / 100;
 
-        if (!('_aggregate_' in outcomes)) {
-            outcomes['_aggregate_'] = {};
+        if (!('aggregate' in evalResult)) {
+            evalResult.aggregate = {};
         }
-        outcomes['_aggregate_'].score = aggregateScore  ;
-        return outcomes;
+        evalResult.aggregate.score = aggregateScore;
+        return evalResult;
     }
 
     /**
@@ -200,15 +229,15 @@ export default class LocalEvaluator
      * @param {Array.<{fieldId, answered}>} answer - student submission
      *
      * @returns {Promise}
-     *      On Success: Returns outcome (player.EvalResult)
+     *      On Success: Returns outcome (Map.<{string} fieldName, {player.FieldEvalResult}>)
      */
-    evaluateLocal_(rule, submissionData)
+    evaluateFields_(rule, submissionData)
     {
         //return Promise.reject("Testing static reject");
 
         return promiseutils.createPromise( function(resolve, reject) {
 
-            // @type {player.EvalResult}
+            // @type {Map.<{string} fieldName, {player.FieldEvalResult}>}
             var outcomes = {};
 
             for (var statementKey in rule) {

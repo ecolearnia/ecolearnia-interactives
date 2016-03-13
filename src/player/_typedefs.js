@@ -27,12 +27,18 @@ var player = {};
  *   <fieldId>: {
  *     "key": (string | number),
  *     "value": (string | number | boolean | Array),
- *   }
+ *   }...
  * }} player.FieldCollection
  */
 player.FieldCollection;
 
-
+/**
+ * @typedef {{
+ *   timestamp: (datetime),
+ *   fields: (player.FieldCollection)
+ * }} player.FieldCollection
+ */
+player.SubmissionDetails;
 /**
  * @typedef {{
  *   <componentId0>: (FieldCollection),
@@ -46,18 +52,23 @@ player.ItemState;
 
 /**
  * @typedef {{
- *   _aggregate_: {
+ *   score: (number),
+ *   feedback: (string),
+ * }} player.FieldEvalResult
+ */
+player.FieldEvalResult;
+
+/**
+ * @typedef {{
+ *   attemptsLeft: (number),
+ *   aggregate: {
  *     "score": (number),
  *     "feedback": (string),
  *   },
- *   <field0>: {
- *     "score": (number),
- *     "feedback": (string),
- *   },
- *   <field1>: {
- *     "score": (number),
- *     "feedback": (string),
- *   },
+ *   fields: {
+ *     <field0>: (player.FieldEvalResult),
+ *     <field1>: (player.FieldEvalResult)
+ *   }
  * }} player.EvalResult
  */
 player.EvalResult;
@@ -83,14 +94,21 @@ player.EvalResult;
  *      }
  *    },
  *    "evalResult": {
- *      "field1": {
+ *      "attemptsLeft": 1,
+ *      "aggregate": {
  *        "score": 1,
- *        "feedback": "You are correct!",
+ *        "feedback": "Optional!"
+        }
+ *      "fields": {
+ *        "field1": {
+ *          "score": 1,
+ *          "feedback": "You are correct!"
+ *        }
  *      }
  *    }
  *  }
  */
-namespace.EvalDetails;
+player.EvalDetails;
 
 
 /**

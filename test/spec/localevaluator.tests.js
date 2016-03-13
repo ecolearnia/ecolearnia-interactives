@@ -11,7 +11,7 @@ import LocalNodeSysRec from '../../src/player/localnodesysrec';
 import LocalEvaluator from '../../src/player/localevaluator';
 var testContent = require('../data/content.test.json');
 
-describe.only('LocalEvaluator', function () {
+describe('LocalEvaluator', function () {
 
 	before(function(){
 	});
@@ -72,7 +72,7 @@ describe.only('LocalEvaluator', function () {
 	});
 
 
-    describe('evaluate', function () {
+    describe('evaluateFields', function () {
 
 		it('should evaluate to correct', function () {
 			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
@@ -82,7 +82,7 @@ describe.only('LocalEvaluator', function () {
 				field2: 4
 			};
 
-			return evaluator.evaluateLocal_(responseProcessing, data)
+			return evaluator.evaluateFields_(responseProcessing, data)
 			.then(function (outcome) {
 				//console.log('outcome=' + JSON.stringify(outcome));
 				expect(outcome, 'Different outcome').to.deep.equals({
@@ -91,7 +91,6 @@ describe.only('LocalEvaluator', function () {
 					"question2": {"score":1, "feedback":"Correct"}
 				});
 			});
-
 
 		});
 
@@ -103,7 +102,7 @@ describe.only('LocalEvaluator', function () {
 				field2: 3
 			};
 
-			return evaluator.evaluateLocal_(responseProcessing, data)
+			return evaluator.evaluateFields_(responseProcessing, data)
 			.then(function (outcome){
 				//console.log('outcome:' + JSON.stringify(outcome));
 				expect(outcome, 'Different outcome').to.deep.equals({
@@ -123,7 +122,7 @@ describe.only('LocalEvaluator', function () {
 				field2: 4
 			};
 
-			return evaluator.evaluateLocal_(responseProcessing, data)
+			return evaluator.evaluateFields_(responseProcessing, data)
 			.then(function (outcome){
 				//console.log('outcome:' + JSON.stringify(outcome));
 				expect(outcome, 'Different outcome').to.deep.equals({
@@ -153,7 +152,7 @@ describe.only('LocalEvaluator', function () {
 				]
 			}
 
-			evaluator.evaluateLocal_(faultyResponseProcessing, data)
+			evaluator.evaluateFields_(faultyResponseProcessing, data)
 			.then(function (outcome){
 				done('Faulty expression did not throw error');
 			})
@@ -167,57 +166,65 @@ describe.only('LocalEvaluator', function () {
 	describe('helper functions', function () {
 		it('should calculateAgregate_ all corrects', function () {
 			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
-			var evals = {
-				"question1": {"score":1, "feedback":"Correct"},
-				"question2": {"score":1, "feedback":"Correct"}
+			var evalResult = {
+				fields: {
+					"question1": {"score":1, "feedback":"Correct"},
+					"question2": {"score":1, "feedback":"Correct"}
+				}
 			};
-			var expected = testutils.cloneObject(evals);
-			expected._aggregate_ = {
+			var expected = testutils.cloneObject(evalResult);
+			expected.aggregate = {
 				score: 1
 			}
-			var result = evaluator.calculateAgregate_(evals);
+			var result = evaluator.calculateAgregate_(evalResult);
 			expect(result, "Wrong aggregate score").to.deep.equals(expected);
 		});
 
 		it('should calculateAgregate_ all incorrects', function () {
 			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
-			var evals = {
-				"question1": {"score":0, "feedback":"Number too large"},
-				"question2": {"score":0, "feedback":"Incorrect"}
+			var evalResult = {
+				fields: {
+					"question1": {"score":0, "feedback":"Number too large"},
+					"question2": {"score":0, "feedback":"Incorrect"}
+				}
 			};
-			var expected = testutils.cloneObject(evals);
-			expected._aggregate_ = {
+			var expected = testutils.cloneObject(evalResult);
+			expected.aggregate = {
 				score: 0
 			};
-			var result = evaluator.calculateAgregate_(evals);
+			var result = evaluator.calculateAgregate_(evalResult);
 			expect(result, "Wrong aggregate score").to.deep.equals(expected);
 		});
 
 		it('should calculateAgregate_ partial corrects', function () {
 			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
-			var evals = {
-				"question1": {"score":0, "feedback":"Number too large"},
-				"question2": {"score":1, "feedback":"Correct"}
+			var evalResult = {
+				fields: {
+					"question1": {"score":0, "feedback":"Number too large"},
+					"question2": {"score":1, "feedback":"Correct"}
+				}
 			};
-			var expected = testutils.cloneObject(evals);
-			expected._aggregate_ = {
+			var expected = testutils.cloneObject(evalResult);
+			expected.aggregate = {
 				score: 0.5
 			};
-			var result = evaluator.calculateAgregate_(evals);
+			var result = evaluator.calculateAgregate_(evalResult);
 			expect(result, "Wrong aggregate score").to.deep.equals(expected);
 		});
 
 		it('should calculateAgregate_ partial with weight', function () {
 			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
-			var evals = {
-				"question1": {"score":0, "feedback":"Number too large"},
-				"question2": {"score":1, "feedback":"Correct"}
+			var evalResult = {
+				fields: {
+					"question1": {"score":0, "feedback":"Number too large"},
+					"question2": {"score":1, "feedback":"Correct"}
+				}
 			};
-			var expected = testutils.cloneObject(evals);
-			expected._aggregate_ = {
+			var expected = testutils.cloneObject(evalResult);
+			expected.aggregate = {
 				score: 0.25
 			};
-			var result = evaluator.calculateAgregate_(evals, 2);
+			var result = evaluator.calculateAgregate_(evalResult, 2);
 			expect(result, "Wrong aggregate score").to.deep.equals(expected);
 		});
 
@@ -256,6 +263,65 @@ describe.only('LocalEvaluator', function () {
 				"var_data2": "test-data"
 			};
 			expect(result).to.deep.equal(expected)
+		});
+	});
+
+	describe('evaluate', function () {
+
+		it('should submit corrects attempt', function () {
+			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
+
+			// Init mock values, just suffice with any data and makes the array to have one element
+			var submissionDetails = {
+				fields: {
+					field1: {value: 15},
+					field2: {value: 18}
+				}
+			};
+
+			return evaluator.evaluate('testContent', submissionDetails)
+			.then(function(evalDetails){
+				let expected = [{
+					"@type": "evaluation",
+					"data": {
+						"submission": submissionDetails,
+						"evalResult": {
+							"attemptsLeft": 0,
+							"aggregate": {"score": 1},
+							fields: {
+								"field1": {"score":1, "feedback":"Correct!"},
+								"field2": {"score":1, "feedback":"Correct2"}
+							}
+						}
+					}
+				}];
+				//console.log("SysRecord.evalDetails" + JSON.stringify(localSysRec.nodes_['testContent'].evalDetails));
+				expect(localSysRec.nodes_['testContent'].evalDetails, 'SysRecord.evalDetails does not match!')
+					.to.deep.equals(expected);
+				expect(evalDetails, 'evalDetails does not match!')
+					.to.deep.equals(expected[0].data.evalResult);
+			});
+		});
+
+		it('should reject with no more attempts', function (done) {
+			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
+
+			// Init mock values, just suffice with any data and makes the array to have one element
+			localSysRec.nodes_['testContent'].evalDetails = [{evalResult:{dummyField:'dontcare'}}];
+			var submissionDetails = {
+				field1: {value: 15},
+				field2: {value: 18}
+			};
+
+			return evaluator.evaluate('testContent', submissionDetails)
+			.then(function(){
+				done("Should not have succeeded");
+			})
+			.catch(function(error){
+				//console.log(JSON.stringify(error.message));
+				expect(error.message).to.equals("NoMoreAttempts");
+				done();
+			});
 		});
 	});
 

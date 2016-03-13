@@ -183,7 +183,7 @@ export default class AssignmentPlayer
       */
      fetchItemAndRender_(nodeDescriptor)
      {
-         return this.itemPlayer_.fetchItem(nodeDescriptor)
+         return this.itemPlayer_.fetchNode(nodeDescriptor)
          .then(function(){
              this.itemPlayer_.render(this.itemEl_);
              return;
@@ -236,17 +236,6 @@ export default class AssignmentPlayer
         }.bind(this));
     }
 
-    isOverallCorrect(evalResult)
-    {
-        for(var fieldName in evalResult)
-        {
-            if (evalResult[fieldName].score < 1) {
-                return false;
-            }
-        }
-        return true;
-    }
-
     /**
      * Function to handle submission before request
      * This event is useful when the assignment UI needs to disable the
@@ -274,7 +263,7 @@ export default class AssignmentPlayer
         } else {
             this.store_.dispatch({type: "STATS_INC_INCORRECT"});
         }*/
-        this.store_.dispatch({type: "STATS_ACCUMULATE", score: message.data.evalResult._aggregate_.score});
+        this.store_.dispatch({type: "STATS_ACCUMULATE", score: message.data.evalResult.aggregate.score});
 
         console.log('handleSubmissionRespondedEvent_:' + JSON.stringify(message));
     }

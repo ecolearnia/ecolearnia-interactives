@@ -85,7 +85,7 @@ export class TextFieldQuestionComponent extends AbstractQuestionComponent
             let isCorrect = false;
             if (lastEval) {
                 if (lastEval.submission.fields[element.responseId] ) {
-                    isCorrect = (lastEval && lastEval.evalResult[element.responseId].score == 1);
+                    isCorrect = (lastEval && lastEval.evalResult.fields[element.responseId].score == 1);
                     optionLabel = (isCorrect) ? 'Correct' : 'Wrong!!';
                 }
             }

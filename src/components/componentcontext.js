@@ -176,4 +176,12 @@ export default class ComponentContext
         return val;
     }
 
+    /**
+     * Returns the last evaluation details in the state
+     * @return {player.EvalDetails}
+     */
+    getLastEval() {
+        let evalsState = this.itemPlayer.getStore().getState('evaluations');
+        return (evalsState && evalsState.length > 0) ? evalsState[evalsState.length-1] : null;
+    }
 }

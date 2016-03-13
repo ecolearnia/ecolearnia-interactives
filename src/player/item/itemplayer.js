@@ -433,11 +433,11 @@ export default class ItemPlayer
     }
 
     /**
-     * fetchItem & restores state
+     * fetchNode & restores state
      * Fetches the content from System of records and set the content
      * @param {NodeDescriptor} nodeDescriptor
      */
-    fetchItem(nodeDescriptor)
+    fetchNode(nodeDescriptor)
     {
         let self = this;
         return this.nodeProvider_.fetch(nodeDescriptor.id)

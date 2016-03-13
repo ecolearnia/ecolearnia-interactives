@@ -53,12 +53,17 @@ export class ActionBarComponent extends EliReactComponent
 
     renderItem_(type)
     {
+        let lastEval = this.props.context.getLastEval();
+        let disableSubmit = lastEval ? (lastEval.evalResult.aggregate.score < 1
+            && lastEval.evalResult.attemptsLeft > 0): true;
+        disableSubmit
+
         var retval = null;
         if (type == 'tts') {
             retval = <div><a onClick={this.handleAction_.bind(this, 'tts')} >audio-icon</a></div>
         }
         if (type == 'submit') {
-            retval = <div><button onClick={this.handleAction_.bind(this, 'submit')} >Submit</button></div>
+            retval = <div><button disabled={!disableSubmit} onClick={this.handleAction_.bind(this, 'submit')} >Submit</button></div>
         }
         if (type == 'reset') {
             retval = <div><a onClick={this.handleAction_.bind(this, 'reset')} >Reset</a></div>
