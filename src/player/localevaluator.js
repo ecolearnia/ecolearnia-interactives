@@ -155,7 +155,7 @@ export default class LocalEvaluator
     calculateAttempts(nodeDetails)
     {
         let numAttempted = (nodeDetails.evalDetails) ? nodeDetails.evalDetails.length: 0;
-        let maxAttempts = 3;
+        let maxAttempts = 1;
         if (nodeDetails.policy) {
             maxAttempts = nodeDetails.policy.maxAttempts || maxAttempts;
         }

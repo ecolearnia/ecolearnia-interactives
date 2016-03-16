@@ -52,8 +52,9 @@ player.ItemState;
 
 /**
  * @typedef {{
+ *   pass: (boolean),
  *   score: (number),
- *   feedback: (string),
+ *   feedback: (string)
  * }} player.FieldEvalResult
  */
 player.FieldEvalResult;
@@ -61,10 +62,8 @@ player.FieldEvalResult;
 /**
  * @typedef {{
  *   attemptsLeft: (number),
- *   aggregate: {
- *     "score": (number),
- *     "feedback": (string),
- *   },
+ *   pass: (boolean),
+ *   aggregate: (player.FieldEvalResult),
  *   fields: {
  *     <field0>: (player.FieldEvalResult),
  *     <field1>: (player.FieldEvalResult)
@@ -96,11 +95,13 @@ player.EvalResult;
  *    "evalResult": {
  *      "attemptsLeft": 1,
  *      "aggregate": {
+ *        "pass": true,
  *        "score": 1,
  *        "feedback": "Optional!"
         }
  *      "fields": {
  *        "field1": {
+ *          "pass": true,
  *          "score": 1,
  *          "feedback": "You are correct!"
  *        }
