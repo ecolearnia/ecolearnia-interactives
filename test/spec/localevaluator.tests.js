@@ -11,7 +11,7 @@ import LocalNodeSysRec from '../../src/player/localnodesysrec';
 import LocalEvaluator from '../../src/player/localevaluator';
 var testContent = require('../data/content.test.json');
 
-describe('LocalEvaluator', function () {
+describe.only('LocalEvaluator', function () {
 
 	before(function(){
 	});
@@ -168,13 +168,14 @@ describe('LocalEvaluator', function () {
 			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
 			var evalResult = {
 				fields: {
-					"question1": {"score":1, "feedback":"Correct"},
-					"question2": {"score":1, "feedback":"Correct"}
+					"question1": {"score":1, "pass": true, "feedback":"Correct"},
+					"question2": {"score":1, "pass": true, "feedback":"Correct"}
 				}
 			};
 			var expected = testutils.cloneObject(evalResult);
 			expected.aggregate = {
-				score: 1
+				score: 1,
+				pass: true
 			}
 			var result = evaluator.calculateAgregate_(evalResult);
 			expect(result, "Wrong aggregate score").to.deep.equals(expected);
@@ -184,13 +185,14 @@ describe('LocalEvaluator', function () {
 			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
 			var evalResult = {
 				fields: {
-					"question1": {"score":0, "feedback":"Number too large"},
-					"question2": {"score":0, "feedback":"Incorrect"}
+					"question1": {"score":0, "pass": false, "feedback":"Number too large"},
+					"question2": {"score":0, "pass": false, "feedback":"Incorrect"}
 				}
 			};
 			var expected = testutils.cloneObject(evalResult);
 			expected.aggregate = {
-				score: 0
+				score: 0,
+				pass: false
 			};
 			var result = evaluator.calculateAgregate_(evalResult);
 			expect(result, "Wrong aggregate score").to.deep.equals(expected);
@@ -200,13 +202,14 @@ describe('LocalEvaluator', function () {
 			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
 			var evalResult = {
 				fields: {
-					"question1": {"score":0, "feedback":"Number too large"},
-					"question2": {"score":1, "feedback":"Correct"}
+					"question1": {"score":0, "pass": false, "feedback":"Number too large"},
+					"question2": {"score":1, "pass": true, "feedback":"Correct"}
 				}
 			};
 			var expected = testutils.cloneObject(evalResult);
 			expected.aggregate = {
-				score: 0.5
+				score: 0.5,
+				pass: false
 			};
 			var result = evaluator.calculateAgregate_(evalResult);
 			expect(result, "Wrong aggregate score").to.deep.equals(expected);
@@ -216,13 +219,14 @@ describe('LocalEvaluator', function () {
 			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
 			var evalResult = {
 				fields: {
-					"question1": {"score":0, "feedback":"Number too large"},
-					"question2": {"score":1, "feedback":"Correct"}
+					"question1": {"score":0, "pass": false, "feedback":"Number too large"},
+					"question2": {"score":1, "pass": true, "feedback":"Correct"}
 				}
 			};
 			var expected = testutils.cloneObject(evalResult);
 			expected.aggregate = {
-				score: 0.25
+				score: 0.25,
+				pass: false
 			};
 			var result = evaluator.calculateAgregate_(evalResult, 2);
 			expect(result, "Wrong aggregate score").to.deep.equals(expected);
@@ -287,10 +291,10 @@ describe('LocalEvaluator', function () {
 						"submission": submissionDetails,
 						"evalResult": {
 							"attemptsLeft": 0,
-							"aggregate": {"score": 1},
+							"aggregate": {"score": 1, "pass": true},
 							fields: {
-								"field1": {"score":1, "feedback":"Correct!"},
-								"field2": {"score":1, "feedback":"Correct2"}
+								"field1": {"score":1, "pass":true, "feedback":"Correct!"},
+								"field2": {"score":1, "pass":true, "feedback":"Correct2"}
 							}
 						}
 					}

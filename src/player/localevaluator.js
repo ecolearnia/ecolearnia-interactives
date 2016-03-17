@@ -156,6 +156,11 @@ export default class LocalEvaluator
     {
         let numAttempted = (nodeDetails.evalDetails) ? nodeDetails.evalDetails.length: 0;
         let maxAttempts = 1;
+
+        if (nodeDetails.content.defaultPolicy) {
+            maxAttempts = nodeDetails.content.defaultPolicy.maxAttempts || maxAttempts;
+        }
+
         if (nodeDetails.policy) {
             maxAttempts = nodeDetails.policy.maxAttempts || maxAttempts;
         }
@@ -200,15 +205,23 @@ export default class LocalEvaluator
     {
         // Attempt
         let _attemptNum = attemptNum || 1;
+        // @todo get the passThreshold from config
+        let passThreshold = 0.9;
         // Calculate the aggregate score
         let sum = 0;
+        let aggregatePass = true;
         for (var fieldName in evalResult.fields) {
-            if (evalResult.fields[fieldName].score) {
-                sum += evalResult.fields[fieldName].score;
+            let fieldResult = evalResult.fields[fieldName];
+            if ('score' in fieldResult) {
+                // Calculate pass/no-pass per field
+                fieldResult.pass = (fieldResult.score > passThreshold);
+                //console.log('** fieldResult.pass=' + JSON.stringify(fieldResult.pass));
+                if (!fieldResult.pass){
+                    aggregatePass = false;
+                }
+                sum += fieldResult.score;
             }
         }
-        console.log('*sum:' + sum);
-        console.log('*evalResult.fields:' + JSON.stringify(evalResult.fields));
 
         // Round to two decimals
         let aggregateScore = Math.round(sum / Object.keys(evalResult.fields).length / _attemptNum * 100) / 100;
@@ -217,6 +230,9 @@ export default class LocalEvaluator
             evalResult.aggregate = {};
         }
         evalResult.aggregate.score = aggregateScore;
+        evalResult.aggregate.pass = aggregatePass;
+
+        //console.log('** evalResult:' + JSON.stringify(evalResult, null, 2));
         return evalResult;
     }
 

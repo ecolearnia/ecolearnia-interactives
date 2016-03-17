@@ -263,7 +263,7 @@ export default class AssignmentPlayer
         } else {
             this.store_.dispatch({type: "STATS_INC_INCORRECT"});
         }*/
-        this.store_.dispatch({type: "STATS_ACCUMULATE", score: message.data.evalResult.aggregate.score});
+        this.store_.dispatch({type: "STATS_ACCUMULATE", aggregateResult: message.data.evalResult.aggregate});
 
         console.log('handleSubmissionRespondedEvent_:' + JSON.stringify(message));
     }

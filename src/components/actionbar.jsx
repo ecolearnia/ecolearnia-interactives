@@ -54,7 +54,7 @@ export class ActionBarComponent extends EliReactComponent
     renderItem_(type)
     {
         let lastEval = this.props.context.getLastEval();
-        let disableSubmit = lastEval ? (lastEval.evalResult.aggregate.score < 1
+        let disableSubmit = lastEval ? (!lastEval.evalResult.aggregate.pass
             && lastEval.evalResult.attemptsLeft > 0): true;
         disableSubmit
 
