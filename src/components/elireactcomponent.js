@@ -16,6 +16,7 @@
  */
 
 var React = require('react');
+import utils from '../../libs/common/utils';
 
 var internals = {};
 
@@ -71,6 +72,27 @@ export class EliReactComponent extends React.Component
         }
     }
 
+    /**
+     * Returns the DOM class name mostly for styling
+     */
+    classNameFor(objName)
+    {
+        // @todo - exteranlize
+        let foundationTheme = {
+            cell: {
+                numeric: 'text-right'
+            },
+            button: {
+                _default: "button",
+                primary: "button primary",
+                secondary: "button secondary",
+                success: "button success",
+                warning: "button warning",
+                alert: "button alert"
+            }
+        };
+        return utils.dotAccess(foundationTheme, objName);
+    }
 }
 
 /**

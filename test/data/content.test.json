@@ -179,7 +179,7 @@
     "@doc": "This section defines the default policy which can be overriden",
     "@doc": "by runtime environment",
     "defaultPolicy": {
-        "maxAttempts": 3,
+        "maxAttempts": 1,
         "@doc": "Optional - if present, each attempt will be timed in seconds",
         "timed": 10,
         "@doc": "If timed is present, following action takes place when time is over",

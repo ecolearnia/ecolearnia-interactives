@@ -1,9 +1,7 @@
 PENDING list
 - [getNextNode] Pass context (with stats) to consider at generating numbers for variables
-- [UI] Apply Foundation
-- [BUG] subsequent attempts with full correct produces score <1 making partial correct.
-    [evaluator] Pass/no pass computation.
-- [Item] Disable button when pass.
+- [Component] externalize Theming with className in EliReactComponent.classNameFor
+- React-ify Assignment Breadcrumb component
 - Restore State
     - [SelectQuestion] State restoration
 - [Timer]

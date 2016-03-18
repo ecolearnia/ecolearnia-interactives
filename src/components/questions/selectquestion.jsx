@@ -116,7 +116,7 @@ export class SelectQuestionComponent extends AbstractQuestionComponent
         // The "eli" prefix in the className stands for EcoLearnia Interactive
 
         return (
-            <div className="eli-question">
+            <div className="eli-select">
                 <span className="eli-question-prompt">{question.prompt}</span>
                 {optionsSet}
             </div>

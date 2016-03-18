@@ -68,6 +68,7 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
 
     render()
     {
+        let self = this;
         // Returns the object either from the config question value itself
         // Or from the reference to the model.
         let question = this.props.context.getConfigVal('question');
@@ -114,11 +115,13 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
             };
             // nums[fidx] is the actual answer
             matrixData[pos[0]][pos[1]] = nums[fidx];
-            matrixCells[pos[0]][pos[1]] = <input type="text" title={nums[fidx]}
+            matrixCells[pos[0]][pos[1]] = <input type="text"
+                // title={nums[fidx]}
                 name={element.responseId} style={style}
                 ref={(c) => this.inputs_[element.responseId] = c}
                 onBlur={this.handleBlur_.bind(this, element.responseId)}
                 placeholder={element.responseId}
+                className={self.classNameFor('cell.numeric')}
             />
         };
         pos = fieldPositions.pop();
@@ -154,15 +157,18 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
 
         // Calculate the sums
 
+        let trStyle = {
+            width: '200px',
+        }
         // @see http://www.phpied.com/reactive-table/
         let matrix = (
-            <table className="MyClassName">
+            <table style={trStyle} >
               <tbody>
                 {matrixCells.map(function(row, i) {
                   return (
                     <tr key={i} >
                       {row.map(function(col, j) {
-                        return <td key={j} border="1">{col}</td>;
+                        return <td className={self.classNameFor('cell.numeric')} key={j} border="1">{col}</td>;
                       })}
                     </tr>
                   );
@@ -174,7 +180,7 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
         // The "eli" prefix in the className stands for EcoLearnia Interactive
         var prompt = this.props.context.itemPlayer.renderTemplateString(question.prompt);
         return (
-            <div className="eli-question">
+            <div className="eli-ninenumbers">
                 <span className="eli-question-prompt">{prompt}</span>
                 {matrix}
             </div>

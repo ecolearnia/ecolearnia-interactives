@@ -1229,7 +1229,7 @@ h6 {
     line-height: 0; }
 
 h1 {
-  font-size: 1.5rem; }
+  font-size: 1.375rem; }
 
 h2 {
   font-size: 1.25rem; }
@@ -1248,15 +1248,15 @@ h6 {
 
 @media screen and (min-width: 40em) {
   h1 {
-    font-size: 3rem; }
+    font-size: 1.875rem; }
   h2 {
-    font-size: 2.5rem; }
+    font-size: 1.625rem; }
   h3 {
-    font-size: 1.9375rem; }
+    font-size: 1.4375rem; }
   h4 {
-    font-size: 1.5625rem; }
-  h5 {
     font-size: 1.25rem; }
+  h5 {
+    font-size: 1.125rem; }
   h6 {
     font-size: 1rem; } }
 
@@ -2003,7 +2003,7 @@ select {
   margin: 0 0 1rem 0;
   padding: 1rem;
   border: 1px solid rgba(10, 10, 10, 0.25);
-  border-radius: 0;
+  border-radius: 7px;
   position: relative;
   color: #0a0a0a;
   background-color: white; }
