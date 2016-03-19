@@ -1,12 +1,15 @@
 PENDING list
 - [getNextNode] Pass context (with stats) to consider at generating numbers for variables
 - [Component] externalize Theming with className in EliReactComponent.classNameFor
+- [inputpad] input keypad for tablets
+- End of Assignment stats summary
+- Scoring per item (not per submission)
+    - refactor assignment store to keep track of each question item
 - React-ify Assignment Breadcrumb component
 - Restore State
     - [SelectQuestion] State restoration
 - [Timer]
-- [Feedback] Nicer output
 - [TextField] validator based on data type
 - Text question: Improve aesthetic
 - Select question: Improve usability
-- Sound (text to speech using Google)
+- Text-to-speech (text to speech using Google or http://responsivevoice.org/)

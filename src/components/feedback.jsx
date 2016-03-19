@@ -56,9 +56,26 @@ export class FeedbackComponent extends EliReactComponent
         </audio>
         */
 
+        let feedbackPane = '';
+        if (lastEval) {
+            if (lastEval.evalResult.aggregate.pass){
+                feedbackPane = <div>
+                    <span className="info label"><i className="fi-widget"></i> Awesome!</span>
+                    <img src="http://lorempixel.com/200/200/animals" ></img>
+                    </div>
+            } else {
+                let tryAgainMsg = (lastEval.evalResult.attemptsLeft > 0) ? "Let's try again!" : "";
+                feedbackPane = <div>
+                    <span className="alert label"><i className="fi-x-circle"></i> Incorrect. {tryAgainMsg}</span>
+                    <img src="http://lorempixel.com/g/200/200/animals" ></img>
+                    </div>
+            }
+        }
+
+
         return (
             <div className="eli-feedback">
-                {evalDump}
+                {feedbackPane}
             </div>
         );
     }

@@ -53,7 +53,9 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
      */
     componentDidUpdate(prevProps, prevState)
     {
+        // From super
         this.restoreInputValues();
+        this.markCorrectnessToInputs()
     }
 
     /**
@@ -74,8 +76,9 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
         let question = this.props.context.getConfigVal('question');
 
         // Obtain the last eval state
-        let evalsState = this.props.store.getState('evaluations');
-        let lastEval = (evalsState && evalsState.length > 0) ? evalsState[evalsState.length-1] : null;
+        //let evalsState = this.props.store.getState('evaluations');
+        //let lastEval = (evalsState && evalsState.length > 0) ? evalsState[evalsState.length-1] : null;
+
 
         let matrixData = [];
         for(let i=0; i < 2; i++) {
@@ -103,6 +106,7 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
         nums.push( this.props.context.itemPlayer.resolveObject('.variable.num2.value') );
         let num3 = this.props.context.itemPlayer.resolveObject('.variable.num3.value');
 
+
         // The loop goes through fields-1 because last one is summation
         // Hence it leaves a cell which is used to fill with the number given
         var pos;
@@ -117,6 +121,7 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
             matrixData[pos[0]][pos[1]] = nums[fidx];
             matrixCells[pos[0]][pos[1]] = <input type="text"
                 // title={nums[fidx]}
+                className=""
                 name={element.responseId} style={style}
                 ref={(c) => this.inputs_[element.responseId] = c}
                 onBlur={this.handleBlur_.bind(this, element.responseId)}
@@ -148,7 +153,8 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
         let totalSum = sumRows(matrixCells, 2);
 
         let lastField = question.fields[question.fields.length-1];
-        matrixCells[2][2] = <input type="text" title={totalSum}
+        matrixCells[2][2] = <input type="text"
+            // title={totalSum}
             name={lastField.responseId}
             ref={(c) => this.inputs_[lastField.responseId] = c}
             onBlur={this.handleBlur_.bind(this, lastField.responseId)}

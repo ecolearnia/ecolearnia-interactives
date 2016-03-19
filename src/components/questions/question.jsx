@@ -86,7 +86,11 @@ export class AbstractQuestionComponent extends EliReactComponent
         return option.value;
     }
 
-    restoreInputValues() {
+    /**
+     * Restores values by populating input's values
+     */
+    restoreInputValues()
+    {
         // Set the value with the restored state
         let question = this.props.context.getConfigVal('question');
         for (var i=0; i < question.fields.length; i++) {
@@ -97,5 +101,37 @@ export class AbstractQuestionComponent extends EliReactComponent
         }
     }
 
+    /**
+     * Add correct/incorrect class to the input elements based on the evaluation
+     */
+    markCorrectnessToInputs()
+    {
+        let lastEval = this.props.context.getLastEval();
+
+        let question = this.props.context.getConfigVal('question');
+        if (!lastEval) {
+            // Has not been evaluated yet, remove all classes
+            for (var i=0; i < question.fields.length; i++) {
+                let fieldRef = question.fields[i];
+                this.inputs_[fieldRef.responseId].classList.remove('correct', 'incorrect');
+            }
+            return;
+        }
+
+        // Set class accordingly
+        for (var i=0; i < question.fields.length; i++) {
+            let fieldRef = question.fields[i];
+            let fieldEval = lastEval.evalResult.fields[fieldRef.responseId];
+
+            let toAdd = 'correct';
+            let toRemove = 'incorrect';
+            if (!fieldEval.pass) {
+                toAdd = 'incorrect';
+                toRemove = 'correct';
+            }
+            this.inputs_[fieldRef.responseId].classList.add(toAdd);
+            this.inputs_[fieldRef.responseId].classList.remove(toRemove);
+        }
+    }
 
 }

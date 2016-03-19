@@ -4237,3 +4237,9 @@ table.hover tr:nth-of-type(even):hover {
 .long-delay {
   -webkit-animation-delay: 700ms !important;
           animation-delay: 700ms !important; }
+
+input.correct {
+  border: 2px solid #3adb76; }
+
+input.incorrect {
+  border: 2px solid #ec5840; }
