@@ -31,7 +31,8 @@ import Immutable from 'immutable';
  *  This reducer keeps the score state.
  *
  */
-function statsReducer(state = Immutable.Map({}), action) {
+function statsReducer(state = Immutable.Map({}), action)
+{
     switch (action.type) {
         case 'STATS_ACCUMULATE':
             var score = state.get('score') || 0;
@@ -53,31 +54,101 @@ function statsReducer(state = Immutable.Map({}), action) {
                 }
             }
 
-            //console.log('state (post)=' + JSON.stringify(newState));
-            //return state.set('corrects', ++corrects);
-        case 'STATS_INC_CORRECT':
-            //console.log('state (pre)=' + JSON.stringify(state));
-            var corrects = state.get('corrects') || 0;
-
-            //console.log('state (post)=' + JSON.stringify(newState));
-            return state.set('corrects', ++corrects);
-        case 'STATS_INC_INCORRECT':
-            //console.log('state (pre)=' + JSON.stringify(state));
-            var incorrects = state.get('incorrects') || 0;
-
-            //console.log('state (post)=' + JSON.stringify(newState));
-            return state.set('incorrects', ++incorrects);
         default:
             return state;
     }
 }
 
+/**
+ * Reducer which manages the state which is an ordered map where the key is the
+ * nodeId and value is the {secondsSpent, aggregateResult}
+function itemEvalBriefReducer(state = Immutable.OrderedMap({}), action)
+{
+    switch (action.type) {
+        case 'ADD_EVAL_BRIEF':
+            action.aggregateResult
+            return state.set(action.nodeId,
+                {
+                    nodeId: action.nodeId,
+                    secondsSpent: action.secondsSpent,
+                    aggregateResult: action.aggregateResult
+                }
+            );
+        default:
+            return state;
+    }
+}
+*/
+
+const initialState = Immutable.Map({
+  stats: {
+      score: 0,
+      corrects: 0,
+      incorrects: 0,
+      semicorrects: 0
+  },
+  itemEvalBriefs: Immutable.OrderedMap({})
+})
+
+
+function reportReducer(state = initialState, action)
+{
+    switch (action.type) {
+        case 'ADD_EVAL_BRIEF':
+
+            let itemEvalBriefs = state.get('itemEvalBriefs') || Immutable.OrderedMap({});
+            state = state.set('itemEvalBriefs', itemEvalBriefs.set(action.nodeId,
+                {
+                    nodeId: action.nodeId,
+                    secondsSpent: action.secondsSpent,
+                    aggregateResult: action.aggregateResult
+                }
+            ));
+
+            return state.set('stats', buildStats_(state.get('itemEvalBriefs').toArray()));
+
+        default:
+            return state;
+    }
+}
+
+/**
+ * Builds a stats object
+ * @param {Array.<>}itemEvalBriefs
+ */
+function buildStats_(itemEvalBriefs)
+{
+    let stats = {
+        score: 0,
+        corrects: 0,
+        incorrects: 0,
+        semicorrects: 0
+    };
+    for (let i=0; i < itemEvalBriefs.length; i++) {
+        if (itemEvalBriefs[i].aggregateResult) {
+            let itemEvalBrief = itemEvalBriefs[i];
+            stats.score += itemEvalBrief.aggregateResult.score;
+            if (itemEvalBrief.aggregateResult.pass) {
+                stats.corrects++;
+            } else {
+                if (itemEvalBrief.aggregateResult.score == 0) {
+                    stats.incorrects++;
+                } else {
+                    // Partial correct
+                    stats.semicorrects++;
+                }
+            }
+        }
+    }
+    return stats;
+}
 
 /**
  * Combined reducers
  */
 const reducers = {
-    stats: statsReducer
+    report: reportReducer
+    //itemEvalBriefs: itemEvalBriefReducer
 }
 
 export default reducers;

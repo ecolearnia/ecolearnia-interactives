@@ -12,21 +12,23 @@
             "hidden": true,
             "baseType": "number",
             "value": 4,
-            "minVal": 10,
-            "maxVal": 30
+            "minVal": 1,
+            "maxVal": 10
         },
         "num3": {
             "@doc": "the given number",
             "hidden": true,
             "baseType": "number",
             "value": 9,
-            "minVal": 0,
+            "minVal": 1,
             "maxVal": 10
         },
         "patternIndex": {
             "@doc": "the positioning pattern index in the permuation. 24 is the num of permuatations",
             "hidden": true,
             "baseType": "number",
+            "@doc": "variability - strict: boundaries cannot change",
+            "variability": "strict",
             "value": 9,
             "minVal": 0,
             "maxVal": 24

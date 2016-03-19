@@ -4239,7 +4239,13 @@ table.hover tr:nth-of-type(even):hover {
           animation-delay: 700ms !important; }
 
 input.correct {
-  border: 2px solid #3adb76; }
+  border: 1px solid #3adb76; }
 
 input.incorrect {
-  border: 2px solid #ec5840; }
+  border: 1px solid #ec5840; }
+
+span.correct {
+  color: #3adb76; }
+
+span.incorrect {
+  color: #ec5840; }

@@ -30,6 +30,7 @@ import assignmentReducers  from './assignmentreducers';
 import ItemPlayer from '../item/itemplayer';
 
 import ScoreBoardComponent from './components/scoreboard.jsx';
+import ReportComponent from './components/report.jsx';
 
 /**
  * @class AssignmentPlayer
@@ -107,7 +108,35 @@ export default class AssignmentPlayer
             ReactDOM.render(<ScoreBoardComponent store={this.store_} context={null} />, placeholders.scoreboard);
         }
 
-        this.loadNextItem();
+        return this.loadNextItem();
+    }
+
+    calcStats()
+    {
+        let itemEvalBriefs = this.store_.getState()['itemEvalBriefs'].toArray();
+
+        let stats = {
+            score: 0,
+            corrects: 0,
+            incorrects: 0,
+            semicorrects: 0
+        };
+        for (let i=0; i < itemEvalBriefs.length; i++) {
+            if (itemEvalBriefs[i].aggregateResult) {
+                stats.score += itemEvalBriefs[i].aggregateResult.score;
+                if (itemEvalBriefs[i].pass) {
+                    stats.corrects++;
+                } else {
+                    if (itemEvalBriefs[i].score == 0) {
+                       stats.incorrects++;
+                    } else {
+                        // Partial correct
+                        stats.semicorrects++;
+                    }
+                }
+            }
+        }
+        return stats;
     }
 
 
@@ -119,11 +148,31 @@ export default class AssignmentPlayer
     {
         // @todo - set properly the assignmentContext
         // Not sure to pass the courseContext, learningContext or assignmentContext,
-        var context = {};
+        let report = this.store_.getState('report')
+        var context = {
+            stats: (report) ? report.stats: null
+        };
         return this.sequenceStrategy_.retrieveNextNode(context)
         .then(function(nodeDescriptor){
             this.pubsub_.publishRaw('next-node-retrieved', nodeDescriptor);
-            return this.fetchItemAndRender_(nodeDescriptor);
+            if (nodeDescriptor) {
+                return this.fetchItemAndRender_(nodeDescriptor)
+                .then(function(nodeDescriptor){
+                    // When successfully loaded, create a slot
+                    // This will keep proper ordering even if the stduent
+                    // skips the item and submits later on
+                    if (nodeDescriptor) {
+                        this.store_.dispatch({
+                            type: "ADD_EVAL_BRIEF",
+                            nodeId: nodeDescriptor.id,
+                            aggregateResult: null
+                        });
+                    };
+                }.bind(this));
+            } else {
+                // resolve to null, nothing else to do.
+                return Promise.resolve(null);
+            }
         }.bind(this));
     }
 
@@ -157,8 +206,17 @@ export default class AssignmentPlayer
         }.bind(this));
     }
 
-
-
+    /**
+     * Loand the assignment report (at the end of assignment,
+     * when no more items left)
+     */
+    loadReport()
+    {
+        //let stats = this.store_.getState('stats')
+        if (placeholders.content) {
+            ReactDOM.render(<ReportComponent store={this.store_} context={null} />, placeholders.content);
+        }
+    }
 
     /**
      * subscribe to events from the assignment player
@@ -183,12 +241,7 @@ export default class AssignmentPlayer
       */
      fetchItemAndRender_(nodeDescriptor)
      {
-         return this.itemPlayer_.fetchNode(nodeDescriptor)
-         .then(function(){
-             this.itemPlayer_.render(this.itemEl_);
-             return;
-         }.bind(this));
-
+         return this.itemPlayer_.fetchNodeAndRender(nodeDescriptor, this.itemEl_);
      }
 
     /**
@@ -256,14 +309,16 @@ export default class AssignmentPlayer
         message.data.evalResult;
 
         // calculare overall correctness
-        /*
-        let isCorrect = this.isOverallCorrect(message.data.evalResult);
-        if (isCorrect) {
-            this.store_.dispatch({type: "STATS_INC_CORRECT"});
-        } else {
-            this.store_.dispatch({type: "STATS_INC_INCORRECT"});
-        }*/
-        this.store_.dispatch({type: "STATS_ACCUMULATE", aggregateResult: message.data.evalResult.aggregate});
+        this.store_.dispatch({
+            type: "STATS_ACCUMULATE",
+            aggregateResult: message.data.evalResult.aggregate
+        });
+        // @todo - add secondsSpent
+        this.store_.dispatch({
+            type: "ADD_EVAL_BRIEF",
+            nodeId: message.nodeId,
+            aggregateResult: message.data.evalResult.aggregate
+        });
 
         console.log('handleSubmissionRespondedEvent_:' + JSON.stringify(message));
     }
@@ -276,9 +331,9 @@ export default class AssignmentPlayer
         console.log('handleNavigateEvent_:' + JSON.stringify(message));
         if (message.param === 'next') {
             // @todo - pass context
-            this.loadNextItem();
+            return this.loadNextItem();
         } else if (_.isNumber(message.param)) {
-            this.loadItem(message.param);
+            return this.loadItemByIndex(message.param);
         }
     }
 }

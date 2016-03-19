@@ -78,9 +78,9 @@ export class ActionBarComponent extends EliReactComponent
     render()
     {
         var items = this.props.context.getConfigVal('items');
-    	var actionbarItems = items.map(function(item) {
+    	var actionbarItems = items.map(function(item, i) {
             return (
-                <div key={item.type}>{this.renderItem_(item)}</div>
+                <div key={i}>{this.renderItem_(item)}</div>
             )
         }.bind(this));
 

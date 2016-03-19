@@ -52,7 +52,7 @@
                     <div>
                         <select id="nodeSelector"></select>
                     </div>
-                    <button type="button" class="success button" onClick="navigateNext()">Next</button>
+                    <button id="nextButton" type="button" class="success button" onClick="navigateNext()">Next</button>
                     <div class="eli-assignment-placeholder" id="placeholder-scoreboard" ></div>
                 </div>
             </div>
@@ -98,7 +98,9 @@
                 .prop('selected', true)
              );
         } else {
-            alert('End of assignment');
+            //alert('End of assignment');
+            $("#nextButton").html('Report');
+            assignmentPlayer.loadReport();
         }
     });
 
@@ -109,11 +111,6 @@
 
 
     assignmentPlayer.render(placeholders);
-
-    function navigatePrev()
-    {
-        alert("Prev");
-    }
 
     function navigateNext()
     {

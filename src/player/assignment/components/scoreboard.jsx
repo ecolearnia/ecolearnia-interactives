@@ -39,7 +39,11 @@ export default class ScoreBoardComponent extends EliReactComponent
     render()
     {
         // The "eli" prefix in the className stands for EcoLearnia Interactive
-        let stats = this.props.store.getState('stats');
+        let report = this.props.store.getState('report');
+        let stats = report.stats;
+
+        //let stats = this.props.store.getState('stats');
+
         stats.corrects = stats.corrects || 0;
         stats.incorrects = stats.incorrects || 0;
         stats.semicorrects = stats.semicorrects || 0;
@@ -49,10 +53,12 @@ export default class ScoreBoardComponent extends EliReactComponent
         return (
             <div className="eli-scoreboard">
                 <table>
-                    <tr><td><strong>Score</strong></td><td>{stats.score}</td></tr>
-                    <tr><td>Corrects</td><td>{stats.corrects}</td></tr>
-                    <tr><td>Incorrects</td><td>{stats.incorrects}</td></tr>
-                    <tr><td>Partial</td><td>{stats.semicorrects}</td></tr>
+                    <tbody>
+                        <tr><td><strong>Score</strong></td><td>{stats.score}</td></tr>
+                        <tr><td>Corrects</td><td>{stats.corrects}</td></tr>
+                        <tr><td>Incorrects</td><td>{stats.incorrects}</td></tr>
+                        <tr><td>Partial</td><td>{stats.semicorrects}</td></tr>
+                    </tbody>
                 </table>
             </div>
         );

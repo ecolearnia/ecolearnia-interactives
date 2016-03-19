@@ -18,7 +18,7 @@
  */
 var promiseutils = require('../../../libs/common/promiseutils');
 import {dotAccess} from '../../../libs/common/utils';
-import VariableRandomizer from './variablerandomizer.js';
+import VariablesRandomizer from './variablesrandomizer.js';
 
  /**
   * @class RandomVarSequencingStrategy
@@ -122,14 +122,14 @@ export default class LocalRandomVarSequencingStrategy
 
     /**
      * Get next node
-     * @param {player.assignent.LearningContext} the learning context
+     * @param {player.assignent.AssignmentContext} the assignment context
      * @return {promise} - On success the next sequenceNode (object containing associationId, item content)
      */
     retrieveNextNode(assignmentContext)
     {
         let self = this;
         let numItemInstances = dotAccess(assignmentContext, 'assemblySettings.numItemInstances');
-        numItemInstances = numItemInstances || 10;
+        numItemInstances = numItemInstances || 5;
         if (self.nodeDescriptors_.length >= numItemInstances)
         {
             // Reached end of assignment item.
@@ -140,11 +140,11 @@ export default class LocalRandomVarSequencingStrategy
         .then(function(content){
 
             // The following is supposed to happen in the server side:
-            var randomizer = new VariableRandomizer();
+            var randomizer = new VariablesRandomizer();
             let newNodeDetails = {
                 // Create a random number for the associationId
                 userId: 'test-user',
-                content: randomizer.apply(content)
+                content: randomizer.apply(content, assignmentContext)
             };
             return self.sysRecords_.add(newNodeDetails)
             .then(function(nodeId) {

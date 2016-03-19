@@ -45,6 +45,16 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
 
     }
 
+    /***** React methods *****/
+    componentDidMount()
+    {
+        super.componentDidMount();
+
+        // following methods are from super class
+        super.restoreInputValues();
+        super.markCorrectnessToInputs();
+    }
+
     /**
      * React lifecycle.
      * Invoked immediately after the component's updates are flushed to the DOM.
@@ -53,10 +63,12 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
      */
     componentDidUpdate(prevProps, prevState)
     {
-        // From super
-        this.restoreInputValues();
-        this.markCorrectnessToInputs()
+        // following methods are from super class
+        super.restoreInputValues();
+        super.markCorrectnessToInputs();
     }
+
+
 
     /**
      * Handle blur: update Item state
@@ -121,7 +133,6 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
             matrixData[pos[0]][pos[1]] = nums[fidx];
             matrixCells[pos[0]][pos[1]] = <input type="text"
                 // title={nums[fidx]}
-                className=""
                 name={element.responseId} style={style}
                 ref={(c) => this.inputs_[element.responseId] = c}
                 onBlur={this.handleBlur_.bind(this, element.responseId)}
@@ -159,6 +170,7 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
             ref={(c) => this.inputs_[lastField.responseId] = c}
             onBlur={this.handleBlur_.bind(this, lastField.responseId)}
             placeholder={lastField.responseId}
+            className={self.classNameFor('cell.numeric')}
         />
 
         // Calculate the sums

@@ -1,11 +1,8 @@
 PENDING list
-- [getNextNode] Pass context (with stats) to consider at generating numbers for variables
-- [Component] externalize Theming with className in EliReactComponent.classNameFor
+- [BUG] Moving from report to any item with state does not fill the state
 - [inputpad] input keypad for tablets
-- End of Assignment stats summary
-- Scoring per item (not per submission)
-    - refactor assignment store to keep track of each question item
 - React-ify Assignment Breadcrumb component
+- [Component] externalize Theming with className in EliReactComponent.classNameFor
 - Restore State
     - [SelectQuestion] State restoration
 - [Timer]

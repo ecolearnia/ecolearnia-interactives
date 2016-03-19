@@ -225,6 +225,7 @@ export default class ItemPlayer
         this.componentSpecs_ = (content && content.item) ? content.item.components : null;
 
         // New content was set, reset the store and trigger render
+        // @todo - Check if the content has been rendered, to rigger reset.
         this.store_.reset();
 
         this.logger_.debug('Content assigned.');
@@ -437,12 +438,22 @@ export default class ItemPlayer
      * Fetches the content from System of records and set the content
      * @param {NodeDescriptor} nodeDescriptor
      */
-    fetchNode(nodeDescriptor)
+    fetchNode_(nodeDescriptor)
     {
         let self = this;
         return this.nodeProvider_.fetch(nodeDescriptor.id)
         .then(function(nodeDetails){
             self.setContent(nodeDetails.id, nodeDetails.content);
+
+            return nodeDetails;
+        });
+    }
+
+    fetchNodeAndRender(nodeDescriptor, el)
+    {
+        return this.fetchNode_(nodeDescriptor)
+        .then(function(nodeDetails){
+            this.render(el);
 
             if (nodeDetails.itemState) {
                 // @todo - later it will change to array of states, array tail
@@ -451,9 +462,10 @@ export default class ItemPlayer
 
                 let stateData = isEvaluation ? nodeDetails.itemState.data.submission.fields : nodeDetails.itemState.data.fields;
 
-                // Calling an asyc method, but not need to return
-                // Promise warning can safely be ignored
-                self.dispatcher_.updateState(
+                // @todo - fix:
+                // This produces forceUpdate before component being rendered
+                // Calling an asyc method, Promise warning can be ignored
+                this.dispatcher_.updateState(
                     nodeDetails.id,
                     "fields",
                     stateData,
@@ -463,11 +475,12 @@ export default class ItemPlayer
                 if (isEvaluation)
                 {
                     // This state is a submission
-                    self.dispatcher_.appendEvalDetails(nodeDetails.itemState.data);
+                    this.dispatcher_.appendEvalDetails(nodeDetails.itemState.data);
                 }
             }
-            return;
-        });
+
+            return nodeDescriptor;
+        }.bind(this));
     }
 
 }
