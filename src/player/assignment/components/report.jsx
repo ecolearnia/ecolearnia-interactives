@@ -61,13 +61,25 @@ export default class ReportComponent extends EliReactComponent
                             title={title}
                             dangerouslySetInnerHTML={ {__html: correctnessMark} }>
                         </span></td>
+                    <td>{evalBrief.secondsSpent} secs</td>
+                    <td>{evalBrief.attemptNum}</td>
                 </tr>);
         });
         return (
             <div className="eli-assignmentreport">
                 <h3>Summary of your work</h3>
                 <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th></th>
+                            <th>Seconds spent</th>
+                            <th>Num Attempts</th>
+                        </tr>
+                    </thead>
+                    <tbody>
                     {rows}
+                    </tbody>
                 </table>
             </div>
         );

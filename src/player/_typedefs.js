@@ -61,6 +61,7 @@ player.FieldEvalResult;
 
 /**
  * @typedef {{
+ *   attemptNum: (number),
  *   attemptsLeft: (number),
  *   pass: (boolean),
  *   aggregate: (player.FieldEvalResult),
@@ -77,7 +78,8 @@ player.EvalResult;
  * @typedef {{
  *    submission: {
  *      timestamp: (Date),
- *      "fields": (player.FieldCollection)
+ *      secondsSpent: (number),
+ *      fields: (player.FieldCollection)
  *    },
  *    evalResult: (player.EvalResult)
  *  }} EvalDetails
@@ -93,6 +95,7 @@ player.EvalResult;
  *      }
  *    },
  *    "evalResult": {
+ *      "attemptNum": 1,
  *      "attemptsLeft": 1,
  *      "aggregate": {
  *        "pass": true,
@@ -119,13 +122,25 @@ player.Component;
 
 
 /**
- * @typedef {Content} player.ContentDefinition
  * This is the definition of the content that complies to the specification
+ * @typedef {Content} player.ContentDefinition
  */
 player.ContentDefinition;
 
+/**
+ * Node related structures:
+ * A Node is an instantiation of a learning sequence activity.
+ * When a student requests the next acivity, an item instance is created and
+ * contextual information is associated with it including the user, policy,
+ * item state, evaluation details, and timestamples.
+ */
 
  /**
+  * A Node Descriptor is a synopsys of a node that is used as identifier.
+  * The AssignmentPlayer (AS) obtains this information when getting the next node.
+  * The AP passes it to the ItemPlayer (IP) to fetch the full data knwon as
+  * NodeDetails.
+  *
   * @typedef {{
   *   id: (string), // the node id (uuid)
   *   userId: (string),
@@ -137,7 +152,8 @@ player.NodeDescriptor;
 
 
 /**
- * Superset of NodeDescriptor
+ * Full Node data. Superset of NodeDescriptor.
+ *
  * @typedef {{
  * player.NodeDescriptor extend {
  *   content: (player.ContentDefinition),

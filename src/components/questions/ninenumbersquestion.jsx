@@ -104,7 +104,7 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
             matrixCells.push(cols);
         }
 
-        let patternIndex = this.props.context.itemPlayer.resolveObject('.variable.patternIndex.value');
+        let patternIndex = this.props.context.item.resolveObject('.variable.patternIndex.value');
         // Shuffle the positions to place the fields
         var fieldPositions = [
             [0,0], [0,1], [1,0], [1,1]
@@ -113,10 +113,10 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
         fieldPositions = permutations[patternIndex];
 
         let nums = [];
-        nums.push( this.props.context.itemPlayer.resolveObject('.variable.num1.value') );
+        nums.push( this.props.context.item.resolveObject('.variable.num1.value') );
         nums.push( nums[0] );
-        nums.push( this.props.context.itemPlayer.resolveObject('.variable.num2.value') );
-        let num3 = this.props.context.itemPlayer.resolveObject('.variable.num3.value');
+        nums.push( this.props.context.item.resolveObject('.variable.num2.value') );
+        let num3 = this.props.context.item.resolveObject('.variable.num3.value');
 
 
         // The loop goes through fields-1 because last one is summation
@@ -196,7 +196,7 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
 
 
         // The "eli" prefix in the className stands for EcoLearnia Interactive
-        var prompt = this.props.context.itemPlayer.renderTemplateString(question.prompt);
+        var prompt = this.props.context.item.renderTemplateString(question.prompt);
         return (
             <div className="eli-ninenumbers">
                 <span className="eli-question-prompt">{prompt}</span>

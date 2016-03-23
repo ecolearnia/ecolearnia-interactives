@@ -23,6 +23,7 @@ import Immutable from 'immutable';
 
 /**
  * componentReducer
+ * @deprecated
  *
  * @module interactives/player/item
  *
@@ -30,7 +31,6 @@ import Immutable from 'immutable';
  *  Redux score reducer function for assignment.
  *  This reducer keeps the score state.
  *
- */
 function statsReducer(state = Immutable.Map({}), action)
 {
     switch (action.type) {
@@ -58,26 +58,6 @@ function statsReducer(state = Immutable.Map({}), action)
             return state;
     }
 }
-
-/**
- * Reducer which manages the state which is an ordered map where the key is the
- * nodeId and value is the {secondsSpent, aggregateResult}
-function itemEvalBriefReducer(state = Immutable.OrderedMap({}), action)
-{
-    switch (action.type) {
-        case 'ADD_EVAL_BRIEF':
-            action.aggregateResult
-            return state.set(action.nodeId,
-                {
-                    nodeId: action.nodeId,
-                    secondsSpent: action.secondsSpent,
-                    aggregateResult: action.aggregateResult
-                }
-            );
-        default:
-            return state;
-    }
-}
 */
 
 const initialState = Immutable.Map({
@@ -100,6 +80,7 @@ function reportReducer(state = initialState, action)
             state = state.set('itemEvalBriefs', itemEvalBriefs.set(action.nodeId,
                 {
                     nodeId: action.nodeId,
+                    attemptNum: action.attemptNum,
                     secondsSpent: action.secondsSpent,
                     aggregateResult: action.aggregateResult
                 }

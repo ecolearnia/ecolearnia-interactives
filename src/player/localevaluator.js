@@ -117,10 +117,10 @@ export default class LocalEvaluator
         .then(function(nodeDetails) {
             let itemVars = nodeDetails.content.variableDeclarations || {};
             let combinedSubmissionData  = this.combineSubmissionData_(itemVars, submissionDetails.fields);
-            console.log('combinedSubmissionData: ' + JSON.stringify(combinedSubmissionData));
+            //console.log('combinedSubmissionData: ' + JSON.stringify(combinedSubmissionData));
 
             let attempts = this.calculateAttempts(nodeDetails);
-            console.log('** attemptsLeft=' + attempts.attemptsLeft);
+            //console.log('** attemptsLeft=' + attempts.attemptsLeft);
             if (attempts.attemptsLeft == 0)
             {
                 throw new Error("NoMoreAttempts");
@@ -129,10 +129,11 @@ export default class LocalEvaluator
             return this.evaluateFields_(nodeDetails.content.responseProcessing, combinedSubmissionData)
             .then(function(fieldEvals){
                 let evalResult = {
-                    fields: fieldEvals
+                    fields: fieldEvals,
+                    attemptNum: attempts.numAttempted + 1
                 }
                 evalResult.attemptsLeft = attempts.attemptsLeft - 1;
-                return this.calculateAgregate_(evalResult, attempts.numAttempted + 1);
+                return this.calculateAgregate_(evalResult, evalResult.attemptNum);
             }.bind(this));
         }.bind(this))
         .then(function(evalResult){

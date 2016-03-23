@@ -39,7 +39,8 @@ import Immutable from 'immutable';
  *  }
  *
  */
-function componentReducer(state = Immutable.Map(), action) {
+function componentReducer(state = Immutable.Map(), action)
+{
     switch (action.type) {
         case 'ITEM_UPDATE_STATE':
             //console.log('state (pre)=' + JSON.stringify(state));
@@ -68,10 +69,77 @@ function componentReducer(state = Immutable.Map(), action) {
  *  Immutable.List.<{player.EvalDetails}> }.
  *
  */
-function evaluationReducer(state = Immutable.List(), action) {
+function evaluationReducer(state = Immutable.List(), action)
+{
     switch (action.type) {
         case 'ITEM_APPEND_EVALDETAILS':
             return state.push(action.evalDetails);
+        default:
+            return state;
+    }
+}
+
+/**
+ * Calculates the delta in seconds of two dates
+ */
+function deltaSeconds(start, end)
+{
+    return Math.round( (end.getTime() - start.getTime()) / 1000);
+}
+
+/**
+ * evalResultReducer
+ *
+ * @module interactives/player/item
+ *
+ * @desc
+ *  Redux timestampReducer. Keeps track of timestamps.
+ * Currently start is the only timestamp tracked.
+ * The element in the list is of form:
+ * {start: (Date), stop: (Date) [, elapsedSeconds: (number)] }
+ * When REGISTER_START, a new entry is added with current time
+ * as the start time. This action is for when item is rendered
+ * for first time.
+ * When REGISTER_STOP, the last entry's stop is updated(replaced).
+ */
+function timestampReducer(state = Immutable.List(), action)
+{
+    let timestamp = action.timestamp || new Date();
+    let lastEntry;
+    switch (action.type) {
+
+        case 'REGISTER_START':
+
+            lastEntry = state.last();
+            // If last entry does not have a stop, make this a stop.
+            // and create a new entry.
+            // @todo - Handle case when user closed the browser
+            if (lastEntry && !lastEntry.stop) {
+                lastEntry.stop = timestamp;
+                lastEntry.elapsedSeconds = deltaSeconds(lastEntry.start, lastEntry.stop);
+                state = state.set(state.size - 1, lastEntry);
+            }
+            let entry = {
+                start: timestamp
+            };
+
+            return state.push(entry);
+
+        case 'REGISTER_STOP':
+            lastEntry = state.last();
+            if (lastEntry) {
+                lastEntry.stop = timestamp;
+                lastEntry.elapsedSeconds = deltaSeconds(lastEntry.start, lastEntry.stop);
+                return state.set(state.size - 1, lastEntry);
+            } else {
+                let entry = {
+                    start: timestamp,
+                    stop: timestamp,
+                    elapsedSeconds: 0
+                };
+                return state.push(entry);
+            }
+
         default:
             return state;
     }
@@ -82,7 +150,8 @@ function evaluationReducer(state = Immutable.List(), action) {
  */
 const reducers = {
     components: componentReducer,
-    evaluations: evaluationReducer
+    evaluations: evaluationReducer,
+    timestamps: timestampReducer
 }
 
 export default reducers;

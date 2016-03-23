@@ -85,12 +85,12 @@ export class TemplateContainerComponent extends EliReactComponent
         for (var key in this.elios_) {
             var objectFqn = this.elios_[key];
             var objectEl = this.queryByHook(key);
-            var object = this.props.context.itemPlayer.resolveObject(objectFqn);
+            var object = this.props.context.item.resolveObject(objectFqn);
 
             if (object.type && object.type.prototype) {
                 // is a component, render it in the el
                 // @todo - Consider checking for object.type.prototype.componentType
-                this.props.context.itemPlayer.renderComponent(object, objectEl);
+                this.props.context.item.renderComponent(object, objectEl);
             } else {
                 // @todo - Is is OK to just set the textContext with stringified object?
                 objectEl.textContent = object.toString();

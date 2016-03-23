@@ -9,7 +9,7 @@
     "build-deps": "browserify -t babelify  -r bluebird -r lodash -r react/addons | uglifyjs -c >  build/el-externdeps.bundle.min.js",
     "build-inter": "browserify -t [ babelify --presets [ es2015 react ] ] -x bluebird -x lodash -x react/addons -r ./src/interactives.js:interactives -r -o build/el-interactives.bundle.js -d",
     "watch-inter": "watchify   -t [ babelify --presets [ es2015 react ] ] -x bluebird -x lodash -x react/addons -r ./src/interactives.js:interactives -r -o build/el-interactives.bundle.js -d -v",
-    "test": "./node_modules/.bin/mocha --compilers js:babel-core/register -u tdd --recursive --reporter spec test/spec --timeout 1000"
+    "test": "./node_modules/.bin/mocha --compilers js:babel-core/register -u tdd --recursive --reporter spec test/spec --timeout 1500"
   },
   "repository": {
     "type": "git",

@@ -11,7 +11,7 @@ import LocalNodeSysRec from '../../src/player/localnodesysrec';
 import LocalEvaluator from '../../src/player/localevaluator';
 var testContent = require('../data/content.test.json');
 
-describe.only('LocalEvaluator', function () {
+describe('LocalEvaluator', function () {
 
 	before(function(){
 	});

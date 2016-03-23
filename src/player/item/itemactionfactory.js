@@ -57,6 +57,32 @@ export default class ItemActionFactory
     }
 
     /**
+     * Returns action for registering a start timestamp
+     *
+     * @param {Date!} timestamp  - Optiona: the timestamp
+     */
+    timestampStart(timestamp)
+    {
+        return {
+            type: 'REGISTER_START',
+            timestamp: timestamp
+        };
+    }
+
+    /**
+     * Returns action for registering a stop timestamp
+     *
+     * @param {Date!} timestamp  - Optiona: the timestamp
+     */
+    timestampStop(timestamp)
+    {
+        return {
+            type: 'REGISTER_STOP',
+            timestamp: timestamp
+        };
+    }
+
+    /**
      * Returns action for append message
      *
      * @param {string} message  - the message to be displayed
@@ -98,50 +124,4 @@ export default class ItemActionFactory
         };
     }
 
-
-    /**
-     * @deprecated The ItemDispatcher is handling the evaluation
-     * Asynchronous evaluation of an item's state (submission)
-     *
-     * @param {string} associationId  - ID of the item that is currently being played
-     */
-    evaluate(associationId)
-    {
-        var self = this;
-        return function (dispatch, getState) {
-            let submissionTimestamp = new Date();
-
-            // components states are Immutablejs
-            let componentStates = getState().components.toJS();
-
-            // merge states of all the components into one single KV Object
-            // This will become th student's submission object
-            var itemState = {};
-            for (var componentId in componentStates) {
-                itemState = _.assignIn(itemState, componentStates[componentId]);
-            }
-
-            // Evaluator can be either local or remote proxy
-            return self.evaluator_.evaluate(associationId, itemState)
-                .then(
-                    (evalResult) => {
-                        // @todo - obtain the componentId from the fieldName
-                        let evalDetails = {
-                            submission: {
-                                timestamp: submissionTimestamp,
-                                fields: itemState
-                            },
-                            evalResult: evalResult
-                        }
-                        return dispatch(self.appendEvalDetails(evalDetails))
-                    }
-                )
-                /* Defer the cath to the outter caller
-                .catch(
-                    (error) => {
-                        return dispatch(self.appendMessage({type: 'Error', associationId, error}))
-                    }
-                )*/;
-        };
-    }
 }

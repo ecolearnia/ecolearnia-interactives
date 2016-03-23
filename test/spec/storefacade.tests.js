@@ -33,7 +33,7 @@ describe('StoreFacade', function () {
 			var result = store.dispatch({type: 'test', data:'test-data'});
 			var state = store.getState();
 			expect(result).to.deep.equals({type: 'test', data:'test-data'});
-			console.log('State:' + JSON.stringify(state));
+			//console.log('State:' + JSON.stringify(state));
 			expect(state, 'Invalid state!').to.deep.equals({data:'test-data'});
 		});
 	});

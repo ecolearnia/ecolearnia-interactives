@@ -58,7 +58,6 @@ export class ActionBarComponent extends EliReactComponent
             && lastEval.evalResult.attemptsLeft > 0): true;
 
 
-
         var retval = null;
         if (type == 'tts') {
             retval = <div><a onClick={this.handleAction_.bind(this, 'tts')} >audio-icon</a></div>

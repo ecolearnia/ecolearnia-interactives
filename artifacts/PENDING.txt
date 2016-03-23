@@ -1,12 +1,12 @@
 PENDING list
-- [BUG] Moving from report to any item with state does not fill the state
+- [FIX] Given a wrong answer, when user changes the value, remove the marker
+- [Timer] WIP: save/retrieve (persistently) timers data
+- [TextField] validator based on data type
 - [inputpad] input keypad for tablets
 - React-ify Assignment Breadcrumb component
 - [Component] externalize Theming with className in EliReactComponent.classNameFor
 - Restore State
     - [SelectQuestion] State restoration
-- [Timer]
-- [TextField] validator based on data type
 - Text question: Improve aesthetic
 - Select question: Improve usability
 - Text-to-speech (text to speech using Google or http://responsivevoice.org/)

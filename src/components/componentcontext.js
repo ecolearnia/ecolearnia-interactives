@@ -32,22 +32,22 @@ import utils from '../../libs/common/utils';
  */
 export default class ComponentContext
 {
-    constructor(componentId, itemPlayer)
+    constructor(componentId, item)
     {
         /**
          * The item player
          */
-        this.itemPlayer = itemPlayer;
+        this.item = item;
 
         // The ID of the component
         this.componentId_ = componentId;
 
         // The component specification (the JSON part of the component)
-        this.componentSpec_ = this.itemPlayer.getContent().item.components[this.componentId_];
+        this.componentSpec_ = this.item.getContent().body.components[this.componentId_];
 
         // For closure
-        var dispatcher = this.itemPlayer.dispatcher_;
-        var associationId =  this.itemPlayer.getAssociationId();
+        var dispatcher = this.item.dispatcher_;
+        var nodeId =  this.item.getNodeId();
         this.dispatcher = {
 
             /**
@@ -55,12 +55,12 @@ export default class ComponentContext
              */
             updateState: function (state)
             {
-                return dispatcher.updateState(associationId, componentId, state);
+                return dispatcher.updateState(nodeId, componentId, state);
             },
 
             evaluate: function ()
             {
-                return dispatcher.evaluate(associationId);
+                return dispatcher.evaluate(nodeId);
             },
 
             appendMessage: function (message)
@@ -84,7 +84,7 @@ export default class ComponentContext
     {
         var configVal = utils.dotAccess(this.componentSpec_.config, fieldName);
         configVal = configVal || defaultVal;
-        return this.itemPlayer.getValue(configVal);
+        return this.item.getValue(configVal);
     }
 
     /**
@@ -98,7 +98,7 @@ export default class ComponentContext
      */
     getFieldState(fieldName)
     {
-        let componentStates = this.itemPlayer.getStore().getState('components');
+        let componentStates = this.item.getStore().getState('components');
         let componentFields = componentStates ? componentStates['fields']: undefined;
         let fieldState = componentFields ? componentFields[fieldName] : undefined;
         return fieldState;
@@ -158,7 +158,7 @@ export default class ComponentContext
      */
     castFieldValue(fieldName, val)
     {
-        let content = this.itemPlayer.getContent();
+        let content = this.item.getContent();
         let fieldDecl = content.responseDeclarations[fieldName];
         let fieldType = (fieldDecl && fieldDecl.baseType) ? fieldDecl.baseType.toLowerCase() : 'string';
         if (typeof val === fieldType) {
@@ -181,7 +181,7 @@ export default class ComponentContext
      * @return {player.EvalDetails}
      */
     getLastEval() {
-        let evalsState = this.itemPlayer.getStore().getState('evaluations');
+        let evalsState = this.item.getStore().getState('evaluations');
         return (evalsState && evalsState.length > 0) ? evalsState[evalsState.length-1] : null;
     }
 }

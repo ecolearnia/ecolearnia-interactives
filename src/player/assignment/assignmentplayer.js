@@ -85,7 +85,7 @@ export default class AssignmentPlayer
          * @type {SequencingStrategy}
          *    has operations: get(index), and getNext()
          */
-        this.sequenceStrategy_ = config.sequencingStrategy;
+        this.sequencingStrategy_ = config.sequencingStrategy;
 
         /**
          * Flux Store
@@ -152,19 +152,20 @@ export default class AssignmentPlayer
         var context = {
             stats: (report) ? report.stats: null
         };
-        return this.sequenceStrategy_.retrieveNextNode(context)
+        return this.sequencingStrategy_.retrieveNextNode(context)
         .then(function(nodeDescriptor){
             this.pubsub_.publishRaw('next-node-retrieved', nodeDescriptor);
             if (nodeDescriptor) {
                 return this.fetchItemAndRender_(nodeDescriptor)
                 .then(function(nodeDescriptor){
-                    // When successfully loaded, create a slot
-                    // This will keep proper ordering even if the stduent
-                    // skips the item and submits later on
+                    // When successfully loaded, create a slot in the report for
+                    // the item. This will keep proper ordering even if the
+                    // student skips the item and submits later on
                     if (nodeDescriptor) {
                         this.store_.dispatch({
                             type: "ADD_EVAL_BRIEF",
                             nodeId: nodeDescriptor.id,
+                            attemptNum: 0,
                             aggregateResult: null
                         });
                     };
@@ -183,7 +184,7 @@ export default class AssignmentPlayer
     {
         // @todo - set properly the assignmentContext
         // Not sure to pass the courseContext, learningContext or assignmentContext,
-        return this.sequenceStrategy_.retrieveNode(nodeId)
+        return this.sequencingStrategy_.retrieveNode(nodeId)
         .then(function(nodeDescriptor){
             this.pubsub_.publish('node-retrieved', nodeDescriptor);
 
@@ -198,7 +199,7 @@ export default class AssignmentPlayer
     {
         // @todo - set properly the assignmentContext
         // Not sure to pass the courseContext, learningContext or assignmentContext,
-        return this.sequenceStrategy_.retrieveNodeByIndex(index)
+        return this.sequencingStrategy_.retrieveNodeByIndex(index)
         .then(function(nodeDescriptor){
             this.pubsub_.publish('node-retrieved', nodeDescriptor);
 
@@ -308,15 +309,11 @@ export default class AssignmentPlayer
         message.nodeId;
         message.data.evalResult;
 
-        // calculare overall correctness
-        this.store_.dispatch({
-            type: "STATS_ACCUMULATE",
-            aggregateResult: message.data.evalResult.aggregate
-        });
-        // @todo - add secondsSpent
         this.store_.dispatch({
             type: "ADD_EVAL_BRIEF",
             nodeId: message.nodeId,
+            attemptNum: message.data.evalResult.attemptNum,
+            secondsSpent: message.data.submission.secondsSpent,
             aggregateResult: message.data.evalResult.aggregate
         });
 

@@ -98,6 +98,30 @@ export default class ItemDispatcher
         this.store_ = store;
     }
 
+    /**
+     * Sets the Store reference
+     * @param {StoreFacade} store;
+     */
+    timestampStart(timestamp)
+    {
+        return this.store_.dispatch(
+            this.actionFactory_.timestampStart(timestamp)
+        );
+    }
+
+    /**
+     * Sets the Store reference
+     * @param {StoreFacade} store;
+     */
+    timestampStop(timestamp)
+    {
+        // @todo - put a guard so the dispatch is skipped when the student has
+        // completed the assessment. I.e. Either no more attempts left or last
+        // evaluation was "pass" 
+        return this.store_.dispatch(
+            this.actionFactory_.timestampStop(timestamp)
+        );
+    }
 
     /**
      * Updates state of a component
@@ -109,6 +133,8 @@ export default class ItemDispatcher
     updateState(nodeId, componentId, componentState, skipSave)
     {
         let self = this;
+        // register stop
+        self.timestampStop();
         return promiseutils.createPromise( function(resolve, reject) {
             // @todo - implement
             let retval = this.store_.dispatch(
@@ -134,6 +160,9 @@ export default class ItemDispatcher
     {
         let self = this;
 
+        // register stop
+        self.timestampStop();
+
         // components states are Immutablejs
         let componentStates = this.store_.getState('components');
 
@@ -144,8 +173,11 @@ export default class ItemDispatcher
             itemState = _.assignIn(itemState, componentStates[componentId]);
         }
 
+        let startTime = this.store_.getState('timestamps').start;
+        let timestamp = new Date();
         var submissionDetails = {
-            timestamp: new Date(),
+            timestamp: timestamp,
+            secondsSpent: this.calculateTimeSpent(),
             fields: itemState
         };
 
@@ -168,7 +200,7 @@ export default class ItemDispatcher
             return evalDetails;
         })
         .then(function(evalDetails) {
-            console.log("yay!" + JSON.stringify(evalDetails));
+            //console.log("yay!" + JSON.stringify(evalDetails));
             if (self.pubsub) {
                 // publish event
                 // @todo - change string literals to constants
@@ -212,6 +244,22 @@ export default class ItemDispatcher
         );
     }
 
+    /**
+     * Returns the summation of elapsedSeconds in the state('timestamps')
+     */
+    calculateTimeSpent()
+    {
+        let timestamps = this.store_.getState('timestamps');
+
+        console.log('** timestamps: ' + JSON.stringify(timestamps));
+
+        let elapsedSecondsSigma = 0;
+        timestamps.forEach(function(element){
+            elapsedSecondsSigma += element.elapsedSeconds;
+        });
+
+        return elapsedSecondsSigma;
+    }
 }
 
 ItemDispatcher.prototype.name = 'itemDispatcher';

@@ -63,21 +63,34 @@ describe('ItemDispatcher', function () {
 			store.getState().components = Immutable.Map({
 				id1 : { mystate: 123 }
 			});
+            var time = new Date();
+            time.setSeconds(time.getSeconds() - 10);
+
+            store.getState().timestamps = Immutable.List.of({
+				start : time
+			});
 
 			return dispatcher.evaluate('id1')
 			.then(function(result){
-				console.log('result2=' + JSON.stringify(result));
+				console.log('** result2=' + JSON.stringify(result));
 				//console.log('state2=' + JSON.stringify(store.getState().evaluations.toObject(), null, 2));
 
                 let expectedEvalDetails = {
-                    "submission":{"fields":{"mystate":123}, timestamp: result.submission.timestamp},
-                    "evalResult":{"descr": "test eval result", "nodeId":"id1","submissionDetails":{"fields": {"mystate":123}, "timestamp": result.submission.timestamp}}
+                    "submission":{
+                        "fields":{"mystate":123}, timestamp: result.submission.timestamp, secondsSpent: result.submission.secondsSpent
+                    },
+                    "evalResult":{
+                        "descr": "test eval result", "nodeId":"id1",
+                        // This is a product of mockEvaluator
+                        "submissionDetails":{"fields": {"mystate":123}, "timestamp": result.submission.timestamp, secondsSpent: result.submission.secondsSpent}
+                    }
                 }
 
 				/*expect(result).to.deep.equals({
                     "type":"ITEM_APPEND_EVALDETAILS",
                     "evalDetails": expectedEvalDetails
                 });*/
+                expect(result.submission.secondsSpent >= 10, 'secondsSpent is integer').to.be.true;
                 expect(result, 'result do not match').to.deep.equals(expectedEvalDetails);
 
                 const expectedEvaluations = expectedEvalDetails;
@@ -88,5 +101,4 @@ describe('ItemDispatcher', function () {
 		});
 	});
 
-	var testManager;
 });

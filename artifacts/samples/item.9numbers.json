@@ -150,7 +150,7 @@
     },
 
     "@doc": "This section is defines the structure of this item.",
-    "item": {
+    "body": {
         "mainComponent": "my_question",
         "components": {
             "my_question": {

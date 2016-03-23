@@ -102,7 +102,7 @@
     },
 
     "@doc": "This section is defines the structure of this item.",
-    "item": {
+    "body": {
         "mainComponent": "my_question",
         "components": {
             "@doc": "Each component has two properties, type and config.",
