@@ -75,6 +75,7 @@ internals.Log = function(name, level) {
  *
  * @param {number} level - the log level
  * @param {...} args  - the information to log
+ *   <object>, [<string-message>, <args>]
  */
 internals.Log.prototype.log = function(level /* log parts */)
 {
@@ -96,13 +97,25 @@ internals.Log.prototype.log = function(level /* log parts */)
     var logParts = ['"name":"' + this.name_ + '"'];
     logParts.push('"level":' + level);
 
-    for (var argIdx = 1; argIdx < arguments.length; argIdx++) {
+    var argsStart = 1;
+    if (typeof arguments[argsStart] === 'object') {
+        // @todo - flattend first level properties
+        logParts.push('"meta":' + JSON.stringify(arguments[argsStart]));
+        argsStart = 2;
+    }
+
+    // Build message (string)
+    var message = [];
+    for (var argIdx = argsStart; argIdx < arguments.length; argIdx++) {
         if (typeof arguments[argIdx] === 'object') {
             // @todo - flattend first level properties
-            logParts.push(JSON.stringify(arguments[argIdx]));
+            message.push(JSON.stringify(arguments[argIdx]).replace(/"/g, '\\"'));
         } else if (typeof arguments[argIdx] === 'string') {
-            logParts.push('"' + arguments[argIdx] + '"');
+            message.push(arguments[argIdx]);
         }
+    }
+    if (message.length > 0) {
+        logParts.push ('"message": "' + message.join(' ') + '"');
     }
 
     var logText = '{' + logParts.join(', ') + '}';
@@ -171,7 +184,7 @@ internals.Log.prototype.warn = function(args) {
  */
 internals.Log.prototype.error = function(args) {
     var args = Array.prototype.slice.call(arguments);
-    arguments.unshift(internals.level.error);
+    args.unshift(internals.level.error);
     this.log.apply(this, args);
 };
 
@@ -181,7 +194,7 @@ internals.Log.prototype.error = function(args) {
  */
 internals.Log.prototype.fatal = function(args) {
     var args = Array.prototype.slice.call(arguments);
-    arguments.unshift(internals.level.fatal);
+    args.unshift(internals.level.fatal);
     this.log.apply(this, args);
 };
 
