@@ -68,8 +68,6 @@ export class NineNumbersQuestionComponent extends AbstractQuestionComponent
         super.markCorrectnessToInputs();
     }
 
-
-
     /**
      * Handle blur: update Item state
      * @param {string} fieldName - the fieldName

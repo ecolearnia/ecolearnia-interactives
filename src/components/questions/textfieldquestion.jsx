@@ -48,7 +48,8 @@ export class TextFieldQuestionComponent extends AbstractQuestionComponent
      */
     componentDidUpdate(prevProps, prevState)
     {
-        this.restoreInputValues();
+        super.restoreInputValues();
+        super.markCorrectnessToInputs();
     }
 
     /**

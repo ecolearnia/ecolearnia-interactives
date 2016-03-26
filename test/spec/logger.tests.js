@@ -4,7 +4,7 @@ var lodash = require('lodash');
 
 import logger from '../../libs/common/logger';
 
-describe.only('Logger', function () {;
+describe('Logger', function () {;
 
 	var log;
 	before(function(){

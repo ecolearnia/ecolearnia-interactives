@@ -148,6 +148,7 @@ export default class ItemDispatcher
     {
         let self = this;
         // register stop
+        // @todo - currently this tirggers additional re-render
         self.timestampStop();
         return promiseutils.createPromise( function(resolve, reject) {
             // @todo - implement

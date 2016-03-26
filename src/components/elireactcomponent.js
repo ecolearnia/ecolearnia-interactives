@@ -40,8 +40,6 @@ export class EliReactComponent extends React.Component
          * Unsubscription function.
          */
         this.unsubscribe;
-
-
     }
 
     subscribeToStateChange()
@@ -52,10 +50,15 @@ export class EliReactComponent extends React.Component
             componentId = this.props.context.getComponentId();
             nodeId = this.props.context.getNodeId();
         }
+        // @todo - use store's observeChanges() instead to listen to changes to
+        //         specific state properties.
         this.unsubscribe = this.props.store.subscribe(function() {
-            console.log('[' + nodeId +':'+ componentId + '] state updated! ' + JSON.stringify(this.props.store.getState('components')));
+            console.log('[' + nodeId +':'+ componentId + '@' + this.constructor.name + '] state updated! ' + JSON.stringify(this.props.store.getState('components')));
             this.forceUpdate();
         }.bind(this));
+        if (this.props.context) {
+            this.props.context.item.registerUnsubscriber(componentId, this.unsubscribe);
+        }
     }
 
     /**
@@ -78,6 +81,7 @@ export class EliReactComponent extends React.Component
             componentId = this.props.context.getComponentId();
             nodeId = this.props.context.getNodeId();
         }
+        console.log('[' + nodeId +':'+ componentId + '@' + this.constructor.name + '] componentWillUnmount.');
         if (this.unsubscribe) {
             console.log('[' + nodeId +':'+ componentId + '] unsubscribing.');
             this.unsubscribe();

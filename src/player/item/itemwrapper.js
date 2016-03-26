@@ -69,7 +69,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
 
          /**
           * Map of component id to its instance
-          * @type {Map.<string, Component>}
+          * @type {Map.<string, {ref: Component, unsubscribe: function>}
           */
          this.componentReferences_ = {};
 
@@ -440,9 +440,11 @@ import stringTemplate from '../../../libs/contrib/templateengine';
              if (!(id in this.componentSpecs_)) {
                  throw new Error('Component with id:' + id + ' not found');
              }
-             this.componentReferences_[id] = this.createComponent(id);
+             this.componentReferences_[id] = {
+                 ref: this.createComponent(id)
+             }
          }
-         return this.componentReferences_[id];
+         return this.componentReferences_[id].ref;
      }
 
      /**
@@ -461,6 +463,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
          var component = param;
          if (typeof param === 'string') {
              component = this.getComponent(param);
+             this.componentReferences_[param].el = el;
          }
 
          // Little hack so I can get the component type from Backbone's view or React.
@@ -490,5 +493,40 @@ import stringTemplate from '../../../libs/contrib/templateengine';
          return mainComponentEl;
      }
 
+     registerUnsubscriber(componentId, unsubscribe)
+     {
+        if (!(componentId in this.componentReferences_)) {
+            this.logger_.warn('Unexistent componentId for registerUnsubscriber' + componentId);
+            return;
+        }
+        this.logger_.info({ node: this.nodeId_, component: componentId},  'Registering unsubscribe');
+        this.componentReferences_[componentId].unsubsribe = unsubscribe;
+     }
+
      ////////// }} item construction //////////
+
+     unmount(el)
+     {
+         ReactDOM.unmountComponentAtNode(el);
+     }
+
+     /**
+      * Disposes this object
+      */
+     dispose()
+     {
+         for(let componentId in this.componentReferences_)
+         {
+             // @todo - figure out out to explicitly unsubscribe
+             this.logger_.info('Cleaning up ' + componentId);
+             //this.componentReferences_[componentId].unsubscribe();
+             this.componentReferences_[componentId].ref = null;
+
+             if (this.componentReferences_[componentId].el) {
+                 //this.unmount(this.componentReferences_[componentId].el);
+             } else {
+                 this.logger_.info('Skipping unmountComponentAtNode ' + componentId);
+             }
+         }
+     }
  }

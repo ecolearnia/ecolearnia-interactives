@@ -1,6 +1,4 @@
 PENDING list
-- [Logger] Logger parameters
-- [FIX] When changing content (content.dispose), unbsubscribe prior
 - [IMPROVE] Given a wrong answer, when user changes the value, remove the marker
 - [TimerComponent]
 - [TextField] validator based on data type

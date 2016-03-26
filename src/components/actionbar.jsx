@@ -43,6 +43,11 @@ export class ActionBarComponent extends EliReactComponent
         //this.bind_('handleAction_');
     }
 
+    componentWillUnmount () {
+        // @todo - should anything happen here?
+        super.componentWillUnmount();
+    }
+
     handleAction_(type, e)
     {
         // e.preventDefault();

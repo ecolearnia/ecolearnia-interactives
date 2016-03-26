@@ -43,11 +43,8 @@ function componentReducer(state = Immutable.Map(), action)
 {
     switch (action.type) {
         case 'ITEM_UPDATE_STATE':
-            //console.log('state (pre)=' + JSON.stringify(state));
             var currState = state.get('fields') || {};
-            //console.log('currState (pre)=' + JSON.stringify(currState));
             _.assign(currState, action.state);
-            //console.log('currState (post)=' + JSON.stringify(currState));
 
             let newState = state.set('fields', currState);
             //console.log('state (post)=' + JSON.stringify(newState));
@@ -123,7 +120,7 @@ function timestampReducer(state = Immutable.List(), action)
                 start: timestamp
             };
             state = state.push(entry);
-            console.log('REGISTER_START ts:' + JSON.stringify(state.toJS()));
+            //console.log('REGISTER_START ts:' + JSON.stringify(state.toJS()));
             return state;
 
         case 'REGISTER_STOP':
@@ -144,7 +141,7 @@ function timestampReducer(state = Immutable.List(), action)
         case 'RESTORE_TIMESTAMPS':
             let timestamps = action.timestamps;
             state = Immutable.List(timestamps);
-            console.log('RESTORE_TIMESTAMPS ts:' + JSON.stringify(state.toJS()));
+            //console.log('RESTORE_TIMESTAMPS ts:' + JSON.stringify(state.toJS()));
             return state;
 
         default:

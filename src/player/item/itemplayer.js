@@ -150,6 +150,9 @@ export default class ItemPlayer
                 store: self.store_,
                 dispatcher: self.dispatcher_
             }
+            if (self.item_) {
+                self.item_.dispose();
+            }
             self.item_ = new ItemWrapper(itemConfig);
             self.item_.setContent(nodeDetails.id, nodeDetails.content);
 

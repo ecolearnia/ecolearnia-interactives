@@ -54,6 +54,8 @@ export class TemplateContainerComponent extends EliReactComponent
          */
         this.elios_ = {};
 
+        this.childComponentEls_ = [];
+
     }
 
     /***** React methods *****/
@@ -67,6 +69,11 @@ export class TemplateContainerComponent extends EliReactComponent
 
     componentWillUnmount () {
         // @todo - should anything happen here?
+        super.componentWillUnmount();
+
+        for (let i=0; i < this.childComponentEls_.length; i++) {
+            this.props.context.item.unmount(this.childComponentEls_[i]);
+        }
     }
 
     render()
@@ -91,6 +98,7 @@ export class TemplateContainerComponent extends EliReactComponent
             if (object.type && object.type.prototype) {
                 // is a component, render it in the el
                 // @todo - Consider checking for object.type.prototype.componentType
+                this.childComponentEls_.push(objectEl);
                 this.props.context.item.renderComponent(object, objectEl);
             } else {
                 // @todo - Is is OK to just set the textContext with stringified object?
