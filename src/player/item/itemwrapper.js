@@ -173,6 +173,126 @@ import stringTemplate from '../../../libs/contrib/templateengine';
          this.store_.reset();
      }
 
+     ////////// item state access {{ //////////
+
+     /**
+      * Add field answers to staging.
+      *
+      * The answeredKey is applicable for inputs which has association key,
+      * E.g. select.
+      *
+      * @param {string} fieldName    - the config property field name in dot notation
+      * @param {Object} defaultVal   - the key that student answered.
+      */
+     getFieldState(fieldName)
+     {
+         let componentStates = this.store_.getState('components');
+         let componentFields = componentStates ? componentStates['fields']: undefined;
+         let fieldState = componentFields ? componentFields[fieldName] : undefined;
+         return fieldState;
+     }
+
+     /**
+      * return the field's key
+      * @param {string} fieldName    - the config property field name in dot notation
+      */
+     getFieldKey(fieldName)
+     {
+         let fieldState = this.getFieldState(fieldName);
+         return  fieldState ? fieldState.key : undefined;
+     }
+
+     /**
+      * return the field's value
+      * @param {string} fieldName    - the config property field name in dot notation
+      */
+     getFieldValue(fieldName)
+     {
+         let fieldState = this.getFieldState(fieldName);
+         return  fieldState ? fieldState.value : undefined;
+     }
+
+     /**
+      * Set's an DOM input's value
+      *
+      * @param {string} fieldName
+      * @param {string} value
+      */
+     setFieldValue(fieldName, strValue)
+     {
+         let value = this.castFieldValue(fieldName, strValue);
+
+         // Skip state update if the value has not changed
+         let prevVal = this.getFieldValue(fieldName);
+         if (prevVal === value) {
+             return;
+         }
+
+         let componentState = {};
+         if (value !== undefined) {
+             componentState[fieldName] = {
+                 value: value
+             };
+         } else {
+             componentState[fieldName] = {};
+         }
+
+         this.dispatcher_.updateState(componentState);
+     }
+
+
+     /**
+      * Casts the field value to appropriated type (either number of string)
+      * @param {string} fieldName
+      * @return {string, number, boolean}
+      */
+     castFieldValue(fieldName, val)
+     {
+         let content = this.getContent();
+         let fieldDecl = content.responseDeclarations[fieldName];
+         let fieldType = (fieldDecl && fieldDecl.baseType) ? fieldDecl.baseType.toLowerCase() : 'string';
+         if (typeof val === fieldType) {
+             return val;
+         }
+         else if (fieldType === 'number') {
+             if (isNaN(val) || val.trim().length == 0) {
+                 return undefined;
+             }
+             return Number(val);
+         }
+         else if (fieldType === 'boolean') {
+             return (val.toLowerCase() === 'true');
+         }
+         return val;
+     }
+
+     /**
+      * Returns the last evaluation details in the state
+      * @return {player.EvalDetails}
+      */
+     getLastEval() {
+         let evalsState = this.item.getStore().getState('evaluations');
+         return (evalsState && evalsState.length > 0) ? evalsState[evalsState.length-1] : null;
+     }
+
+     /**
+      * Returns true iff there was no prior submission or (there are more
+      * attempts left AND prior attempt was incorrect)
+      * @return boolean
+      */
+     isSubmissionAllowed()
+     {
+        let lastEval = this.getLastEval();
+        let allowSubmission = lastEval ? (!lastEval.evalResult.aggregate.pass
+            && lastEval.evalResult.attemptsLeft > 0): true;
+        return allowSubmission;
+     }
+
+     ////////// }} item state access //////////
+
+
+     ////////// item construction {{ //////////
+
      /**
       * renderTemplateString
       *
@@ -369,4 +489,6 @@ import stringTemplate from '../../../libs/contrib/templateengine';
 
          return mainComponentEl;
      }
+
+     ////////// }} item construction //////////
  }

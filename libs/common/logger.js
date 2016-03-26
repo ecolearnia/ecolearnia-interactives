@@ -101,7 +101,7 @@ internals.Log.prototype.log = function(level /* log parts */)
             // @todo - flattend first level properties
             logParts.push(JSON.stringify(arguments[argIdx]));
         } else if (typeof arguments[argIdx] === 'string') {
-            logParts.push(arguments[argIdx]);
+            logParts.push('"' + arguments[argIdx] + '"');
         }
     }
 

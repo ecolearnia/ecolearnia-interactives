@@ -12,21 +12,27 @@ describe('ItemPlayer', function () {
         let itemPlayer;
 
 		beforeEach(function(){
-            var settings = {};
+            var settings = {
+                pubsub :'mockPubSub',
+                nodeProvider: 'mockNodeProvider',
+                componentNamespace: 'interactives'
+            };
 
             // The package name as specified when building the library
-            settings.componentNamespace = 'interactives';
 	        itemPlayer = new ItemPlayer(settings);
-            itemPlayer.setContent('testNodeId', testContent);
 		});
 
 		afterEach(function(){
 
 		});
 
-		it('should renderTemplateString', function () {
-            let result = itemPlayer.renderTemplateString("<%=num1%> <%=data2%>");
-            expect(result).to.equal("-1 test-data");
+		it('should initialize', function () {
+            expect(itemPlayer.logger_).to.not.null;
+            expect(itemPlayer.pubsub).to.equal('mockPubSub');
+            expect(itemPlayer.componentModule_).to.not.null;
+            expect(itemPlayer.nodeProvider_).to.equal('mockNodeProvider');
+            expect(itemPlayer.store_).to.not.null;
+            expect(itemPlayer.dispatcher_).to.not.null;
 		});
 	});
 

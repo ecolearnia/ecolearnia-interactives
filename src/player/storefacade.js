@@ -44,7 +44,7 @@ export default class StoreFacade
         // Wrapper around ther reducers to handle
         // _RESET_ action
         // @see: http://stackoverflow.com/questions/35622588/how-to-reset-the-state-of-a-redux-store/35641992#35641992
-        const resettableReducer = (state, action) => {
+        const resetableReducer = (state, action) => {
             if (action.type === '_RESET_') {
                 state = undefined;
             }
@@ -52,7 +52,7 @@ export default class StoreFacade
         };
 
         this.store_ = createStore(
-            resettableReducer,
+            resetableReducer,
             compose(
                 applyMiddleware(thunk),
                 // window.devToolsExtension is the Redux Chrome DevTools
@@ -94,6 +94,26 @@ export default class StoreFacade
         return this.dispatch({
             type: '_RESET_'
         });
+    }
+
+    /**
+     * @see: https://github.com/reactjs/redux/issues/303#issuecomment-125184409
+     */
+    observeChanges(onChange, select = s => s)
+    {
+        let currentState;
+
+        function handleChange() {
+            let nextState = select(this.store_.getState());
+            if (nextState !== currentState) {
+                currentState = nextState;
+                onChange(currentState);
+            }
+        }
+
+        let unsubscribe = this.store_.subscribe(handleChange);
+        handleChange();
+        return unsubscribe;
     }
 
     /**

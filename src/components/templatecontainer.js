@@ -59,8 +59,9 @@ export class TemplateContainerComponent extends EliReactComponent
     /***** React methods *****/
     componentDidMount()
     {
-        super.componentDidMount();
-        //this.subscribeToStateChange();
+        // @todo - For some reason the subscription to change causes warning
+        //         about doing forceUpdate without being rendered.
+        //super.componentDidMount();
         this.renderChildren_();
     }
 

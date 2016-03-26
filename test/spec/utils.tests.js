@@ -173,7 +173,7 @@ describe('utils', function () {;
 			let result = utils.shuffleArray(shuffle);
 
 			//console.log("original:" + JSON.stringify(fieldPositions));
-			console.log("shuffled:" + JSON.stringify(result));
+			//console.log("shuffled:" + JSON.stringify(result));
 
 			expect(result, 'Shuffle resulted same').to.not.deep.equal(fieldPositions);
 		});

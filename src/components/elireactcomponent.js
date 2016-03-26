@@ -41,16 +41,21 @@ export class EliReactComponent extends React.Component
          */
         this.unsubscribe;
 
-        //this.componentId_ = props.componentId;
+
     }
 
     subscribeToStateChange()
     {
-        var self = this;
+        let componentId = '<anon-component>';
+        let nodeId = '<anon-node>';
+        if (this.props.context) {
+            componentId = this.props.context.getComponentId();
+            nodeId = this.props.context.getNodeId();
+        }
         this.unsubscribe = this.props.store.subscribe(function() {
-            console.log('state updated! ' + JSON.stringify(self.props.store.getState('components')));
-            self.forceUpdate();
-        });
+            console.log('[' + nodeId +':'+ componentId + '] state updated! ' + JSON.stringify(this.props.store.getState('components')));
+            this.forceUpdate();
+        }.bind(this));
     }
 
     /**
@@ -67,10 +72,33 @@ export class EliReactComponent extends React.Component
      */
     componentWillUnmount()
     {
+        let componentId = '<anon-component>';
+        let nodeId = '<anon-node>';
+        if (this.props.context) {
+            componentId = this.props.context.getComponentId();
+            nodeId = this.props.context.getNodeId();
+        }
         if (this.unsubscribe) {
+            console.log('[' + nodeId +':'+ componentId + '] unsubscribing.');
             this.unsubscribe();
         }
     }
+
+    /**
+     * Returns the ID of this component instance
+     */
+    componentId()
+    {
+        return (this.componentId_) ? this.componentId_ : '<anon-component>';
+    };
+
+    /**
+     * Returns the ID of this component instance
+     */
+    nodeId()
+    {
+        return (this.nodeId_) ? this.nodeId_ : '<anon-node>';
+    };
 
     /**
      * Returns the DOM class name mostly for styling
@@ -105,13 +133,7 @@ EliReactComponent.prototype.bind_ = function(...methods)
 };
 
 
-/**
- * Returns the ID of this component instance
- */
-EliReactComponent.prototype.componentId = function()
-{
-    return this.componentId_;
-};
+
 
 /**
  * Returns the kind of this component (react)

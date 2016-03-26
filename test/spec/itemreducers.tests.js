@@ -93,5 +93,28 @@ describe('ItemReducers', function () {
             }, 600);
 
 		});
+
+        it('should restore timestamps to empty', function () {
+            let action = {
+                type: 'RESTORE_TIMESTAMPS',
+                timestamp: undefined
+            };
+            let state = Immutable.List(['dummy']);
+            let newState = itemReducers.timestamps(state, action).toJS();
+            let expected = [];
+            expect(newState).to.deep.equal(expected);
+		});
+
+        it('should restore timestamps to new values', function () {
+            let action = {
+                type: 'RESTORE_TIMESTAMPS',
+                timestamps: [{start: new Date()}]
+            };
+            let state = Immutable.List(['dummy']);
+            let newState = itemReducers.timestamps(state, action).toJS();
+            let expected = action.timestamps;
+            expect(newState).to.deep.equal(expected);
+		});
+
 	});
 });

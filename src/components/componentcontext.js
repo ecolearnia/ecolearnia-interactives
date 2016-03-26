@@ -34,6 +34,7 @@ export default class ComponentContext
 {
     constructor(componentId, item)
     {
+        let self = this;
         /**
          * The item player
          */
@@ -47,7 +48,8 @@ export default class ComponentContext
 
         // For closure
         var dispatcher = this.item.dispatcher_;
-        var nodeId =  this.item.getNodeId();
+        let nodeId = this.item.getNodeId();
+        this.nodeId_ = nodeId;
         this.dispatcher = {
 
             /**
@@ -70,6 +72,23 @@ export default class ComponentContext
         }
     }
 
+    /**
+     * Return the componentId
+     */
+    getComponentId()
+    {
+        return this.componentId_;
+    }
+
+    /**
+     * Return the componentId
+     */
+    getNodeId()
+    {
+        return this.nodeId_;
+    }
+
+    ///////// @todo - all the implementation were copied over to itemwrapper
 
     /**
      * Add field answers to staging.

@@ -1,6 +1,7 @@
 PENDING list
-- [FIX] Given a wrong answer, when user changes the value, remove the marker
-- [Timer] WIP: save/retrieve (persistently) timers data
+- [FIX] When changing content (content.dispose), unbsubscribe prior
+- [IMPROVE] Given a wrong answer, when user changes the value, remove the marker
+- [TimerComponent]
 - [TextField] validator based on data type
 - [inputpad] input keypad for tablets
 - React-ify Assignment Breadcrumb component

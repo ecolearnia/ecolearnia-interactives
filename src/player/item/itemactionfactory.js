@@ -83,6 +83,19 @@ export default class ItemActionFactory
     }
 
     /**
+     * Returns action for restoring (replacing) timestamps
+     *
+     * @param {Date!} timestamp  - Optiona: the timestamp
+     */
+    restoreTimestamps(timestamps)
+    {
+        return {
+            type: 'RESTORE_TIMESTAMPS',
+            timestamps: timestamps
+        };
+    }
+
+    /**
      * Returns action for append message
      *
      * @param {string} message  - the message to be displayed

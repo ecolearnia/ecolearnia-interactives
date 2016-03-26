@@ -61,16 +61,16 @@
       * Saves an node item's state
       * @param {string} id  - the node Id
       * @param {player.ItemState | player.EvalDetails} state
-      * @param {string} type - Either 'submission' or 'interaction'
+      * @param {Array} timestamps - Array of timestamps
       * @return {Promise.resolve({string})} On success resolves state id (uuid)
       */
-     saveState(id, state)
+     saveState(id, state, timestamps)
      {
          let stateEntry = {
              "@type": 'interaction',
              data: cloneObject(state)
          }
-         return this.sysRecords_.saveState(id, stateEntry);
+         return this.sysRecords_.saveState(id, stateEntry, timestamps);
      }
 
 

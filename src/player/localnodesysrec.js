@@ -89,9 +89,10 @@ export default class LocalNodeSysRec
      * Saves an node item's state
      * @param {string} id  - the nodeId
      * @param {player.ItemState}  itemState - the item state
+     * @param {Array!} timestamps - (optional) Array of timestamps
      * @return Promise.resolve({string}) On success resolves state id (uuid)
      */
-    saveState(id, itemState)
+    saveState(id, itemState, timestamps)
     {
         return promiseutils.createPromise( function(resolve, reject) {
             if (!this.nodes_[id]) {
@@ -101,12 +102,18 @@ export default class LocalNodeSysRec
             this.nodes_[id].itemState = cloneObject(itemState);
 
             // Add evalResult records
+            // This case comes from evaluator (e.g. localevaluator.js)
             if (itemState['@type'] === 'evaluation') {
                 if (!('evalDetails' in this.nodes_[id])) {
                     this.nodes_[id].evalDetails = [];
                 }
                 this.nodes_[id].evalDetails.push(cloneObject(itemState));
             }
+
+            if (timestamps) {
+                this.nodes_[id].timestamps = cloneObject(timestamps);
+            }
+
             return resolve();
         }.bind(this));
     }

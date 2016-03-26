@@ -67,7 +67,7 @@ describe('ItemDispatcher', function () {
             time.setSeconds(time.getSeconds() - 10);
 
             store.getState().timestamps = Immutable.List.of({
-				start : time
+				start: time, elapsedSeconds: 10, 
 			});
 
 			return dispatcher.evaluate('id1')

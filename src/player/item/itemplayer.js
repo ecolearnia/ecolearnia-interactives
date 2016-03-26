@@ -166,6 +166,14 @@ export default class ItemPlayer
     {
         return this.fetchNode_(nodeDescriptor)
         .then(function(nodeDetails){
+            this.logger_.info('nodeDetails.timestamps:', nodeDetails.timestamps)
+            if (nodeDetails.timestamps) {
+                // set timestamps
+                this.dispatcher_.restoreTimestamps(
+                    nodeDetails.timestamps
+                );
+            }
+            // Render will add a start timestamp
             this.render(el);
 
             if (nodeDetails.itemState) {
@@ -191,6 +199,8 @@ export default class ItemPlayer
                     // updates the store
                     this.dispatcher_.appendEvalDetails(nodeDetails.itemState.data);
                 }
+
+
             }
 
             return nodeDescriptor;

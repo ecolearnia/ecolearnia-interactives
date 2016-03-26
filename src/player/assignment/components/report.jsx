@@ -38,31 +38,37 @@ export default class ReportComponent extends EliReactComponent
 
     render()
     {
+        let self = this;
         // Get the state of report, an Immutable.Map
         let report = this.props.store.getState()['report'].toObject();
         // Convert itemEvalBriefs (an Immutable.OrderedMap) into array
         let itemEvalBriefs = report.itemEvalBriefs.toArray();
 
+        let secondsSpentSigma = 0;
         let rows = itemEvalBriefs.map(function(evalBrief, index) {
             let correctnessMark = '-';
             let correctnessClass = '';
             let title = '';
             let secondsSpent = '';
+
             title = (evalBrief.nodeId) ? evalBrief.nodeId : "";
-            secondsSpent = (evalBrief.secondsSpent) ? evalBrief.secondsSpent : "";
+            secondsSpent = (evalBrief.secondsSpent) ? evalBrief.secondsSpent : "0";
             if (evalBrief && evalBrief.aggregateResult) {
                  correctnessMark = (evalBrief.aggregateResult.pass) ? "&#10003;" : "&#10007;";
                  correctnessClass = (evalBrief.aggregateResult.pass) ? "&#10003;" : "&#10007;";
             }
 
+            if (evalBrief.secondsSpent) {
+                secondsSpentSigma += evalBrief.secondsSpent
+            }
             return (<tr key={index}>
                     <td>{index}</td>
                     <td><span className={correctnessClass}
                             title={title}
                             dangerouslySetInnerHTML={ {__html: correctnessMark} }>
                         </span></td>
-                    <td>{evalBrief.secondsSpent} secs</td>
-                    <td>{evalBrief.attemptNum}</td>
+                    <td className={self.classNameFor('cell.numeric')}>{secondsSpent} secs</td>
+                    <td className={self.classNameFor('cell.numeric')}>{evalBrief.attemptNum}</td>
                 </tr>);
         });
         return (
@@ -73,13 +79,21 @@ export default class ReportComponent extends EliReactComponent
                         <tr>
                             <th>#</th>
                             <th></th>
-                            <th>Seconds spent</th>
-                            <th>Num Attempts</th>
+                            <th className={self.classNameFor('cell.numeric')}>{secondsSpentSigma} spent</th>
+                            <th></th>
                         </tr>
                     </thead>
                     <tbody>
                     {rows}
                     </tbody>
+                    <tfoot>
+                    <tr>
+                        <td>Total</td>
+                        <td></td>
+                        <td>{secondsSpentSigma} secs</td>
+                        <td></td>
+                    </tr>
+                    </tfoot>
                 </table>
             </div>
         );

@@ -290,6 +290,7 @@ describe('LocalEvaluator', function () {
 					"data": {
 						"submission": submissionDetails,
 						"evalResult": {
+							"attemptNum": 1,
 							"attemptsLeft": 0,
 							"aggregate": {"score": 1, "pass": true},
 							fields: {

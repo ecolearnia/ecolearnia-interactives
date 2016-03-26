@@ -117,18 +117,32 @@ export default class ItemDispatcher
     {
         // @todo - put a guard so the dispatch is skipped when the student has
         // completed the assessment. I.e. Either no more attempts left or last
-        // evaluation was "pass" 
+        // evaluation was "pass"
         return this.store_.dispatch(
             this.actionFactory_.timestampStop(timestamp)
         );
     }
 
     /**
-     * Updates state of a component
+     * Restores (replaces) timestamps
+     *
+     * @param {Array<>} timestamps -
+     */
+    restoreTimestamps(timestamps)
+    {
+        return this.store_.dispatch(
+            this.actionFactory_.restoreTimestamps(timestamps)
+        );
+    }
+
+    /**
+     * Updates state of a component.
+     * It also saves in the system or records
      *
      * @param {string} nodeId -
      * @param {string} componentId -
      * @param {player.FieldCollection} componentState  - the component state
+     * @param {boolean} skipSave  - If true, skip saving in the system or records
      */
     updateState(nodeId, componentId, componentState, skipSave)
     {
@@ -144,7 +158,8 @@ export default class ItemDispatcher
             let itemState = this.store_.getState('components');
             if (!skipSave && this.nodeProvider_) {
                 // Save the item state in the system of records
-                this.nodeProvider_.saveState(nodeId, itemState);
+                let timestamps = this.store_.getState('timestamps');
+                this.nodeProvider_.saveState(nodeId, itemState, timestamps);
             }
             resolve(retval);
         }.bind(this));
@@ -161,7 +176,11 @@ export default class ItemDispatcher
         let self = this;
 
         // register stop
-        self.timestampStop();
+        // Commented out: last state update will be taken as the time stop
+        // Time until submit button is presses will not be taken into account
+        // If timestampStop needs to be enabled here, then  evaluate() should
+        // save the timestamp in the system of records
+        // self.timestampStop();
 
         // components states are Immutablejs
         let componentStates = this.store_.getState('components');
@@ -218,7 +237,8 @@ export default class ItemDispatcher
                 nodeId: nodeId,
                 error: error
             });
-            alert(error);
+            //alert(error);
+            throw error;
         });
     }
 
@@ -257,6 +277,7 @@ export default class ItemDispatcher
         timestamps.forEach(function(element){
             elapsedSecondsSigma += element.elapsedSeconds;
         });
+        console.log('** elapsedSecondsSigma: ' + elapsedSecondsSigma);
 
         return elapsedSecondsSigma;
     }

@@ -122,8 +122,9 @@ function timestampReducer(state = Immutable.List(), action)
             let entry = {
                 start: timestamp
             };
-
-            return state.push(entry);
+            state = state.push(entry);
+            console.log('REGISTER_START ts:' + JSON.stringify(state.toJS()));
+            return state;
 
         case 'REGISTER_STOP':
             lastEntry = state.last();
@@ -139,6 +140,12 @@ function timestampReducer(state = Immutable.List(), action)
                 };
                 return state.push(entry);
             }
+
+        case 'RESTORE_TIMESTAMPS':
+            let timestamps = action.timestamps;
+            state = Immutable.List(timestamps);
+            console.log('RESTORE_TIMESTAMPS ts:' + JSON.stringify(state.toJS()));
+            return state;
 
         default:
             return state;
