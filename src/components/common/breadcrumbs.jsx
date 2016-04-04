@@ -16,10 +16,10 @@
  */
 
 var React = require('react');
-var EliReactComponent = require('../../core/elireactcomponent').EliReactComponent;
+import EliReactComponent from '../../core/elireactcomponent';
 
 /**
- * @class Breadcrumb
+ * @class Breadcrumbs
  *
  * @module interactives/components
  *
@@ -28,7 +28,7 @@ var EliReactComponent = require('../../core/elireactcomponent').EliReactComponen
  *
  * @todo - Implement!
  */
-export default class Breadcrumb extends EliReactComponent
+export default class Breadcrumbs extends EliReactComponent
 {
     constructor(props)
     {

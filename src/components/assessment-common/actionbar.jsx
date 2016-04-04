@@ -15,9 +15,9 @@
  * @date 5/13/15
  */
 
-//var React = require('react');
-var EliReactComponent = require('../../core/elireactcomponent').EliReactComponent;
+var React = require('react');
 var Events = require('../../core/events').Events;
+import EliReactComponent from '../../core/elireactcomponent';
 
 
 /**

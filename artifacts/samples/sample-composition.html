@@ -89,17 +89,9 @@
 
     var matches = document.querySelectorAll('[id^="placeholder-"]');
 
+    container.render(placeholders);
+    container.dispatcher('common').;
 
-    assignmentPlayer.render(placeholders);
-
-    function navigateNext()
-    {
-        assignmentPlayer.handleNavigateEvent_({param: "next"});
-    }
-
-    $("#nodeSelector").change(function(event) {
-        assignmentPlayer.loadItemByNodeId(event.target.value);
-    });
 
 </script>
 

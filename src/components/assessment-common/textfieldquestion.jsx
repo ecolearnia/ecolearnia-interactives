@@ -15,7 +15,7 @@
  * @date 5/13/15
  */
 var React = require('react');
-var AbstractQuestionComponent = require('./abstractquestion.jsx').AbstractQuestionComponent;
+import AbstractQuestionComponent from './abstractquestion.jsx';
 
 /**
  * @class TextFieldQuestionComponent

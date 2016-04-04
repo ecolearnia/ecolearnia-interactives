@@ -39,20 +39,21 @@ module.exports.LocalRandomVarSequencingStrategy = player.LocalRandomVarSequencin
 module.exports.VariablesRandomizer = player.VariablesRandomizer;
 module.exports.LocalEvaluator = player.LocalEvaluator;
 
-module.exports.module = {};
+//Modules
+module.exports.modules = {};
 
 var moduleCommon = require('./components/module-common');
-module.exports.Breadcrumbs = Breadcrumbs;
-module.exports.TemplateContainer = TemplateContainer;
-module.exports.module.common = moduleCommon.manifest;
+module.exports.Breadcrumbs = moduleCommon.Breadcrumbs;
+module.exports.TemplateContainer = moduleCommon.TemplateContainer;
+module.exports.modules.common = moduleCommon.manifest;
 
 var moduleAssessmentCommon = require('./components/module-assessment-common');
 module.exports.ActionBar = moduleAssessmentCommon.ActionBar;
 module.exports.Feedback = moduleAssessmentCommon.Feedback;
 module.exports.SelectQuestion = moduleAssessmentCommon.SelectQuestion;
 module.exports.TextFieldQuestion = moduleAssessmentCommon.TextFieldQuestion;
-module.exports.module.assessmentCommon = moduleAssessmentCommon.manifest;
+module.exports.modules.assessmentCommon = moduleAssessmentCommon.manifest;
 
 var moduleMathElem = require('./components/module-math-elem');
 module.exports.NineNumbersQuestion = moduleMathElem.NineNumbersQuestion;
-module.exports.module.mathElem = moduleMathElem.manifest;
+module.exports.modules.mathElem = moduleMathElem.manifest;

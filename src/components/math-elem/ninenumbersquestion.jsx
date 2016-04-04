@@ -18,7 +18,7 @@
 var utils = require('../../../libs/common/utils');
 
 var React = require('react');
-var AbstractQuestionComponent = require('../assessment-common/abstractquestion.jsx').AbstractQuestionComponent;
+import AbstractQuestionComponent from '../assessment-common/abstractquestion.jsx';
 
 /**
  * @class TextFieldQuestionComponent

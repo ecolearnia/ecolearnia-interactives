@@ -15,7 +15,7 @@
  * @date 10/21/15
  */
 var React = require('react');
-var EliReactComponent = require('../../core/elireactcomponent').EliReactComponent;
+import EliReactComponent from '../../core/elireactcomponent';
 
 const ID_PREFIX = 'elio_';
 
@@ -158,4 +158,4 @@ export default class TemplateContainerComponent extends EliReactComponent
 
         return template.join('');
     }
-};
+}

@@ -18,8 +18,6 @@
 var React = require('react');
 import utils from '../../libs/common/utils';
 
-var internals = {};
-
 /**
  * @class EliReactComponent
  * @abstract
@@ -30,7 +28,7 @@ var internals = {};
  *  Abstract class which all React-based EL-I components should extend.
  *
  */
-export class EliReactComponent extends React.Component
+export default class EliReactComponent extends React.Component
 {
     constructor(props)
     {

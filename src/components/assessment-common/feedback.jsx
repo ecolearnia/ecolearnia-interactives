@@ -16,8 +16,8 @@
  */
 
 var React = require('react');
-var EliReactComponent = require('../../core/elireactcomponent').EliReactComponent;
 var Events = require('../../core/events').Events;
+import EliReactComponent from '../../core/elireactcomponent';
 
 /**
  * @class FeedbackComponent

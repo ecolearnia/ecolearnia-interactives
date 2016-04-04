@@ -14,11 +14,11 @@
  * @author Young Suk Ahn Park
  * @date 6/02/15
  */
-var EliReactComponent = require('../../core/elireactcomponent').EliReactComponent;
 var Events = require('../../core/events').Events;
+import EliReactComponent from '../../core/elireactcomponent';
 
 /**
- * @class QuestionComponent
+ * @class AbstractQuestionComponent
  *
  * @module interactives/components/questions
  *
