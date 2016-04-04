@@ -16,7 +16,7 @@
  */
 
 import React from 'react';
-import {EliReactComponent} from '../../../components/elireactcomponent';
+import {EliReactComponent} from '../../../core/elireactcomponent';
 
 /**
  * @class ScoreBoard

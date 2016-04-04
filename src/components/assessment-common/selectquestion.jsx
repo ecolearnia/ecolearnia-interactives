@@ -15,7 +15,7 @@
  * @date 5/13/15
  */
 var React = require('react');
-var AbstractQuestionComponent = require('./question.jsx').AbstractQuestionComponent;
+var AbstractQuestionComponent = require('./abstractquestion.jsx').AbstractQuestionComponent;
 
 /**
  * @class SelectQuestionComponent
@@ -32,7 +32,7 @@ var AbstractQuestionComponent = require('./question.jsx').AbstractQuestionCompon
  * @todo - Submission handling: keep the state in models
  * @todo - Factor out the presenter: multiselect, multichoice, etc.
  */
-export class SelectQuestionComponent extends AbstractQuestionComponent
+export default class SelectQuestionComponent extends AbstractQuestionComponent
 {
     constructor(props)
     {

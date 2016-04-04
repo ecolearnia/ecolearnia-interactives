@@ -2,7 +2,7 @@ var expect = require('chai').expect;
 var sinon = require('sinon');
 var lodash = require('lodash');
 
-import StoreFacade from '../../src/player/storefacade';
+import StoreFacade from '../../src/core/storefacade';
 import ItemDispatcher from '../../src/player/item/itemdispatcher';
 import ItemActionFactory from '../../src/player/item/itemactionfactory';
 import itemReducers from '../../src/player/item/itemreducers';
@@ -67,7 +67,7 @@ describe('ItemDispatcher', function () {
             time.setSeconds(time.getSeconds() - 10);
 
             store.getState().timestamps = Immutable.List.of({
-				start: time, elapsedSeconds: 10, 
+				start: time, elapsedSeconds: 10,
 			});
 
 			return dispatcher.evaluate('id1')

@@ -22,24 +22,6 @@ var PubSub = require('../libs/common/pubsub').default;
 module.exports.PubSub = PubSub;
 
 /**
- * Interactive Components:
- * The interactive components must be exported, otherwise the CoreContext will
- * not be able to instantiate.
- */
-var ActionBar = require('./components/actionbar.jsx').ActionBarComponent;
-var Feedback = require('./components/feedback.jsx').FeedbackComponent;
-var SelectQuestion = require('./components/questions/selectquestion.jsx').SelectQuestionComponent;
-var TextFieldQuestion = require('./components/questions/textfieldquestion.jsx').TextFieldQuestionComponent;
-var NineNumbersQuestion = require('./components/questions/ninenumbersquestion.jsx').NineNumbersQuestionComponent;
-var TemplateContainer = require('./components/templatecontainer').TemplateContainerComponent;
-module.exports.ActionBar = ActionBar;
-module.exports.Feedback = Feedback;
-module.exports.SelectQuestion = SelectQuestion;
-module.exports.TextFieldQuestion = TextFieldQuestion;
-module.exports.TemplateContainer = TemplateContainer;
-module.exports.NineNumbersQuestion = NineNumbersQuestion;
-
-/**
  * Players and their auxiliaries:
  * These can be bundled in different file
  */

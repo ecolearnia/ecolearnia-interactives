@@ -15,12 +15,10 @@
  * @date 5/13/15
  */
 
-var React = require('react');
-var EliReactComponent = require('./elireactcomponent').EliReactComponent;
-var Events = require('../core/events').Events;
+//var React = require('react');
+var EliReactComponent = require('../../core/elireactcomponent').EliReactComponent;
+var Events = require('../../core/events').Events;
 
-
-var internals = {};
 
 /**
  * @class ActionBarComponent
@@ -35,7 +33,7 @@ var internals = {};
  *
  * @todo - Implement!
  */
-export class ActionBarComponent extends EliReactComponent
+export default class ActionBarComponent extends EliReactComponent
 {
     constructor(props)
     {

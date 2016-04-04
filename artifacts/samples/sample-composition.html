@@ -10,7 +10,7 @@
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
     <script src='../../build/el-externdeps.bundle.min.js'></script>
-    <script src="../../build/eli-player.bundle.js" type="text/javascript" ></script>
+    <script src="../../build/el-interactives.bundle.js" type="text/javascript" ></script>
 
     <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
 
@@ -76,46 +76,18 @@
 
 
 <script type="text/javascript">
-    var interactives = require('interactives');
+    Collective enlightment
+    ecolime elme
+    var elicore = require('ei-core');
 
-    // Provides local node system of records
-    var localSysRec = new interactives.LocalNodeSysRec();
-
-    var sequencingConfig = {
-        sysRecords: localSysRec,
-        resourceUrl: 'item.addition-2digits.json'
-        //resourceUrl: 'item.9numbers.json'
-    };
-
-    var nodeProvider = new interactives.LocalNodeProvider({sysRecords: localSysRec});
-    var evaluator = new interactives.LocalEvaluator({sysRecords: localSysRec});
-    var assignemntPlayerConfig = {
-        nodeProvider: nodeProvider,
-        evaluator: evaluator,
-        sequencingStrategy: new interactives.LocalRandomVarSequencingStrategy(sequencingConfig)
-    };
-
-    var assignmentPlayer = new interactives.AssignmentPlayer(assignemntPlayerConfig);
-    assignmentPlayer.subscribe('next-node-retrieved', function(nodeDescriptor){
-        // New node has been retrieved (in this case generated), add a new entry in the drop down
-        if (nodeDescriptor) {
-            $("#nodeSelector").append(
-                $("<option></option>")
-                .attr("value", nodeDescriptor.id)
-                .text(nodeDescriptor.id)
-                .prop('selected', true)
-             );
-        } else {
-            //alert('End of assignment');
-            $("#nextButton").html('Report');
-            assignmentPlayer.loadReport();
-        }
-    });
+    var container = new elicore.Container(assignemntPlayerConfig);
 
     var placeholders = {
         content: document.getElementById('placeholder-content'),
         scoreboard: document.getElementById('placeholder-scoreboard')
-    }
+    };
+
+    var matches = document.querySelectorAll('[id^="placeholder-"]');
 
 
     assignmentPlayer.render(placeholders);

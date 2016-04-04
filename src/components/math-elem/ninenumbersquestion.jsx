@@ -18,7 +18,7 @@
 var utils = require('../../../libs/common/utils');
 
 var React = require('react');
-var AbstractQuestionComponent = require('./question.jsx').AbstractQuestionComponent;
+var AbstractQuestionComponent = require('../assessment-common/abstractquestion.jsx').AbstractQuestionComponent;
 
 /**
  * @class TextFieldQuestionComponent
@@ -35,7 +35,7 @@ var AbstractQuestionComponent = require('./question.jsx').AbstractQuestionCompon
  * sum|sum|total_sum
  *
  */
-export class NineNumbersQuestionComponent extends AbstractQuestionComponent
+export default class NineNumbersQuestionComponent extends AbstractQuestionComponent
 {
     constructor(props)
     {

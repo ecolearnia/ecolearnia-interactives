@@ -14,8 +14,7 @@
  * @author Young Suk Ahn Park
  * @date 6/02/15
  */
-var React = require('react');
-var EliReactComponent = require('../elireactcomponent').EliReactComponent;
+var EliReactComponent = require('../../core/elireactcomponent').EliReactComponent;
 var Events = require('../../core/events').Events;
 
 /**
@@ -32,7 +31,7 @@ var Events = require('../../core/events').Events;
  * @todo - Submission handling: keep the state in models
  * @todo - Factor out the presenter: multiselect, multichoice, etc.
  */
-export class AbstractQuestionComponent extends EliReactComponent
+export default class AbstractQuestionComponent extends EliReactComponent
 {
     constructor(props)
     {

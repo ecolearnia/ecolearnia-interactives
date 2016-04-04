@@ -22,7 +22,7 @@ var _ = require('lodash');
 import utils  from '../../../libs/common/utils';
 import logger from '../../../libs/common/logger';
 
-import StoreFacade       from '../storefacade';
+import StoreFacade       from '../../core/storefacade';
 import ItemActionFactory from './itemactionfactory';
 import ItemDispatcher    from './itemdispatcher';
 import itemReducers      from './itemreducers';

@@ -25,12 +25,12 @@ import utils  from '../../../libs/common/utils';
 import logger from '../../../libs/common/logger';
 import PubSub from '../../../libs/common/pubsub';
 
-import StoreFacade       from '../storefacade';
-import assignmentReducers  from './assignmentreducers';
-import ItemPlayer from '../item/itemplayer';
+import StoreFacade        from '../../core/storefacade';
+import assignmentReducers from './assignmentreducers';
+import ItemPlayer         from '../item/itemplayer';
 
 import ScoreBoardComponent from './components/scoreboard.jsx';
-import ReportComponent from './components/report.jsx';
+import ReportComponent    from './components/report.jsx';
 
 /**
  * @class AssignmentPlayer

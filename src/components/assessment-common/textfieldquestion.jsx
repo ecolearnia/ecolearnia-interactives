@@ -15,7 +15,7 @@
  * @date 5/13/15
  */
 var React = require('react');
-var AbstractQuestionComponent = require('./question.jsx').AbstractQuestionComponent;
+var AbstractQuestionComponent = require('./abstractquestion.jsx').AbstractQuestionComponent;
 
 /**
  * @class TextFieldQuestionComponent
@@ -30,7 +30,7 @@ var AbstractQuestionComponent = require('./question.jsx').AbstractQuestionCompon
  *  Object.<key: string, value: Object>
  *
  */
-export class TextFieldQuestionComponent extends AbstractQuestionComponent
+export default class TextFieldQuestionComponent extends AbstractQuestionComponent
 {
     constructor(props)
     {

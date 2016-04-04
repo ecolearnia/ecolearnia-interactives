@@ -15,7 +15,7 @@
  * @date 10/21/15
  */
 var React = require('react');
-var EliReactComponent = require('./elireactcomponent').EliReactComponent;
+var EliReactComponent = require('../../core/elireactcomponent').EliReactComponent;
 
 const ID_PREFIX = 'elio_';
 
@@ -33,7 +33,7 @@ const ID_PREFIX = 'elio_';
  *
  * @todo - Do validation/sanitization of the HTML tags in the template string.
  */
-export class TemplateContainerComponent extends EliReactComponent
+export default class TemplateContainerComponent extends EliReactComponent
 {
 
     constructor(props)

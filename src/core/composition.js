@@ -21,39 +21,30 @@ import ReactDOM from 'react-dom';
 import utils  from '../../../libs/common/utils';
 import logger from '../../../libs/common/logger';
 
-import ComponentContext  from '../../core/componentcontext';
+import ComponentContext  from './componentcontext';
 import stringTemplate from '../../../libs/contrib/templateengine';
 
 
  /**
-  * @class ItemPlayer
+  * @class Composition
   *
-  * @module interactives/player/item
+  * @module interactives/core
   *
   * @classdesc
   *  Item Wrapper wraps around the item, which is a content instanted.
   *
   */
- export default class ItemWrapper
+ export default class Composition
  {
      /**
       * @param {object} config
       */
-     constructor(config)
+     constructor(container)
      {
         /**
          * The logger
          */
-        this.logger_ = logger.getLogger('ItemWrapper');
-
-        /**
-         * ID used to retrieve the LearnerAssignmentItem, the content instance
-         * with associated user/course.
-         * The server uses the retrieved LearnerAssignmentItem to evaluate the
-         * submission and append the result (activity).
-         * @type {string}
-         */
-        this.nodeId_;
+        this.logger_ = logger.getLogger('Composition');
 
         /**
          * The content which this context is operating on
@@ -67,27 +58,17 @@ import stringTemplate from '../../../libs/contrib/templateengine';
          */
         this.componentSpecs_ = {};
 
-         /**
-          * Map of component id to its instance
-          * @type {Map.<string, {ref: Component, unsubscribe: function>}
-          */
-         this.componentReferences_ = {};
+        /**
+         * Map of component id to its instance
+         * @type {Map.<string, {ref: Component, unsubscribe: function>}
+         */
+        this.componentReferences_ = {};
 
-         /**
-          * Scope in which all the component class definitions are.
-          * @type {Object}
-          */
-         this.componentModule_ = config.componentModule;
-
-         /**
-          * @type {StoreFacade}
-          */
-         this.store_ = config.store;
-
-         /**
-          * @type {ItemDispatcher}
-          */
-         this.dispatcher_ = config.dispatcher;
+        /**
+         * Scope in which all the component class definitions are.
+         * @type {Object}
+         */
+        this.container_ = container;
      }
 
      /*** Static methods ***/
@@ -120,18 +101,17 @@ import stringTemplate from '../../../libs/contrib/templateengine';
       */
      getStore()
      {
-         return this.store_;
+         return this.container_.getStore();
      }
 
      /**
-      * Gets the node Id (aka assocationId).
-      *
-      * @param {string} content
+      * Returns the dispatcher associated with the component
       */
-     getNodeId()
+     getDispatcher(componentName)
      {
-         return this.nodeId_;
+         return this.container_.getDispatcher(componentName);
      }
+
 
      /**
       * Gets the content.
@@ -170,7 +150,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
 
          // New content was set, reset the store and trigger render
          // @todo - Check if the content has been rendered, to rigger reset.
-         this.store_.reset();
+         this.getStore().reset();
      }
 
      ////////// item state access {{ //////////
@@ -186,14 +166,15 @@ import stringTemplate from '../../../libs/contrib/templateengine';
       */
      getFieldState(fieldName)
      {
-         let componentStates = this.store_.getState('components');
+         let componentStates = this.getStore().getState('components');
          let componentFields = componentStates ? componentStates['fields']: undefined;
          let fieldState = componentFields ? componentFields[fieldName] : undefined;
          return fieldState;
      }
 
      /**
-      * return the field's key
+      * Return the field's value denoting the selected key
+      * This applicable only for those that has key, e.g. select
       * @param {string} fieldName    - the config property field name in dot notation
       */
      getFieldKey(fieldName)
@@ -203,7 +184,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
      }
 
      /**
-      * return the field's value
+      * Return the field's value
       * @param {string} fieldName    - the config property field name in dot notation
       */
      getFieldValue(fieldName)
@@ -237,7 +218,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
              componentState[fieldName] = {};
          }
 
-         this.dispatcher_.updateState(componentState);
+         this.getDispatcher().updateState(componentState);
      }
 
 
@@ -264,28 +245,6 @@ import stringTemplate from '../../../libs/contrib/templateengine';
              return (val.toLowerCase() === 'true');
          }
          return val;
-     }
-
-     /**
-      * Returns the last evaluation details in the state
-      * @return {player.EvalDetails}
-      */
-     getLastEval() {
-         let evalsState = this.item.getStore().getState('evaluations');
-         return (evalsState && evalsState.length > 0) ? evalsState[evalsState.length-1] : null;
-     }
-
-     /**
-      * Returns true iff there was no prior submission or (there are more
-      * attempts left AND prior attempt was incorrect)
-      * @return boolean
-      */
-     isSubmissionAllowed()
-     {
-        let lastEval = this.getLastEval();
-        let allowSubmission = lastEval ? (!lastEval.evalResult.aggregate.pass
-            && lastEval.evalResult.attemptsLeft > 0): true;
-        return allowSubmission;
      }
 
      ////////// }} item state access //////////
@@ -318,7 +277,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
      }
 
      /**
-      * getValue
+      * getObject
       *
       * If the parameter is a primitive value return it, if the paremeter
       * is an object with reference (_ref) property, which is
@@ -329,7 +288,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
       *      or may be an object which contains "_ref" denoting a local fully
       *      qualified name to where the actual value is.
       */
-     getValue(param)
+     getObject(param)
      {
          var retval = param;
          // If it contains a local reference, get the object it points to.
@@ -374,7 +333,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
              }
              else
              {
-                 throw new Exception('Wrong object path, must be either .model or .component')
+                 throw new Error('Wrong object path, must be either .model or .component');
              }
          }
          // Not starts with dot means it is already a component name.
@@ -386,43 +345,6 @@ import stringTemplate from '../../../libs/contrib/templateengine';
          return retval;
      }
 
-
-     /**
-      * Builds the components as specified in the spec
-      *
-      * @param {object} spec  - The specification of the components
-      * @param {string} componentId  - id of the component
-      *
-      * @return {player.Component}  The component instance (a React element)
-      */
-     createComponent(componentId)
-     {
-         let spec = this.componentSpecs_[componentId];
-         if (!(spec.type in this.componentModule_)) {
-             throw new Error('Component ' + spec.type + ' not found in module');
-         }
-         var componentClass = this.componentModule_[spec.type];
-
-         var componentKind = componentClass.prototype.componentKind();
-
-         var constructorArg = {
-             context: new ComponentContext(componentId, this),
-             store: this.store_
-         };
-
-         var retval = null;
-         if (componentKind === 'react') {
-             retval = React.createElement(componentClass, constructorArg);
-         } else {
-             retval = new componentClass(constructorArg);
-         }
-         this.logger_.info(
-             { componentKind: componentKind, type: spec.type, id: componentId},
-             'Component created'
-         );
-
-         return retval;
-     }
 
      /**
       * getComponent
@@ -484,15 +406,32 @@ import stringTemplate from '../../../libs/contrib/templateengine';
       */
      renderMainComponent(el)
      {
-         if (!this.content_ || !this.content_.body.mainComponent) {
+         if (!this.getContent() || !this.getContent().body.mainComponent) {
              throw new Error('Main component was not specified');
          }
          let mainComponentEl = this.renderComponent(
-             this.content_.body.mainComponent, el);
+             this.getContent().body.mainComponent, el);
 
          return mainComponentEl;
      }
 
+     /**
+      * Renders to the component
+      */
+     render(placeholders)
+     {
+         for(placeholderId in placeholders) {
+             try {
+                 this.renderComponent(placeholderId, placeholders[placeholderId]);
+             } catch (error) {
+                 this.logger_.warn({ placeholderId: placeholderId, error: error},  'Placeholder could not be rendered.');
+             }
+         }
+     }
+
+     /**
+      * Not sure if this is actually needed
+      */
      registerUnsubscriber(componentId, unsubscribe)
      {
         if (!(componentId in this.componentReferences_)) {
@@ -505,6 +444,10 @@ import stringTemplate from '../../../libs/contrib/templateengine';
 
      ////////// }} item construction //////////
 
+     /**
+      * Unmounts a component from a DOM element
+      * @param {DOMElement} el - the DOM element which the component was loaded
+      */
      unmount(el)
      {
          ReactDOM.unmountComponentAtNode(el);
@@ -517,13 +460,12 @@ import stringTemplate from '../../../libs/contrib/templateengine';
      {
          for(let componentId in this.componentReferences_)
          {
-             // @todo - figure out out to explicitly unsubscribe
-             this.logger_.info('Cleaning up ' + componentId);
-             //this.componentReferences_[componentId].unsubscribe();
+             this.logger_.info({componentId}, 'Cleaning up');
              this.componentReferences_[componentId].ref = null;
 
              if (this.componentReferences_[componentId].el) {
-                 //this.unmount(this.componentReferences_[componentId].el);
+                 // Unmounting should unsubsribe as well
+                 this.unmount(this.componentReferences_[componentId].el);
              } else {
                  this.logger_.info('Skipping unmountComponentAtNode ' + componentId);
              }
