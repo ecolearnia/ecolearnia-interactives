@@ -4250,3 +4250,20 @@ span.correct {
 
 span.incorrect {
   color: #ec5840; }
+
+.top-bar.secondary {
+  background-color: #ADDFFF; }
+
+.card-container {
+  background-color: #fff;
+  color: #000;
+  border: 1px solid #000;
+  radius: 4px;
+  shadow: 0 4px 10px black; }
+
+.card-divider {
+  background: #ccc;
+  padding: 1rem; }
+
+.card-section {
+  padding: 1rem; }

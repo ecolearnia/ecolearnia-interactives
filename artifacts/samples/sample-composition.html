@@ -71,7 +71,9 @@
 
     var container = new interactives.Container();
 
+    // Registers modules
     container.registerModule(interactives.modules.common);
+    // All modules registered, now initialize the store
     container.initStore();
     container.setContent({
         "@doc": "This section is defines the structure of this item.",
@@ -87,6 +89,7 @@
     });
 
     var placeholders = interactives.Container.scanPlaceholders("placeholder-");
+    // render it!
     container.render(placeholders);
 
     var breadcrumbs = [{title: 'home'}, {title: 'test'}];
