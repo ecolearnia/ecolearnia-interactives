@@ -17,6 +17,8 @@
  * @date 3/30/2016
  */
 
+import StoreFacade from './storefacade';
+import Composition from './composition';
 
 /**
  * @class Container
@@ -81,9 +83,10 @@ export default class Container
          */
         this.store_ ;
 
+        this.composition_ = new Composition(this);
 
         // Start listening to events
-        this.subscribeToEvents_();
+        //this.subscribeToEvents_();
     }
 
     getStore()
@@ -111,7 +114,7 @@ export default class Container
 
     render(placeholders)
     {
-        this.composition.render(placeholders);
+        this.composition_.render(placeholders);
     }
 
     /**
@@ -123,6 +126,11 @@ export default class Container
     subscribe(topic, listener)
     {
         this.pubsub_.subscribe(topic, listener);
+    }
+
+    setContent(content)
+    {
+        this.composition_.setContent(content);
     }
 
     /**
@@ -138,7 +146,7 @@ export default class Container
     {
         // @todo - Check for dependencies
 
-        this.reducers_[module.name] = module.reducers;
+        _.assign(this.reducers_, module.reducers);
 
         let dispatcher = new module.dispatcherClass(this.store_, this.dispatcherContext);
         this.dispatchers_[module.name] = dispatcher;
@@ -147,12 +155,12 @@ export default class Container
             // For the mean time we are assuming there is no name clashes
             let componentClass = module.componentTypes[i];
 
-            if (componentClass.constructor.name in internals.componentTypes_)
+            if (componentClass.name in this.componentTypes_)
             {
-                throw Error("The component " + componentClass.constructor.name + " already exists");
+                throw Error("The component " + componentClass.name + " already exists");
             }
 
-            this.componentTypes_[componentClass.constructor.name] = {
+            this.componentTypes_[componentClass.name] = {
                 module: module.name,
                 componentClass: componentClass,
                 dispatcher: dispatcher
@@ -174,40 +182,19 @@ export default class Container
         }
     }
 
+
     /**
-     * Builds the components as specified in the spec
-     *
-     * @param {object} spec  - The specification of the components
-     * @param {string} componentId  - id of the component
-     *
-     * @return {player.Component}  The component instance (a React element)
+     * Scans and obtains the DOM elements which matches the ID with idPrefix
+     * @return {Map.<name, DOMElement>}
      */
-    createComponent(componentId)
+    static scanPlaceholders(idPrefix)
     {
-        let spec = this.componentSpecs_[componentId];
-        if (!(spec.type in this.componentModule_)) {
-            throw new Error('Component ' + spec.type + ' not found in module');
+        let placeholders = {};
+        var matches = document.querySelectorAll('[id^="' + idPrefix + '"]');
+        for (let i=0; i < matches.length; i++) {
+            let nameWoPrefix = matches[i].id.substring(idPrefix.length);
+            placeholders[nameWoPrefix] = matches[i];
         }
-        var componentClass = this.componentModule_[spec.type];
-
-        var componentKind = componentClass.prototype.componentKind();
-
-        var constructorArg = {
-            context: new ComponentContext(componentId, this),
-            store: this.store_
-        };
-
-        var retval = null;
-        if (componentKind === 'react') {
-            retval = React.createElement(componentClass, constructorArg);
-        } else {
-            retval = new componentClass(constructorArg);
-        }
-        this.logger_.info(
-            { componentKind: componentKind, type: spec.type, id: componentId},
-            'Component created'
-        );
-
-        return retval;
+        return placeholders;
     }
 }

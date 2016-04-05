@@ -18,7 +18,7 @@
  */
 
 var _ = require('lodash');
-import utils from '../../libs/common/utils';
+import utils from '../../../libs/common/utils';
 
 /**
  * @class ComponentContext
@@ -32,19 +32,44 @@ import utils from '../../libs/common/utils';
  */
 export default class ComponentContext
 {
-    constructor(componentId, composition)
+    constructor(componentId, item)
     {
+        let self = this;
         /**
-         * The composition
+         * The item player
          */
-        this.composition = composition;
+        this.item = item;
 
         // The ID of the component
         this.componentId_ = componentId;
 
         // The component specification (the JSON part of the component)
-        this.componentSpec_ = this.composition.getContent().body.components[this.componentId_];
+        this.componentSpec_ = this.item.getContent().body.components[this.componentId_];
 
+        // For closure
+        var dispatcher = this.item.dispatcher_;
+        let nodeId = this.item.getNodeId();
+        this.nodeId_ = nodeId;
+        this.dispatcher = {
+
+            /**
+             * updates state of a component
+             */
+            updateState: function (state)
+            {
+                return dispatcher.updateState(nodeId, componentId, state);
+            },
+
+            evaluate: function ()
+            {
+                return dispatcher.evaluate(nodeId);
+            },
+
+            appendMessage: function (message)
+            {
+                return dispatcher.appendMessage(message);
+            }
+        }
     }
 
     /**
@@ -53,6 +78,14 @@ export default class ComponentContext
     getComponentId()
     {
         return this.componentId_;
+    }
+
+    /**
+     * Return the componentId
+     */
+    getNodeId()
+    {
+        return this.nodeId_;
     }
 
     ///////// @todo - all the implementation were copied over to itemwrapper
@@ -70,7 +103,7 @@ export default class ComponentContext
     {
         var configVal = utils.dotAccess(this.componentSpec_.config, fieldName);
         configVal = configVal || defaultVal;
-        return this.composition.getValue(configVal);
+        return this.item.getValue(configVal);
     }
 
     /**
@@ -84,7 +117,7 @@ export default class ComponentContext
      */
     getFieldState(fieldName)
     {
-        let componentStates = this.composition.getStore().getState('components');
+        let componentStates = this.item.getStore().getState('components');
         let componentFields = componentStates ? componentStates['fields']: undefined;
         let fieldState = componentFields ? componentFields[fieldName] : undefined;
         return fieldState;
@@ -144,7 +177,7 @@ export default class ComponentContext
      */
     castFieldValue(fieldName, val)
     {
-        let content = this.composition.getContent();
+        let content = this.item.getContent();
         let fieldDecl = content.responseDeclarations[fieldName];
         let fieldType = (fieldDecl && fieldDecl.baseType) ? fieldDecl.baseType.toLowerCase() : 'string';
         if (typeof val === fieldType) {
@@ -162,4 +195,12 @@ export default class ComponentContext
         return val;
     }
 
+    /**
+     * Returns the last evaluation details in the state
+     * @return {player.EvalDetails}
+     */
+    getLastEval() {
+        let evalsState = this.item.getStore().getState('evaluations');
+        return (evalsState && evalsState.length > 0) ? evalsState[evalsState.length-1] : null;
+    }
 }

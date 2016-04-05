@@ -40,18 +40,18 @@ export default class Breadcrumbs extends EliReactComponent
         // @type {[
         //   {title, url, disabled}
         // ]}
-        let path = this.props.store.getState('breadcrumbs');
+        let path = this.props.store.getState()['breadcrumbs'].toArray();
 
-        let items = itemEvalBriefs.map(function(item, index) {
+        let items = path.map(function(item, index) {
             let href = item.url;
             return (
-                <li key={index}><a href={href}>item.titles</a></li>
+                <li key={index}><a href={href}>{item.title}</a></li>
             );
         });
 
         return (
             <nav aria-label="You are here:" role="navigation">
-                <ul class="breadcrumbs">
+                <ul className="breadcrumbs">
                 {items}
                 </ul>
             </nav>

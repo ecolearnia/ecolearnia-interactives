@@ -21,7 +21,7 @@ import ReactDOM from 'react-dom';
 import utils  from '../../../libs/common/utils';
 import logger from '../../../libs/common/logger';
 
-import ComponentContext  from '../../core/componentcontext';
+import ComponentContext  from './itemcomponentcontext';
 import stringTemplate from '../../../libs/contrib/templateengine';
 
 

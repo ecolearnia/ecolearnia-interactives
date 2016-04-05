@@ -17,6 +17,8 @@
  * @date 2/10/2016
  */
 
+ import Immutable from 'immutable';
+
  /**
   * componentReducer
   *
@@ -39,8 +41,7 @@
  {
      switch (action.type) {
          case 'COMMON_SET_BREADCRUMBS':
-             let newState = state.set(action.items);
-             //console.log('state (post)=' + JSON.stringify(newState));
+             let newState = Immutable.List(action.items);
              return newState;
          default:
              return state;

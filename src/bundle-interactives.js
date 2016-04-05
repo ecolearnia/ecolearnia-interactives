@@ -20,6 +20,7 @@
 
 var core = require('./bundle-core');
 module.exports.PubSub = core.PubSub;
+module.exports.Container = core.Container;
 
 var player = require('./bundle-player');
 /**

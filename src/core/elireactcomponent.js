@@ -46,7 +46,9 @@ export default class EliReactComponent extends React.Component
         let nodeId = '<anon-node>';
         if (this.props.context) {
             componentId = this.props.context.getComponentId();
-            nodeId = this.props.context.getNodeId();
+            if (this.props.context.getNodeId) {
+                nodeId = this.props.context.getNodeId();
+            }
         }
         // @todo - use store's observeChanges() instead to listen to changes to
         //         specific state properties.
@@ -54,9 +56,6 @@ export default class EliReactComponent extends React.Component
             console.log('[' + nodeId +':'+ componentId + '@' + this.constructor.name + '] state updated! ' + JSON.stringify(this.props.store.getState('components')));
             this.forceUpdate();
         }.bind(this));
-        if (this.props.context) {
-            this.props.context.item.registerUnsubscriber(componentId, this.unsubscribe);
-        }
     }
 
     /**
@@ -77,7 +76,9 @@ export default class EliReactComponent extends React.Component
         let nodeId = '<anon-node>';
         if (this.props.context) {
             componentId = this.props.context.getComponentId();
-            nodeId = this.props.context.getNodeId();
+            if (this.props.context.getNodeId) {
+                nodeId = this.props.context.getNodeId();
+            }
         }
         console.log('[' + nodeId +':'+ componentId + '@' + this.constructor.name + '] componentWillUnmount.');
         if (this.unsubscribe) {
@@ -151,7 +152,7 @@ EliReactComponent.propTypes = {
     context: React.PropTypes.object.isRequired,
     /**
      * @type {StoreFacade}
-     * Player's item state store
+     * Container's state store
      */
     store: React.PropTypes.object.isRequired
 };

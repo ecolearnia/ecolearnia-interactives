@@ -18,11 +18,11 @@
  */
 import React from 'react';
 import ReactDOM from 'react-dom';
-import utils  from '../../../libs/common/utils';
-import logger from '../../../libs/common/logger';
+import utils  from '../../libs/common/utils';
+import logger from '../../libs/common/logger';
 
 import ComponentContext  from './componentcontext';
-import stringTemplate from '../../../libs/contrib/templateengine';
+import stringTemplate from '../../libs/contrib/templateengine';
 
 
  /**
@@ -132,14 +132,8 @@ import stringTemplate from '../../../libs/contrib/templateengine';
       * @param {string} nodeId - the node ID
       * @param {object} content - the actual content
       */
-     setContent(nodeId, content)
+     setContent(content)
      {
-         if (this.nodeId_ === nodeId) {
-             // Trying to set same content. othing to do.
-             return;
-         }
-
-         this.nodeId_ = nodeId;
          this.content_ = content;
          this.componentReferences_ = {};
 
@@ -150,7 +144,9 @@ import stringTemplate from '../../../libs/contrib/templateengine';
 
          // New content was set, reset the store and trigger render
          // @todo - Check if the content has been rendered, to rigger reset.
-         this.getStore().reset();
+         if (this.getStore()) {
+             this.getStore().reset();
+         }
      }
 
      ////////// item state access {{ //////////
@@ -357,7 +353,8 @@ import stringTemplate from '../../../libs/contrib/templateengine';
       *
       * @return {player.Component} The component instance (a React element)
       */
-     getComponent(id) {
+     getComponent(id)
+     {
          if (!(id in this.componentReferences_)) {
              if (!(id in this.componentSpecs_)) {
                  throw new Error('Component with id:' + id + ' not found');
@@ -367,6 +364,43 @@ import stringTemplate from '../../../libs/contrib/templateengine';
              }
          }
          return this.componentReferences_[id].ref;
+     }
+
+     /**
+      * Builds the components as specified in the spec
+      *
+      * @param {object} spec  - The specification of the components
+      * @param {string} componentId  - id of the component
+      *
+      * @return {player.Component}  The component instance (a React element)
+      */
+     createComponent(componentId)
+     {
+         let spec = this.componentSpecs_[componentId];
+         if (!(spec.type in this.container_.componentTypes_)) {
+             throw new Error('Component ' + spec.type + ' not found in module');
+         }
+         var componentClass = this.container_.componentTypes_[spec.type].componentClass;
+
+         var componentKind = componentClass.prototype.componentKind();
+
+         var constructorArg = {
+             context: new ComponentContext(componentId, this),
+             store: this.container_.store_
+         };
+
+         var retval = null;
+         if (componentKind === 'react') {
+             retval = React.createElement(componentClass, constructorArg);
+         } else {
+             retval = new componentClass(constructorArg);
+         }
+         this.logger_.info(
+             { componentKind: componentKind, type: spec.type, id: componentId},
+             'Component created'
+         );
+
+         return retval;
      }
 
      /**
@@ -420,12 +454,14 @@ import stringTemplate from '../../../libs/contrib/templateengine';
       */
      render(placeholders)
      {
-         for(placeholderId in placeholders) {
+         for(let placeholderId in placeholders) {
+             this.renderComponent(placeholderId, placeholders[placeholderId]);
+             /*
              try {
                  this.renderComponent(placeholderId, placeholders[placeholderId]);
              } catch (error) {
-                 this.logger_.warn({ placeholderId: placeholderId, error: error},  'Placeholder could not be rendered.');
-             }
+                 this.logger_.warn({ placeholderId: placeholderId, error: error.message},  'Placeholder could not be rendered.');
+             }*/
          }
      }
 

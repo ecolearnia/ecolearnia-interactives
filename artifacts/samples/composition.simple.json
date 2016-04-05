@@ -1,0 +1,12 @@
+{
+    "@doc": "This section is defines the structure of this item.",
+    "body": {
+        "mainComponent": "my_question",
+        "components": {
+            "breadcrumbs": {
+                "type": "breadcrumbs",
+                "config": {}
+            }
+        }
+    }
+}
