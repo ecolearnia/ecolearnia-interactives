@@ -17,7 +17,6 @@
  * @date 3/09/2016
  */
 
-import _ from 'lodash';
 import Immutable from 'immutable';
 
 
@@ -61,14 +60,14 @@ function statsReducer(state = Immutable.Map({}), action)
 */
 
 const initialState = Immutable.Map({
-  stats: {
-      score: 0,
-      corrects: 0,
-      incorrects: 0,
-      semicorrects: 0
-  },
-  itemEvalBriefs: Immutable.OrderedMap({})
-})
+    stats: {
+        score: 0,
+        corrects: 0,
+        incorrects: 0,
+        semicorrects: 0
+    },
+    itemEvalBriefs: Immutable.OrderedMap({})
+});
 
 
 function reportReducer(state = initialState, action)
@@ -130,6 +129,6 @@ function buildStats_(itemEvalBriefs)
 const reducers = {
     report: reportReducer
     //itemEvalBriefs: itemEvalBriefReducer
-}
+};
 
 export default reducers;

@@ -17,8 +17,6 @@
  * @date 2/10/2016
  */
 
-var _ = require('lodash');
-import {dehydrate} from '../../../libs/common/utils';
 var logger = require('../../../libs/common/logger');
 
 var namespace = {};

@@ -17,8 +17,6 @@
  * @date 5/13/15
  */
 
-var _ = require('lodash');
-
 import utils  from '../../../libs/common/utils';
 import logger from '../../../libs/common/logger';
 
@@ -113,7 +111,7 @@ export default class ItemPlayer
             let associationId = config.associationId || (Math.floor((Math.random() * 1000) + 1)).toString();
             this.setContent(associationId, config.content); // the content body
         }*/
-    };
+    }
 
 
     /**
@@ -149,7 +147,7 @@ export default class ItemPlayer
                 componentModule: self.componentModule_,
                 store: self.store_,
                 dispatcher: self.dispatcher_
-            }
+            };
             if (self.item_) {
                 self.item_.dispose();
             }
@@ -169,7 +167,7 @@ export default class ItemPlayer
     {
         return this.fetchNode_(nodeDescriptor)
         .then(function(nodeDetails){
-            this.logger_.info('nodeDetails.timestamps:', nodeDetails.timestamps)
+            this.logger_.info('nodeDetails.timestamps:', nodeDetails.timestamps);
             if (nodeDetails.timestamps) {
                 // set timestamps
                 this.dispatcher_.restoreTimestamps(
@@ -191,7 +189,7 @@ export default class ItemPlayer
                 // Calling an asyc method, Promise warning can be ignored
                 this.dispatcher_.updateState(
                     nodeDetails.id,
-                    "fields",
+                    'fields',
                     stateData,
                     true // Skip saving to the system or records
                 );

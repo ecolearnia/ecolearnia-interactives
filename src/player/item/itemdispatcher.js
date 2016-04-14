@@ -80,12 +80,12 @@ export default class ItemDispatcher
         if(config && config.actionFactory) {
             this.actionFactory_ = config.actionFactory;
         } else {
-            throw new Exception('actionFactory not provided')
+            throw new Error('actionFactory not provided');
         }
         if(config && config.evaluator) {
             this.evaluator_ = config.evaluator;
         } else {
-            throw new Exception('evaluator not provided')
+            throw new Error('evaluator not provided');
         }
     }
 

@@ -107,7 +107,7 @@ export default class LocalRandomVarSequencingStrategy
         if (index < this.nodeDescriptors_.length()) {
             return Promise.resolve(this.nodeDescriptors_[index]);
         } else {
-            return Promise.reject("Index out of bounds");
+            return Promise.reject('Index out of bounds');
         }
     }
 

@@ -93,7 +93,7 @@ export default class EliReactComponent extends React.Component
     componentId()
     {
         return (this.componentId_) ? this.componentId_ : '<anon-component>';
-    };
+    }
 
     /**
      * Returns the ID of this component instance
@@ -101,7 +101,7 @@ export default class EliReactComponent extends React.Component
     nodeId()
     {
         return (this.nodeId_) ? this.nodeId_ : '<anon-node>';
-    };
+    }
 
     /**
      * Returns the DOM class name mostly for styling
@@ -114,12 +114,12 @@ export default class EliReactComponent extends React.Component
                 numeric: 'text-right'
             },
             button: {
-                _default: "button",
-                primary: "button primary",
-                secondary: "button secondary",
-                success: "button success",
-                warning: "button warning",
-                alert: "button alert"
+                _default: 'button',
+                primary: 'button primary',
+                secondary: 'button secondary',
+                success: 'button success',
+                warning: 'button warning',
+                alert: 'button alert'
             }
         };
         return utils.dotAccess(foundationTheme, objName);

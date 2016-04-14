@@ -49,7 +49,7 @@
       */
      fetch(id)
      {
-         throw new Error("NO IMPLEMENT");
+         throw new Error('NO IMPLEMENT');
          // @todo - AJAX call
      }
 
@@ -59,7 +59,7 @@
       */
      saveState(id, state)
      {
-         throw new Error("NO IMPLEMENT");
+         throw new Error('NO IMPLEMENT');
          // @todo - AJAX call
      }
 

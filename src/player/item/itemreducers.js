@@ -156,6 +156,6 @@ const reducers = {
     components: componentReducer,
     evaluations: evaluationReducer,
     timestamps: timestampReducer
-}
+};
 
 export default reducers;

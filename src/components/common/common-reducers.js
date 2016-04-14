@@ -53,6 +53,6 @@
  */
 const reducers = {
     breadcrumbs: breadcrumbsReducer
-}
+};
 
 export default reducers;

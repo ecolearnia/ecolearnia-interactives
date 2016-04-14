@@ -81,7 +81,7 @@ export default class TemplateContainerComponent extends EliReactComponent
         this.renderChildren_();
         return (
             <div ref="templateBody" dangerouslySetInnerHTML={this.createMarkup()} />
-            )
+        );
     }
 
     /***** React methods *****/

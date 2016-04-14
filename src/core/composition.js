@@ -309,15 +309,16 @@ import stringTemplate from '../../libs/contrib/templateengine';
          if (utils.startsWith(fqn, '.'))
          {
              // if it starts with '.model' returns the model's object,
+             var refPath;
              if (utils.startsWith(fqn, '.model'))
              {
-                 var refPath = fqn.substring('.model.'.length );
+                 refPath = fqn.substring('.model.'.length );
                  retval = utils.dotAccess(this.content_.modelDefinition, refPath);
              }
              // if it starts with '.variable' returns the varable's object
              else if (utils.startsWith(fqn, '.variable.'))
              {
-                 var refPath = fqn.substring('.variable.'.length );
+                 refPath = fqn.substring('.variable.'.length );
                  retval = utils.dotAccess(this.content_.variableDeclarations, refPath);
              }
 
@@ -361,7 +362,7 @@ import stringTemplate from '../../libs/contrib/templateengine';
              }
              this.componentReferences_[id] = {
                  ref: this.createComponent(id)
-             }
+             };
          }
          return this.componentReferences_[id].ref;
      }

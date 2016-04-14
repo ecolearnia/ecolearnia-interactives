@@ -157,7 +157,7 @@ export default class Container
 
             if (componentClass.name in this.componentTypes_)
             {
-                throw Error("The component " + componentClass.name + " already exists");
+                throw Error('The component ' + componentClass.name + ' already exists');
             }
 
             this.componentTypes_[componentClass.name] = {

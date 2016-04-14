@@ -17,7 +17,6 @@
  * @date 2/20/16
  */
 
-var _ = require('lodash');
 import utils from '../../libs/common/utils';
 
 /**

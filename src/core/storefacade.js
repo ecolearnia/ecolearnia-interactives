@@ -18,7 +18,7 @@
  */
 
 var _ = require('lodash');
-import { createStore, applyMiddleware, combineReducers, compose} from 'redux'
+import { createStore, applyMiddleware, combineReducers, compose} from 'redux';
 import thunk from 'redux-thunk';
 
 /**
@@ -48,7 +48,7 @@ export default class StoreFacade
             if (action.type === '_RESET_') {
                 state = undefined;
             }
-            return rootReducer(state, action)
+            return rootReducer(state, action);
         };
 
         this.store_ = createStore(

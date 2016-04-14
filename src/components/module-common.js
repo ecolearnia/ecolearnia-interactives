@@ -32,7 +32,7 @@ var reducers = require('./common/common-reducers').default;
 var Dispatcher = require('./common/common-dispatcher').default;
 
 var moduleManifest = {
-    name: "common",
+    name: 'common',
     componentTypes: [Breadcrumbs, TemplateContainer],
     reducers: reducers,
     dispatcherClass: Dispatcher

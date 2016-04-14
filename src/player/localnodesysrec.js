@@ -74,7 +74,7 @@ export default class LocalNodeSysRec
     get(id)
     {
         var promise = promiseutils.createPromise( function(resolve, reject) {
-            if (!id in this.nodes_)
+            if (!(id in this.nodes_))
             {
                 return reject('Unexistent ID');
             }

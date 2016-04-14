@@ -123,7 +123,7 @@ export default class LocalEvaluator
             //console.log('** attemptsLeft=' + attempts.attemptsLeft);
             if (attempts.attemptsLeft == 0)
             {
-                throw new Error("NoMoreAttempts");
+                throw new Error('NoMoreAttempts');
             }
 
             return this.evaluateFields_(nodeDetails.content.responseProcessing, combinedSubmissionData)
@@ -131,7 +131,7 @@ export default class LocalEvaluator
                 let evalResult = {
                     fields: fieldEvals,
                     attemptNum: attempts.numAttempted + 1
-                }
+                };
                 evalResult.attemptsLeft = attempts.attemptsLeft - 1;
                 return this.calculateAgregate_(evalResult, evalResult.attemptNum);
             }.bind(this));
@@ -139,7 +139,7 @@ export default class LocalEvaluator
         .then(function(evalResult){
             // Simulate saving to the system of records
             let stateEntry = {
-                "@type": "evaluation",
+                '@type': 'evaluation',
                 data: {
                     submission: submissionDetails,
                     evalResult: evalResult

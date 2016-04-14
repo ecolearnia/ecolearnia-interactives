@@ -17,8 +17,6 @@
  * @date 1/02/16
  */
 
-var _ = require('lodash');
-
 //var logger = require('../../libs/common/logger');
 var promiseutils = require('../../libs/common/promiseutils');
 
@@ -90,9 +88,13 @@ export default class Removtevaluator
      */
     evaluateLocal_(associationId, submissionData)
     {
+        throw Error('NO IMPLEMENT');
+
+        /*
         return promiseutils.createPromise( function(resolve, reject) {
             // @todo - implement
 
         }.bind(this));
+        */
     }
 }

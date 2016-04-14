@@ -17,7 +17,6 @@
  * @date 2/20/16
  */
 
-var _ = require('lodash');
 import utils from '../../../libs/common/utils';
 
 /**
@@ -34,7 +33,6 @@ export default class ComponentContext
 {
     constructor(componentId, item)
     {
-        let self = this;
         /**
          * The item player
          */
@@ -69,7 +67,7 @@ export default class ComponentContext
             {
                 return dispatcher.appendMessage(message);
             }
-        }
+        };
     }
 
     /**

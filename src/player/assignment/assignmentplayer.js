@@ -57,6 +57,11 @@ export default class AssignmentPlayer
     constructor(config)
     {
         /**
+         * The logger
+         */
+        this.logger_ = logger.getLogger('AssignmentPlayer');
+
+        /**
          * DOM element placeholders to render the assignment item
          * Assigned by the load() method
          * @type{Mapp.<{string} placeholderName, {DOM} el}
@@ -74,7 +79,7 @@ export default class AssignmentPlayer
             evaluator: config.evaluator,
             componentNamespace: 'interactives',
             pubsub: this.pubsub_
-        }
+        };
 
         /**
          * The item player instance which manages an item content
@@ -128,7 +133,7 @@ export default class AssignmentPlayer
                     stats.corrects++;
                 } else {
                     if (itemEvalBriefs[i].score == 0) {
-                       stats.incorrects++;
+                        stats.incorrects++;
                     } else {
                         // Partial correct
                         stats.semicorrects++;
@@ -148,7 +153,7 @@ export default class AssignmentPlayer
     {
         // @todo - set properly the assignmentContext
         // Not sure to pass the courseContext, learningContext or assignmentContext,
-        let report = this.store_.getState('report')
+        let report = this.store_.getState('report');
         var context = {
             stats: (report) ? report.stats: null
         };
@@ -163,12 +168,12 @@ export default class AssignmentPlayer
                     // student skips the item and submits later on
                     if (nodeDescriptor) {
                         this.store_.dispatch({
-                            type: "ADD_EVAL_BRIEF",
+                            type: 'ADD_EVAL_BRIEF',
                             nodeId: nodeDescriptor.id,
                             attemptNum: 0,
                             aggregateResult: null
                         });
-                    };
+                    }
                 }.bind(this));
             } else {
                 // resolve to null, nothing else to do.
@@ -208,14 +213,15 @@ export default class AssignmentPlayer
     }
 
     /**
-     * Loand the assignment report (at the end of assignment,
+     * Load the assignment report (at the end of assignment,
      * when no more items left)
      */
     loadReport()
     {
         //let stats = this.store_.getState('stats')
-        if (placeholders.content) {
-            ReactDOM.render(<ReportComponent store={this.store_} context={null} />, placeholders.content);
+        // this.placeholders_?
+        if (this.placeholders_.content) {
+            ReactDOM.render(<ReportComponent store={this.store_} context={null} />, this.placeholders_.content);
         }
     }
 
@@ -240,10 +246,10 @@ export default class AssignmentPlayer
      /**
       * Loads an item content and render it
       */
-     fetchItemAndRender_(nodeDescriptor)
-     {
-         return this.itemPlayer_.fetchNodeAndRender(nodeDescriptor, this.itemEl_);
-     }
+    fetchItemAndRender_(nodeDescriptor)
+    {
+        return this.itemPlayer_.fetchNodeAndRender(nodeDescriptor, this.itemEl_);
+    }
 
     /**
      * Subscribe to various events
@@ -297,7 +303,7 @@ export default class AssignmentPlayer
      */
     handleSubmissionBeforeRequestEvent_(message)
     {
-        console.log('handleSubmissionBeforeRequestEvent_:' + JSON.stringify(message));
+        this.logger_.debug({message: message}, 'handleSubmissionBeforeRequestEvent_');
     }
 
     /**
@@ -310,14 +316,14 @@ export default class AssignmentPlayer
         message.data.evalResult;
 
         this.store_.dispatch({
-            type: "ADD_EVAL_BRIEF",
+            type: 'ADD_EVAL_BRIEF',
             nodeId: message.nodeId,
             attemptNum: message.data.evalResult.attemptNum,
             secondsSpent: message.data.submission.secondsSpent,
             aggregateResult: message.data.evalResult.aggregate
         });
 
-        console.log('handleSubmissionRespondedEvent_:' + JSON.stringify(message));
+        this.logger_.debug({message: message}, 'handleSubmissionRespondedEvent_');
     }
 
     /**
@@ -325,7 +331,8 @@ export default class AssignmentPlayer
      */
     handleNavigateEvent_(message)
     {
-        console.log('handleNavigateEvent_:' + JSON.stringify(message));
+        this.logger_.debug({message: message}, 'handleNavigateEvent_');
+
         if (message.param === 'next') {
             // @todo - pass context
             return this.loadNextItem();

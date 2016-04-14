@@ -67,9 +67,9 @@
      saveState(id, state, timestamps)
      {
          let stateEntry = {
-             "@type": 'interaction',
+             '@type': 'interaction',
              data: cloneObject(state)
-         }
+         };
          return this.sysRecords_.saveState(id, stateEntry, timestamps);
      }
 
