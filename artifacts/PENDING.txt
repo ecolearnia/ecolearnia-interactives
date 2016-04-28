@@ -1,4 +1,5 @@
 PENDING list
+- Refactor: rename 'node' to 'activity'
 - [IMPROVE] Given a wrong answer, when user changes the value, remove the marker
 - [TimerComponent]
 - [TextField] input type based on data type

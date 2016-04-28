@@ -46,8 +46,8 @@ export default class ComponentContext
 
         // For closure
         var dispatcher = this.item.dispatcher_;
-        let nodeId = this.item.getNodeId();
-        this.nodeId_ = nodeId;
+        let activityId = this.item.getActivityId();
+        this.activityId_ = activityId;
         this.dispatcher = {
 
             /**
@@ -55,12 +55,12 @@ export default class ComponentContext
              */
             updateState: function (state)
             {
-                return dispatcher.updateState(nodeId, componentId, state);
+                return dispatcher.updateState(activityId, componentId, state);
             },
 
             evaluate: function ()
             {
-                return dispatcher.evaluate(nodeId);
+                return dispatcher.evaluate(activityId);
             },
 
             appendMessage: function (message)
@@ -81,9 +81,9 @@ export default class ComponentContext
     /**
      * Return the componentId
      */
-    getNodeId()
+    getActivityId()
     {
-        return this.nodeId_;
+        return this.activityId_;
     }
 
     ///////// @todo - all the implementation were copied over to itemwrapper

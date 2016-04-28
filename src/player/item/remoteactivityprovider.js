@@ -11,22 +11,22 @@
  * EcoLearnia v0.0.2
  *
  * @fileoverview
- *  This file includes the definition of LocalNodeProvider class.
+ *  This file includes the definition of RemoteActivityProvider class.
  *
  * @author Young Suk Ahn Park
  * @date 3/04/2016
  */
 
  /**
-  * @class RemoteNodeProvider
+  * @class RemoteActivityProvider
   *
   * @module interactives/player/item
   *
   * @classdesc
-  *  LocalNodeProvider provides interface for CRUD operation of the Node
+  *  RemoteActivityProvider provides interface for CRUD operation of the Activity
   *
   */
- export default class RemoteNodeProvider
+ export default class RemoteActivityProvider
  {
      /**
       * @param {object} config
@@ -34,18 +34,17 @@
      constructor(config)
      {
          /**
-          * The local system of records.
-          * This is used to add content
-          * @type {LocalNodeSysRec}
+          * The remote activity provider
+          * @type {string}
           */
          this.baseUrl = config.baseUrl_;
      }
 
      /**
-      * Fetches a Node
-      * @param {string} id  - the node id to fetch
-      * @return {Promise.resolve({player.NodeDetails})} On success resolves
-      *         node details
+      * Fetches a activity
+      * @param {string} id  - the activity id to fetch
+      * @return {Promise.resolve({player.ActivityDetails})} On success resolves
+      *         activity details
       */
      fetch(id)
      {
@@ -54,7 +53,7 @@
      }
 
      /**
-      * Saves an node item's state
+      * Saves an activity item's state
       * @return {Promise.resolve({string})} On success resolves state id (uuid)
       */
      saveState(id, state)

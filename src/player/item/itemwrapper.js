@@ -53,7 +53,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
          * submission and append the result (activity).
          * @type {string}
          */
-        this.nodeId_;
+        this.activityId_;
 
         /**
          * The content which this context is operating on
@@ -124,13 +124,13 @@ import stringTemplate from '../../../libs/contrib/templateengine';
      }
 
      /**
-      * Gets the node Id (aka assocationId).
+      * Gets the activity Id (aka assocationId).
       *
       * @param {string} content
       */
-     getNodeId()
+     getActivityId()
      {
-         return this.nodeId_;
+         return this.activityId_;
      }
 
      /**
@@ -149,17 +149,17 @@ import stringTemplate from '../../../libs/contrib/templateengine';
       *
       * @todo - Trigger re-rendering
       *
-      * @param {string} nodeId - the node ID
+      * @param {string} activityId - the activity ID
       * @param {object} content - the actual content
       */
-     setContent(nodeId, content)
+     setContent(activityId, content)
      {
-         if (this.nodeId_ === nodeId) {
+         if (this.activityId_ === activityId) {
              // Trying to set same content. othing to do.
              return;
          }
 
-         this.nodeId_ = nodeId;
+         this.activityId_ = activityId;
          this.content_ = content;
          this.componentReferences_ = {};
 
@@ -500,7 +500,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
             this.logger_.warn('Unexistent componentId for registerUnsubscriber' + componentId);
             return;
         }
-        this.logger_.info({ node: this.nodeId_, component: componentId},  'Registering unsubscribe');
+        this.logger_.info({ activity: this.activityId_, component: componentId},  'Registering unsubscribe');
         this.componentReferences_[componentId].unsubsribe = unsubscribe;
      }
 
@@ -526,7 +526,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
              if (this.componentReferences_[componentId].el) {
                  //this.unmount(this.componentReferences_[componentId].el);
              } else {
-                 this.logger_.info('Skipping unmountComponentAtNode ' + componentId);
+                 this.logger_.info('Skipping unmountComponentAtActivity ' + componentId);
              }
          }
      }

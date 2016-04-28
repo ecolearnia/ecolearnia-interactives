@@ -59,7 +59,7 @@
                 </div>
                 <div class="medium-4 columns">
                     <div>
-                        <select id="nodeSelector"></select>
+                        <select id="activitySelector"></select>
                     </div>
                     <button id="nextButton" type="button" class="success button" onClick="navigateNext()">Next</button>
                     <div class="eli-assignment-placeholder" id="placeholder-scoreboard" ></div>
@@ -79,8 +79,8 @@
 <script type="text/javascript">
     var interactives = require('interactives');
 
-    // Provides local node system of records
-    var localSysRec = new interactives.LocalNodeSysRec();
+    // Provides local activity system of records
+    var localSysRec = new interactives.LocalActivitySysRec();
 
     var sequencingConfig = {
         sysRecords: localSysRec,
@@ -88,22 +88,22 @@
         resourceUrl: 'item.9numbers.json'
     };
 
-    var nodeProvider = new interactives.LocalNodeProvider({sysRecords: localSysRec});
+    var activityProvider = new interactives.LocalActivityProvider({sysRecords: localSysRec});
     var evaluator = new interactives.LocalEvaluator({sysRecords: localSysRec});
     var assignemntPlayerConfig = {
-        nodeProvider: nodeProvider,
+        activityProvider: activityProvider,
         evaluator: evaluator,
         sequencingStrategy: new interactives.LocalRandomVarSequencingStrategy(sequencingConfig)
     };
 
     var assignmentPlayer = new interactives.AssignmentPlayer(assignemntPlayerConfig);
-    assignmentPlayer.subscribe('next-node-retrieved', function(nodeDescriptor){
-        // New node has been retrieved (in this case generated), add a new entry in the drop down
-        if (nodeDescriptor) {
-            $("#nodeSelector").append(
+    assignmentPlayer.subscribe('next-activity-retrieved', function(activityDescriptor){
+        // New activity has been retrieved (in this case generated), add a new entry in the drop down
+        if (activityDescriptor) {
+            $("#activitySelector").append(
                 $("<option></option>")
-                .attr("value", nodeDescriptor.id)
-                .text(nodeDescriptor.id)
+                .attr("value", activityDescriptor.id)
+                .text(activityDescriptor.id)
                 .prop('selected', true)
              );
         } else {
@@ -126,8 +126,8 @@
         assignmentPlayer.handleNavigateEvent_({param: "next"});
     }
 
-    $("#nodeSelector").change(function(event) {
-        assignmentPlayer.loadItemByNodeId(event.target.value);
+    $("#activitySelector").change(function(event) {
+        assignmentPlayer.loadItemByActivityId(event.target.value);
     });
 
 </script>

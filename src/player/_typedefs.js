@@ -39,15 +39,7 @@ player.FieldCollection;
  * }} player.FieldCollection
  */
 player.SubmissionDetails;
-/**
- * @typedef {{
- *   <componentId0>: (FieldCollection),
- *   <componentId1>: (FieldCollection), ...
- * }} ItemState
- * NOTE: The itemState is no longer grouped into componentId.
- *       Only one sigle "fields" property is used for all components.
- */
-player.ItemState;
+
 
 
 /**
@@ -127,38 +119,51 @@ player.Component;
  */
 player.ContentDefinition;
 
+
 /**
- * Node related structures:
- * A Node is an instantiation of a learning sequence activity.
+ *
+ * @typedef {{
+ *   start: (ISODate),
+ *   stop: (ISODate),
+ *   elapsedSeconds: (number)
+ * }} player.ActivityTimestamp
+ */
+player.ActivityTimestamp;
+
+/**
+ * Activity related structures:
+ * An activity is an instantiation of a learning sequence activity.
  * When a student requests the next acivity, an item instance is created and
  * contextual information is associated with it including the user, policy,
  * item state, evaluation details, and timestamples.
  */
 
  /**
-  * A Node Descriptor is a synopsys of a node that is used as identifier.
-  * The AssignmentPlayer (AS) obtains this information when getting the next node.
+  * An Activity Descriptor is a synopsys of a activity that is used as identifier.
+  * The AssignmentPlayer (AS) obtains this information when getting the next activity.
   * The AP passes it to the ItemPlayer (IP) to fetch the full data knwon as
-  * NodeDetails.
+  * ActivityDetails.
   *
   * @typedef {{
-  *   id: (string), // the node id (uuid)
-  *   userId: (string),
+  *   assignmentUuid: (string), // the activity id (uuid)
+  *   uuid: (string), // the activity id (uuid)
+  *   userId: (!string),
   *   playerName: (string), // The name of the (item) player
   *   policy: (Object), // The policy
-  * }} player.NodeDescriptor
+  * }} player.ActivityDescriptor
   */
-player.NodeDescriptor;
+player.ActivityDescriptor;
 
 
 /**
- * Full Node data. Superset of NodeDescriptor.
+ * Full Activity data. Superset of ActivityDescriptor.
  *
  * @typedef {{
- * player.NodeDescriptor extend {
+ * player.ActivityDescriptor extend {
  *   content: (player.ContentDefinition),
- *   itemState: (player.ItemState),
+ *   itemState: (player.FieldCollection),
+ *   timestamps: (Array.<ActivityTimestamp>),
  *   evalDetails: (player.EvalDetails)
- * }} player.NodeDetails
+ * }} player.ActivityDetails
  */
-player.NodeDetails;
+player.ActivityDetails;

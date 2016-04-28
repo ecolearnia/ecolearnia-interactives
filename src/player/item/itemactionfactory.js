@@ -70,7 +70,7 @@ export default class ItemActionFactory
     /**
      * Returns action for registering a stop timestamp
      *
-     * @param {Date!} timestamp  - Optiona: the timestamp
+     * @param {Date!} timestamp  - Optional: the timestamp
      */
     timestampStop(timestamp)
     {
@@ -83,7 +83,7 @@ export default class ItemActionFactory
     /**
      * Returns action for restoring (replacing) timestamps
      *
-     * @param {Date!} timestamp  - Optiona: the timestamp
+     * @param {Date!} timestamps  - 
      */
     restoreTimestamps(timestamps)
     {

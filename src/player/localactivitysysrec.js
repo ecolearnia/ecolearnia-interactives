@@ -25,20 +25,20 @@ function cloneObject(obj) {
 }
 
  /**
-  * @class LocalNodeSysRec
+  * @class LocalActivitySysRec
   *
   * @module interactives/player/assignment
   *
   * @classdesc
-  *  Local SequenceNode System of Records.
+  *  Local Activity System of Records.
   *
   */
-export default class LocalNodeSysRec
+export default class LocalActivitySysRec
 {
     constructor(config)
     {
         this.currId_ = 0;
-        this.nodes_ = {};
+        this.activities_ = {};
     }
 
     /**
@@ -47,38 +47,38 @@ export default class LocalNodeSysRec
      */
     size()
     {
-        return this.nodes_.length;
+        return this.activities_.length;
     }
 
     /**
-     * Adds a new node
-     * @param {player.NodeDetails} nodeDetails
-     * @return Promise.resolve({string}) On success resolves nodeId
+     * Adds a new activity
+     * @param {player.ActivityDetails} activityDetails
+     * @return Promise.resolve({string}) On success resolves activityId
      */
-    add(nodeDetails)
+    add(activityDetails)
     {
         return promiseutils.createPromise( function(resolve, reject) {
-            let nodeId = nodeDetails.id ? nodeDetails.id : this.getNextId();
-            nodeDetails.id = nodeId;
-            this.nodes_[nodeId] = cloneObject(nodeDetails);
+            let activityId = activityDetails.id ? activityDetails.id : this.getNextId();
+            activityDetails.id = activityId;
+            this.activities_[activityId] = cloneObject(activityDetails);
 
-            return resolve(nodeId);
+            return resolve(activityId);
         }.bind(this));
     }
 
     /**
-     * Retrieve Node
-     * @return Promise.resolve({player.NodeDetails}) On success resolves the
-     *         matching node
+     * Retrieve Activity
+     * @return Promise.resolve({player.ActivityDetails}) On success resolves the
+     *         matching activity
      */
     get(id)
     {
         var promise = promiseutils.createPromise( function(resolve, reject) {
-            if (!(id in this.nodes_))
+            if (!(id in this.activities_))
             {
                 return reject('Unexistent ID');
             }
-            let match = this.nodes_[id];
+            let match = this.activities_[id];
             return resolve(match);
         }.bind(this));
 
@@ -86,32 +86,32 @@ export default class LocalNodeSysRec
     }
 
     /**
-     * Saves an node item's state
-     * @param {string} id  - the nodeId
+     * Saves an activity item's state
+     * @param {string} id  - the activityId
      * @param {player.ItemState}  itemState - the item state
-     * @param {Array!} timestamps - (optional) Array of timestamps
+     * @param {Array.<player.ActivityTimestamp>!} timestamps - (optional) Array of timestamps
      * @return Promise.resolve({string}) On success resolves state id (uuid)
      */
     saveState(id, itemState, timestamps)
     {
         return promiseutils.createPromise( function(resolve, reject) {
-            if (!this.nodes_[id]) {
+            if (!this.activities_[id]) {
                 return reject('Unexistent ID');
             }
             // @todo - use array instead, and resolve a uuid
-            this.nodes_[id].itemState = cloneObject(itemState);
+            this.activities_[id].itemState = cloneObject(itemState);
 
             // Add evalResult records
             // This case comes from evaluator (e.g. localevaluator.js)
             if (itemState['@type'] === 'evaluation') {
-                if (!('evalDetails' in this.nodes_[id])) {
-                    this.nodes_[id].evalDetails = [];
+                if (!('evalDetails' in this.activities_[id])) {
+                    this.activities_[id].evalDetails = [];
                 }
-                this.nodes_[id].evalDetails.push(cloneObject(itemState));
+                this.activities_[id].evalDetails.push(cloneObject(itemState));
             }
 
             if (timestamps) {
-                this.nodes_[id].timestamps = cloneObject(timestamps);
+                this.activities_[id].timestamps = cloneObject(timestamps);
             }
 
             return resolve();

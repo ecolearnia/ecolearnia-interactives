@@ -19,7 +19,7 @@
             "@doc": "the given number",
             "hidden": true,
             "baseType": "number",
-            "value": 9,
+            "value": 8,
             "minVal": 1,
             "maxVal": 10
         },

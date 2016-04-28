@@ -129,7 +129,6 @@ import stringTemplate from '../../libs/contrib/templateengine';
       *
       * @todo - Trigger re-rendering
       *
-      * @param {string} nodeId - the node ID
       * @param {object} content - the actual content
       */
      setContent(content)
@@ -475,7 +474,7 @@ import stringTemplate from '../../libs/contrib/templateengine';
             this.logger_.warn('Unexistent componentId for registerUnsubscriber' + componentId);
             return;
         }
-        this.logger_.info({ node: this.nodeId_, component: componentId},  'Registering unsubscribe');
+        this.logger_.info({ component: componentId},  'Registering unsubscribe');
         this.componentReferences_[componentId].unsubsribe = unsubscribe;
      }
 
@@ -487,7 +486,7 @@ import stringTemplate from '../../libs/contrib/templateengine';
       */
      unmount(el)
      {
-         ReactDOM.unmountComponentAtNode(el);
+         ReactDOM.unmountComponentAtActivity(el);
      }
 
      /**
@@ -504,7 +503,7 @@ import stringTemplate from '../../libs/contrib/templateengine';
                  // Unmounting should unsubsribe as well
                  this.unmount(this.componentReferences_[componentId].el);
              } else {
-                 this.logger_.info('Skipping unmountComponentAtNode ' + componentId);
+                 this.logger_.info('Skipping unmountComponentAtActivity ' + componentId);
              }
          }
      }

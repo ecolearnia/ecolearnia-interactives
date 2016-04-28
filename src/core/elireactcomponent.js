@@ -43,17 +43,17 @@ export default class EliReactComponent extends React.Component
     subscribeToStateChange()
     {
         let componentId = '<anon-component>';
-        let nodeId = '<anon-node>';
+        let activityId = '<anon-activity>';
         if (this.props.context) {
             componentId = this.props.context.getComponentId();
-            if (this.props.context.getNodeId) {
-                nodeId = this.props.context.getNodeId();
+            if (this.props.context.getActivityId) {
+                activityId = this.props.context.getActivityId();
             }
         }
         // @todo - use store's observeChanges() instead to listen to changes to
         //         specific state properties.
         this.unsubscribe = this.props.store.subscribe(function() {
-            console.log('[' + nodeId +':'+ componentId + '@' + this.constructor.name + '] state updated! ' + JSON.stringify(this.props.store.getState('components')));
+            console.log('[' + activityId +':'+ componentId + '@' + this.constructor.name + '] state updated! ' + JSON.stringify(this.props.store.getState('components')));
             this.forceUpdate();
         }.bind(this));
     }
@@ -73,16 +73,16 @@ export default class EliReactComponent extends React.Component
     componentWillUnmount()
     {
         let componentId = '<anon-component>';
-        let nodeId = '<anon-node>';
+        let activityId = '<anon-activity>';
         if (this.props.context) {
             componentId = this.props.context.getComponentId();
-            if (this.props.context.getNodeId) {
-                nodeId = this.props.context.getNodeId();
+            if (this.props.context.getActivityId) {
+                activityId = this.props.context.getActivityId();
             }
         }
-        console.log('[' + nodeId +':'+ componentId + '@' + this.constructor.name + '] componentWillUnmount.');
+        console.log('[' + activityId +':'+ componentId + '@' + this.constructor.name + '] componentWillUnmount.');
         if (this.unsubscribe) {
-            console.log('[' + nodeId +':'+ componentId + '] unsubscribing.');
+            console.log('[' + activityId +':'+ componentId + '] unsubscribing.');
             this.unsubscribe();
         }
     }
@@ -98,9 +98,9 @@ export default class EliReactComponent extends React.Component
     /**
      * Returns the ID of this component instance
      */
-    nodeId()
+    activityId()
     {
-        return (this.nodeId_) ? this.nodeId_ : '<anon-node>';
+        return (this.activityId_) ? this.activityId_ : '<anon-activity>';
     }
 
     /**

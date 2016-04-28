@@ -77,25 +77,25 @@ export default class LocalEvaluator
      *
      * @param {ItemPlayer} itemPlayer - The id associated with item (one per itemPlayer)
      * @param {ItemPlayer} itemPlayer - The id associated with item (one per itemPlayer)
-    registerContent(nodeId, content)
+    registerContent(activityId, content)
     {
         // The response processing rule
-        this.rules_[nodeId] = content.responseProcessing;
-        this.variables_[nodeId] = content.variableDeclarations || {};
+        this.rules_[activityId] = content.responseProcessing;
+        this.variables_[activityId] = content.variableDeclarations || {};
     }
     */
 
     /**
      * Retrieves a rule
-     * @param nodeId
+     * @param activityId
      * @returns {Promise}
      */
-    retrieveRule(nodeId)
+    retrieveRule(activityId)
     {
-        return this.sysRecords_.get(nodeId)
-        .then(function(nodeDetails){
-            return (nodeDetails.content.responseProcessing);
-            //resolve(this.rules_[nodeId]);
+        return this.sysRecords_.get(activityId)
+        .then(function(activityDetails){
+            return (activityDetails.content.responseProcessing);
+            //resolve(this.rules_[activityId]);
         });
     }
 
@@ -105,28 +105,28 @@ export default class LocalEvaluator
      * For php implementation, use
      * http://symfony.com/doc/current/components/expression_language/syntax.html
      *
-     * @param {string} nodeId  -  The instance ID that the item is associated to
+     * @param {string} activityId  -  The instance ID that the item is associated to
      * @param {player.SubmissionDetails} submissionDetails - student submission
      *
      * @returns {Promise}
      *      On Succss: Returns outcome (player.EvalResult) in key-value pairs
      */
-    evaluate(nodeId, submissionDetails)
+    evaluate(activityId, submissionDetails)
     {
-        return this.sysRecords_.get(nodeId)
-        .then(function(nodeDetails) {
-            let itemVars = nodeDetails.content.variableDeclarations || {};
+        return this.sysRecords_.get(activityId)
+        .then(function(activityDetails) {
+            let itemVars = activityDetails.content.variableDeclarations || {};
             let combinedSubmissionData  = this.combineSubmissionData_(itemVars, submissionDetails.fields);
             //console.log('combinedSubmissionData: ' + JSON.stringify(combinedSubmissionData));
 
-            let attempts = this.calculateAttempts(nodeDetails);
+            let attempts = this.calculateAttempts(activityDetails);
             //console.log('** attemptsLeft=' + attempts.attemptsLeft);
             if (attempts.attemptsLeft == 0)
             {
                 throw new Error('NoMoreAttempts');
             }
 
-            return this.evaluateFields_(nodeDetails.content.responseProcessing, combinedSubmissionData)
+            return this.evaluateFields_(activityDetails.content.responseProcessing, combinedSubmissionData)
             .then(function(fieldEvals){
                 let evalResult = {
                     fields: fieldEvals,
@@ -145,7 +145,7 @@ export default class LocalEvaluator
                     evalResult: evalResult
                 }
             };
-            this.sysRecords_.saveState(nodeId, stateEntry);
+            this.sysRecords_.saveState(activityId, stateEntry);
             return evalResult;
         }.bind(this));
     }
@@ -153,17 +153,17 @@ export default class LocalEvaluator
     /**
      * Calculates the number of attempts lesft before this submission.
      */
-    calculateAttempts(nodeDetails)
+    calculateAttempts(activityDetails)
     {
-        let numAttempted = (nodeDetails.evalDetails) ? nodeDetails.evalDetails.length: 0;
+        let numAttempted = (activityDetails.evalDetails) ? activityDetails.evalDetails.length: 0;
         let maxAttempts = 1;
 
-        if (nodeDetails.content.defaultPolicy) {
-            maxAttempts = nodeDetails.content.defaultPolicy.maxAttempts || maxAttempts;
+        if (activityDetails.content.defaultPolicy) {
+            maxAttempts = activityDetails.content.defaultPolicy.maxAttempts || maxAttempts;
         }
 
-        if (nodeDetails.policy) {
-            maxAttempts = nodeDetails.policy.maxAttempts || maxAttempts;
+        if (activityDetails.policy) {
+            maxAttempts = activityDetails.policy.maxAttempts || maxAttempts;
         }
         return {
             numAttempted: numAttempted,

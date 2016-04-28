@@ -75,7 +75,7 @@ export default class AssignmentPlayer
 
         // Item Player Config
         var itemPlayerConfig = {
-            nodeProvider: config.nodeProvider,
+            activityProvider: config.activityProvider,
             evaluator: config.evaluator,
             componentNamespace: 'interactives',
             pubsub: this.pubsub_
@@ -147,7 +147,7 @@ export default class AssignmentPlayer
 
     /**
      * loads the next item in the sequence
-     * Next item involves intantiation of a new node
+     * Next item involves intantiation of a new activity
      */
     loadNextItem()
     {
@@ -157,19 +157,19 @@ export default class AssignmentPlayer
         var context = {
             stats: (report) ? report.stats: null
         };
-        return this.sequencingStrategy_.retrieveNextNode(context)
-        .then(function(nodeDescriptor){
-            this.pubsub_.publishRaw('next-node-retrieved', nodeDescriptor);
-            if (nodeDescriptor) {
-                return this.fetchItemAndRender_(nodeDescriptor)
-                .then(function(nodeDescriptor){
+        return this.sequencingStrategy_.retrieveNextActivity(context)
+        .then(function(activityDescriptor){
+            this.pubsub_.publishRaw('next-activity-retrieved', activityDescriptor);
+            if (activityDescriptor) {
+                return this.fetchItemAndRender_(activityDescriptor)
+                .then(function(activityDescriptor){
                     // When successfully loaded, create a slot in the report for
                     // the item. This will keep proper ordering even if the
                     // student skips the item and submits later on
-                    if (nodeDescriptor) {
+                    if (activityDescriptor) {
                         this.store_.dispatch({
                             type: 'ADD_EVAL_BRIEF',
-                            nodeId: nodeDescriptor.id,
+                            activityId: activityDescriptor.id,
                             attemptNum: 0,
                             aggregateResult: null
                         });
@@ -185,15 +185,15 @@ export default class AssignmentPlayer
     /**
      * loads an previously intantiated item in the sequene
      */
-    loadItemByNodeId(nodeId)
+    loadItemByActivityId(activityId)
     {
         // @todo - set properly the assignmentContext
         // Not sure to pass the courseContext, learningContext or assignmentContext,
-        return this.sequencingStrategy_.retrieveNode(nodeId)
-        .then(function(nodeDescriptor){
-            this.pubsub_.publish('node-retrieved', nodeDescriptor);
+        return this.sequencingStrategy_.retrieveActivity(activityId)
+        .then(function(activityDescriptor){
+            this.pubsub_.publish('activity-retrieved', activityDescriptor);
 
-            return this.fetchItemAndRender_(nodeDescriptor);
+            return this.fetchItemAndRender_(activityDescriptor);
         }.bind(this));
     }
 
@@ -204,11 +204,11 @@ export default class AssignmentPlayer
     {
         // @todo - set properly the assignmentContext
         // Not sure to pass the courseContext, learningContext or assignmentContext,
-        return this.sequencingStrategy_.retrieveNodeByIndex(index)
-        .then(function(nodeDescriptor){
-            this.pubsub_.publish('node-retrieved', nodeDescriptor);
+        return this.sequencingStrategy_.retrieveActivityByIndex(index)
+        .then(function(activityDescriptor){
+            this.pubsub_.publish('activity-retrieved', activityDescriptor);
 
-            return this.fetchItemAndRender_(nodeDescriptor);
+            return this.fetchItemAndRender_(activityDescriptor);
         }.bind(this));
     }
 
@@ -246,9 +246,9 @@ export default class AssignmentPlayer
      /**
       * Loads an item content and render it
       */
-    fetchItemAndRender_(nodeDescriptor)
+    fetchItemAndRender_(activityDescriptor)
     {
-        return this.itemPlayer_.fetchNodeAndRender(nodeDescriptor, this.itemEl_);
+        return this.itemPlayer_.fetchActivityAndRender(activityDescriptor, this.itemEl_);
     }
 
     /**
@@ -312,12 +312,12 @@ export default class AssignmentPlayer
      */
     handleSubmissionRespondedEvent_(message)
     {
-        message.nodeId;
+        message.activityId;
         message.data.evalResult;
 
         this.store_.dispatch({
             type: 'ADD_EVAL_BRIEF',
-            nodeId: message.nodeId,
+            activityId: message.activityId,
             attemptNum: message.data.evalResult.attemptNum,
             secondsSpent: message.data.submission.secondsSpent,
             aggregateResult: message.data.evalResult.aggregate

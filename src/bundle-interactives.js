@@ -34,8 +34,8 @@ module.exports.AssignmentPlayer = player.AssignmentPlayer;
  * Modules for fully local operation
  * @todo - Externalized into a different js bundle so it can be opted out
  */
-module.exports.LocalNodeSysRec = player.LocalNodeSysRec;
-module.exports.LocalNodeProvider = player.LocalNodeProvider;
+module.exports.LocalActivitySysRec = player.LocalActivitySysRec;
+module.exports.LocalActivityProvider = player.LocalActivityProvider;
 module.exports.LocalRandomVarSequencingStrategy = player.LocalRandomVarSequencingStrategy;
 module.exports.VariablesRandomizer = player.VariablesRandomizer;
 module.exports.LocalEvaluator = player.LocalEvaluator;

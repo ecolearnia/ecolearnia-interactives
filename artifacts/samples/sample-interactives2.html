@@ -231,13 +231,13 @@ INTERACTIVES v0.0.2 {{
     };
 
     // Provides local node system of records
-    var localSysRec = new interactives.LocalNodeSysRec();
+    var localSysRec = new interactives.LocalActivitySysRec();
     localSysRec.add({
         id: 'test-node',
         content: contentSpec
     });
     var evaluator = new interactives.LocalEvaluator({sysRecords: localSysRec});
-    var nodeProvider = new interactives.LocalNodeProvider({sysRecords: localSysRec});
+    var nodeProvider = new interactives.LocalActivityProvider({sysRecords: localSysRec});
     var settings = {
         evaluator,
         nodeProvider

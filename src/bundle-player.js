@@ -34,13 +34,13 @@ module.exports.AssignmentPlayer = AssignmentPlayer;
  * Modules for fully local operation
  * @todo - Externalized into a different js bundle so it can be opted out
  */
-var LocalNodeSysRec = require('./player/localnodesysrec').default;
-var LocalNodeProvider = require('./player/item/localnodeprovider').default;
+var LocalActivitySysRec = require('./player/localactivitysysrec').default;
+var LocalActivityProvider = require('./player/item/localactivityprovider').default;
 var LocalRandomVarSequencingStrategy = require('./player/assignment/localrandomvarsequencingstrategy').default;
 var VariablesRandomizer = require('./player/assignment/variablesrandomizer').default;
 var LocalEvaluator = require('./player/localevaluator').default;
-module.exports.LocalNodeSysRec = LocalNodeSysRec;
-module.exports.LocalNodeProvider = LocalNodeProvider;
+module.exports.LocalActivitySysRec = LocalActivitySysRec;
+module.exports.LocalActivityProvider = LocalActivityProvider;
 module.exports.LocalRandomVarSequencingStrategy = LocalRandomVarSequencingStrategy;
 module.exports.VariablesRandomizer = VariablesRandomizer;
 module.exports.LocalEvaluator = LocalEvaluator;

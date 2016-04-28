@@ -76,9 +76,9 @@ function reportReducer(state = initialState, action)
         case 'ADD_EVAL_BRIEF':
 
             let itemEvalBriefs = state.get('itemEvalBriefs') || Immutable.OrderedMap({});
-            state = state.set('itemEvalBriefs', itemEvalBriefs.set(action.nodeId,
+            state = state.set('itemEvalBriefs', itemEvalBriefs.set(action.activityId,
                 {
-                    nodeId: action.nodeId,
+                    activityId: action.activityId,
                     attemptNum: action.attemptNum,
                     secondsSpent: action.secondsSpent,
                     aggregateResult: action.aggregateResult

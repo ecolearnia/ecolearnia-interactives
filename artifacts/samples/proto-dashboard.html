@@ -118,7 +118,7 @@
     var interactives = require('interactives');
 
     // Provides local node system of records
-    var localSysRec = new interactives.LocalNodeSysRec();
+    var localSysRec = new interactives.LocalActivitySysRec();
 
     var sequencingConfig = {
         sysRecords: localSysRec,
@@ -126,7 +126,7 @@
         //resourceUrl: 'item.9numbers.json'
     };
 
-    var nodeProvider = new interactives.LocalNodeProvider({sysRecords: localSysRec});
+    var nodeProvider = new interactives.LocalActivityProvider({sysRecords: localSysRec});
     var evaluator = new interactives.LocalEvaluator({sysRecords: localSysRec});
     var assignemntPlayerConfig = {
         nodeProvider: nodeProvider,
@@ -165,7 +165,7 @@
     }
 
     $("#nodeSelector").change(function(event) {
-        assignmentPlayer.loadItemByNodeId(event.target.value);
+        assignmentPlayer.loadItemByActivityId(event.target.value);
     });
 
 </script>

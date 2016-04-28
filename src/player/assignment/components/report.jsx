@@ -51,7 +51,7 @@ export default class ReportComponent extends EliReactComponent
             let title = '';
             let secondsSpent = '';
 
-            title = (evalBrief.nodeId) ? evalBrief.nodeId : "";
+            title = (evalBrief.activityId) ? evalBrief.activityId : "";
             secondsSpent = (evalBrief.secondsSpent) ? evalBrief.secondsSpent : "0";
             if (evalBrief && evalBrief.aggregateResult) {
                  correctnessMark = (evalBrief.aggregateResult.pass) ? "&#10003;" : "&#10007;";

@@ -75,9 +75,9 @@ export default class ItemPlayer
         }
 
         /**
-         * @type {NodeProvider} object that provides node
+         * @type {ActivityProvider} object that provides activity
          */
-        this.nodeProvider_ = config.nodeProvider;
+        this.activityProvider_ = config.activityProvider;
 
         /**
          * Flux Store
@@ -95,7 +95,7 @@ export default class ItemPlayer
         this.dispatcher_ = new ItemDispatcher({
             pubsub: this.pubsub,
             actionFactory: new ItemActionFactory(),
-            nodeProvider: this.nodeProvider_,
+            activityProvider: this.activityProvider_,
             evaluator: evaluator
         });
         this.dispatcher_.setStore(this.store_);
@@ -134,15 +134,15 @@ export default class ItemPlayer
     }
 
     /**
-     * fetchNode
+     * fetchActivity
      * Fetches the content from System-of-records and set the content
-     * @param {NodeDescriptor} nodeDescriptor
+     * @param {ActivityDescriptor} activityDescriptor
      */
-    fetchNode_(nodeDescriptor)
+    fetchActivity_(activityDescriptor)
     {
         let self = this;
-        return this.nodeProvider_.fetch(nodeDescriptor.id)
-        .then(function(nodeDetails){
+        return this.activityProvider_.fetch(activityDescriptor.id)
+        .then(function(activityDetails){
             let itemConfig = {
                 componentModule: self.componentModule_,
                 store: self.store_,
@@ -152,43 +152,43 @@ export default class ItemPlayer
                 self.item_.dispose();
             }
             self.item_ = new ItemWrapper(itemConfig);
-            self.item_.setContent(nodeDetails.id, nodeDetails.content);
+            self.item_.setContent(activityDetails.id, activityDetails.content);
 
-            return nodeDetails;
+            return activityDetails;
         });
     }
 
     /**
-     * fetchNode & restores state
-     * Fetches the the node and restores its state
-     * @param {NodeDescriptor} nodeDescriptor
+     * fetchActivity & restores state
+     * Fetches the the activity and restores its state
+     * @param {ActivityDescriptor} activityDescriptor
      */
-    fetchNodeAndRender(nodeDescriptor, el)
+    fetchActivityAndRender(activityDescriptor, el)
     {
-        return this.fetchNode_(nodeDescriptor)
-        .then(function(nodeDetails){
-            this.logger_.info('nodeDetails.timestamps:', nodeDetails.timestamps);
-            if (nodeDetails.timestamps) {
+        return this.fetchActivity_(activityDescriptor)
+        .then(function(activityDetails){
+            this.logger_.info('activityDetails.timestamps:', activityDetails.timestamps);
+            if (activityDetails.timestamps) {
                 // set timestamps
                 this.dispatcher_.restoreTimestamps(
-                    nodeDetails.timestamps
+                    activityDetails.timestamps
                 );
             }
             // Render will add a start timestamp
             this.render(el);
 
-            if (nodeDetails.itemState) {
+            if (activityDetails.itemState) {
                 // @todo - later it will change to array of states, array tail
                 // being the last state
-                let isEvaluation = (nodeDetails.itemState['@type'] === 'evaluation');
+                let isEvaluation = (activityDetails.itemState['@type'] === 'evaluation');
 
-                let stateData = isEvaluation ? nodeDetails.itemState.data.submission.fields : nodeDetails.itemState.data.fields;
+                let stateData = isEvaluation ? activityDetails.itemState.data.submission.fields : activityDetails.itemState.data.fields;
 
                 // @todo - fix:
                 // This produces forceUpdate before component being rendered
                 // Calling an asyc method, Promise warning can be ignored
                 this.dispatcher_.updateState(
-                    nodeDetails.id,
+                    activityDetails.id,
                     'fields',
                     stateData,
                     true // Skip saving to the system or records
@@ -198,13 +198,13 @@ export default class ItemPlayer
                 {
                     // Notice appendEvalDetails, as opposed to evaluate(), only
                     // updates the store
-                    this.dispatcher_.appendEvalDetails(nodeDetails.itemState.data);
+                    this.dispatcher_.appendEvalDetails(activityDetails.itemState.data);
                 }
 
 
             }
 
-            return nodeDescriptor;
+            return activityDescriptor;
         }.bind(this));
     }
 
