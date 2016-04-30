@@ -34,17 +34,26 @@ import stringTemplate from '../../../libs/contrib/templateengine';
   *  Item Wrapper wraps around the item, which is a content instanted.
   *
   */
- export default class ItemWrapper
- {
-     /**
-      * @param {object} config
-      */
-     constructor(config)
-     {
+export default class ItemWrapper
+{
+    /**
+     * @param {object} config
+     */
+    constructor(config)
+    {
         /**
          * The logger
          */
         this.logger_ = logger.getLogger('ItemWrapper');
+
+        /**
+         * ID used to retrieve the LearnerAssignmentItem, the content instance
+         * with associated user/course.
+         * The server uses the retrieved LearnerAssignmentItem to evaluate the
+         * submission and append the result (activity).
+         * @type {string}
+         */
+        this.assignmentId_;
 
         /**
          * ID used to retrieve the LearnerAssignmentItem, the content instance
@@ -67,113 +76,124 @@ import stringTemplate from '../../../libs/contrib/templateengine';
          */
         this.componentSpecs_ = {};
 
-         /**
-          * Map of component id to its instance
-          * @type {Map.<string, {ref: Component, unsubscribe: function>}
-          */
-         this.componentReferences_ = {};
+        /**
+         * Map of component id to its instance
+         * @type {Map.<string, {ref: Component, unsubscribe: function>}
+         */
+        this.componentReferences_ = {};
 
-         /**
-          * Scope in which all the component class definitions are.
-          * @type {Object}
-          */
-         this.componentModule_ = config.componentModule;
+        /**
+         * Scope in which all the component class definitions are.
+         * @type {Object}
+         */
+        this.componentModule_ = config.componentModule;
 
-         /**
-          * @type {StoreFacade}
-          */
-         this.store_ = config.store;
+        /**
+         * @type {StoreFacade}
+         */
+        this.store_ = config.store;
 
-         /**
-          * @type {ItemDispatcher}
-          */
-         this.dispatcher_ = config.dispatcher;
-     }
+        /**
+         * @type {ItemDispatcher}
+         */
+        this.dispatcher_ = config.dispatcher;
+    }
 
      /*** Static methods ***/
 
-     /**
-      *
-      * @param fqn
-      * @returns {object}
-      *      Format: { domain: <definition|components>, id: (string) }
-      */
-     static parseFqn(fqn)
-     {
-         var retval = {};
-         if (fqn) {
-             if (fqn[0] === '.') {
-                 var parts = fqn.split('.');
-                 retval.domain = parts[0];
-                 retval.id = parts.shift();
-             } else {
-                 retval.id = fqn;
-             }
-         }
-         return retval;
-     }
+    /**
+     *
+     * @param fqn
+     * @returns {object}
+     *      Format: { domain: <definition|components>, id: (string) }
+     */
+    static parseFqn(fqn)
+    {
+        var retval = {};
+        if (fqn) {
+            if (fqn[0] === '.') {
+                var parts = fqn.split('.');
+                retval.domain = parts[0];
+                retval.id = parts.shift();
+            } else {
+                retval.id = fqn;
+            }
+        }
+        return retval;
+    }
 
      /*** Member methods ***/
 
-     /**
-      * getStore
-      */
-     getStore()
-     {
-         return this.store_;
-     }
+    /**
+     * getStore
+     */
+    getStore()
+    {
+        return this.store_;
+    }
 
-     /**
-      * Gets the activity Id (aka assocationId).
-      *
-      * @param {string} content
-      */
-     getActivityId()
-     {
-         return this.activityId_;
-     }
+    /**
+     * Gets the assignment Id.
+     *
+     * @return {string}
+     */
+    getAssignmentId()
+    {
+        return this.assignmentId_;
+    }
 
-     /**
-      * Gets the content.
-      *
-      * @param {object} content
-      */
-     getContent()
-     {
-         return this.content_;
-     }
+    /**
+     * Gets the activity Id.
+     *
+     * @return {string}
+     */
+    getActivityId()
+    {
+        return this.activityId_;
+    }
 
-     /**
-      * Sets the content.
-      * Triggers re-rendering.
-      *
-      * @todo - Trigger re-rendering
-      *
-      * @param {string} activityId - the activity ID
-      * @param {object} content - the actual content
-      */
-     setContent(activityId, content)
-     {
-         if (this.activityId_ === activityId) {
-             // Trying to set same content. othing to do.
-             return;
-         }
+    /**
+     * Gets the content.
+     *
+     * @param {object} content
+     */
+    getContent()
+    {
+        return this.content_;
+    }
 
-         this.activityId_ = activityId;
-         this.content_ = content;
-         this.componentReferences_ = {};
+    /**
+     * Sets the content.
+     * Triggers re-rendering.
+     *
+     * @todo - Trigger re-rendering
+     *
+     * @param {string} activityId - the activity ID
+     * @param {object} content - the actual content
+     */
+    setContent(activityDetails)
+    {
+        if (this.activityId_ === activityDetails.uuid) {
+            // Trying to set same content. Nothing to do.
+            return;
+        }
 
-         // Convert component spec from array to Object map for efficient
-         // retrieval.
-         // the components are already in form of map
-         this.componentSpecs_ = (content && content.body) ? content.body.components : null;
+        this.assignmentId_ = activityDetails.assignmentUuid;
+        this.activityId_ = activityDetails.uuid;
+        this.content_ = activityDetails.content;
+        this.componentReferences_ = {};
 
-         // New content was set, reset the store and trigger render
-         // @todo - Check if the content has been rendered, to rigger reset.
-         this.store_.reset();
-     }
+        // Convert component spec from array to Object map for efficient
+        // retrieval.
+        // the components are already in form of map
+        this.componentSpecs_ = (this.content_ && this.content_.body) ? this.content_.body.components : null;
 
-     ////////// item state access {{ //////////
+        // New content was set, reset the store and trigger render
+        // @todo - Check if the content has been rendered, to rigger reset.
+        this.store_.reset();
+    }
+
+    ////////// item state access {{ //////////
 
      /**
       * Add field answers to staging.
@@ -275,18 +295,18 @@ import stringTemplate from '../../../libs/contrib/templateengine';
          return (evalsState && evalsState.length > 0) ? evalsState[evalsState.length-1] : null;
      }
 
-     /**
-      * Returns true iff there was no prior submission or (there are more
-      * attempts left AND prior attempt was incorrect)
-      * @return boolean
-      */
-     isSubmissionAllowed()
-     {
+    /**
+     * Returns true iff there was no prior submission or (there are more
+     * attempts left AND prior attempt was incorrect)
+     * @return boolean
+     */
+    isSubmissionAllowed()
+    {
         let lastEval = this.getLastEval();
         let allowSubmission = lastEval ? (!lastEval.evalResult.aggregate.pass
             && lastEval.evalResult.attemptsLeft > 0): true;
         return allowSubmission;
-     }
+    }
 
      ////////// }} item state access //////////
 

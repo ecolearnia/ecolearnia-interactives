@@ -14,7 +14,7 @@ describe('ItemDispatcher', function () {
 
 		let store = null;
 		let mockEvaluator = {
-			evaluate: (nodeId, submissionDetails) =>
+			evaluate: (assignId, nodeId, submissionDetails) =>
 			{
 				//console.log(itemId, itemState);
 				// for the
@@ -38,7 +38,7 @@ describe('ItemDispatcher', function () {
             dispatcher.setStore(store);
 
             // @todo updateState will be changed to Promise
-			return dispatcher.updateState('assocId1', 'id1', {answer:123})
+			return dispatcher.updateState('dummyAssignId', 'assocId1', 'id1', {answer:123})
             .then(function(result){
 
                 const expectedStateItems = {
@@ -70,7 +70,7 @@ describe('ItemDispatcher', function () {
 				start: time, elapsedSeconds: 10,
 			});
 
-			return dispatcher.evaluate('id1')
+			return dispatcher.evaluate('assId', 'id1')
 			.then(function(result){
 				console.log('** result2=' + JSON.stringify(result));
 				//console.log('state2=' + JSON.stringify(store.getState().evaluations.toObject(), null, 2));

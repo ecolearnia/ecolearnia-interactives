@@ -22,7 +22,6 @@ var _ = require('lodash');
 //import { logger } from '../../libs/common/logger';
 var promiseutils = require('../../../libs/common/promiseutils');
 
-import ItemActionFactory from './itemactionfactory';
 
 /**
  * @class ItemDispatcher
@@ -144,7 +143,7 @@ export default class ItemDispatcher
      * @param {player.FieldCollection} componentState  - the component state
      * @param {boolean} skipSave  - If true, skip saving in the system or records
      */
-    updateState(activityId, componentId, componentState, skipSave)
+    updateState(assignmentId, activityId, componentId, componentState, skipSave)
     {
         let self = this;
         // register stop
@@ -160,7 +159,7 @@ export default class ItemDispatcher
             if (!skipSave && this.activityProvider_) {
                 // Save the item state in the system of records
                 let timestamps = this.store_.getState('timestamps');
-                this.activityProvider_.saveState(activityId, itemState, timestamps);
+                this.activityProvider_.saveState(assignmentId, activityId, itemState, timestamps);
             }
             resolve(retval);
         }.bind(this));
@@ -172,7 +171,7 @@ export default class ItemDispatcher
      * @param {string} activityId  - the activityId
      * @return {player.EvalDetails}
      */
-    evaluate(activityId)
+    evaluate(assignmentId, activityId)
     {
         let self = this;
 
@@ -208,7 +207,7 @@ export default class ItemDispatcher
 
         // Evaluator can be either local or remote proxy
         // The evaluator is expected to save activity state with the evalResult
-        return self.evaluator_.evaluate(activityId, submissionDetails)
+        return self.evaluator_.evaluate(assignmentId, activityId, submissionDetails)
         .then( function(evalResult) {
             // @todo - obtain the componentId from the fieldName
             let evalDetails = {

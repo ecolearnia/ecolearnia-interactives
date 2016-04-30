@@ -38,14 +38,25 @@ describe('ItemWrapper', function () {
 		});
 
         it('should setContent', function () {
-            itemWrapper.setContent('mockId', testContent);
-            expect(itemWrapper.nodeId_).to.equal("mockId");
-            expect(itemWrapper.content_).to.equal(testContent);
+            var activityDetails = {
+                assignmentUuid: 'mockAssId',
+                uuid: 'mockId',
+                content: testContent
+            };
+
+            itemWrapper.setContent(activityDetails);
+            expect(itemWrapper.activityId_, "activityId is wrong").to.equal("mockId");
+            expect(itemWrapper.content_, "content is wrong").to.equal(testContent);
             expect(mockStore.reset.calledOnce).to.true;
         });
 
 		it('should renderTemplateString', function () {
-            itemWrapper.setContent('mockId', testContent);
+            var activityDetails = {
+                assignmentUuid: 'mockAssId',
+                uuid: 'mockId',
+                content: testContent
+            };
+            itemWrapper.setContent(activityDetails);
 
             let result = itemWrapper.renderTemplateString("<%=num1%> <%=data2%>");
             expect(result).to.equal("-1 test-data");

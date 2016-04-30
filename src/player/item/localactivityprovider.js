@@ -52,9 +52,9 @@
       * @return {Promise.resolve({player.ActivityDetails})} On success resolves
       *         activity details
       */
-     fetch(id)
+     fetch(assignmentUuid, activityUuid)
      {
-         return this.sysRecords_.get(id);
+         return this.sysRecords_.get(activityUuid);
      }
 
      /**
@@ -64,13 +64,13 @@
       * @param {Array} timestamps - Array of timestamps
       * @return {Promise.resolve({string})} On success resolves state id (uuid)
       */
-     saveState(id, state, timestamps)
+     saveState(assignmentUuid, activityUuid, state, timestamps)
      {
          let stateEntry = {
              '@type': 'interaction',
              data: cloneObject(state)
          };
-         return this.sysRecords_.saveState(id, stateEntry, timestamps);
+         return this.sysRecords_.saveState(activityUuid, stateEntry, timestamps);
      }
 
 

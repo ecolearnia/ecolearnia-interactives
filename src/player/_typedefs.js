@@ -79,6 +79,7 @@ player.EvalResult;
  *  Example:
  *    "submission": {
  *      "timestamp": "20160213T13:25:00.23",
+ *      "secondsSpent": (number),
  *      "fields": {
  *        "field1": {
  *          "key": "ans1",

@@ -102,6 +102,11 @@ export default class AssignmentPlayer
         this.subscribeToEvents_();
     }
 
+
+
+    /**
+     * Reder
+     */
     render(placeholders)
     {
         this.placeholders_ = placeholders;
@@ -169,7 +174,7 @@ export default class AssignmentPlayer
                     if (activityDescriptor) {
                         this.store_.dispatch({
                             type: 'ADD_EVAL_BRIEF',
-                            activityId: activityDescriptor.id,
+                            activityId: activityDescriptor.uuid,
                             attemptNum: 0,
                             aggregateResult: null
                         });

@@ -69,6 +69,7 @@ export default class EliReactComponent extends React.Component
 
     /**
      * React component about to unmounting
+     * Unsubscrive itself from Store changes
      */
     componentWillUnmount()
     {

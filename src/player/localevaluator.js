@@ -111,7 +111,7 @@ export default class LocalEvaluator
      * @returns {Promise}
      *      On Succss: Returns outcome (player.EvalResult) in key-value pairs
      */
-    evaluate(activityId, submissionDetails)
+    evaluate(assignmentId, activityId, submissionDetails)
     {
         return this.sysRecords_.get(activityId)
         .then(function(activityDetails) {
@@ -146,6 +146,7 @@ export default class LocalEvaluator
                 }
             };
             this.sysRecords_.saveState(activityId, stateEntry);
+            this.sysRecords_.updateEvalBriefs(assignmentId, activityId, stateEntry.data);
             return evalResult;
         }.bind(this));
     }

@@ -79,8 +79,8 @@ export default class ReportComponent extends EliReactComponent
                         <tr>
                             <th>#</th>
                             <th></th>
-                            <th className={self.classNameFor('cell.numeric')}>{secondsSpentSigma} spent</th>
-                            <th></th>
+                            <th className={self.classNameFor('cell.numeric')}>Time spent</th>
+                            <th>Attempts</th>
                         </tr>
                     </thead>
                     <tbody>

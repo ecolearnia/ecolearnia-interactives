@@ -18,7 +18,9 @@
  */
 
 //var logger = require('../../libs/common/logger');
-var promiseutils = require('../../libs/common/promiseutils');
+var logger = require('../../libs/common/logger');
+
+import ResourceService from '../../../libs/common/resourceservice';
 
 /**
  * @class RemoteEvaluator
@@ -30,33 +32,22 @@ var promiseutils = require('../../libs/common/promiseutils');
  * service for evaluation.
  *
  */
-export default class Removtevaluator
+export default class RemoteEvaluator
 {
-    constructor(settings)
+    constructor(config)
     {
         /**
          * The logger
          */
-        //this.logger_ = logger.getLogger('Evaluator');
+        this.logger_ = logger.getLogger('RemoteEvaluator');
 
         /**
          * Evaluation handlers
          * @type {{}}
          * @private
          */
-        this.serviceUrl = settings.serviceUrl;
+        this.assignmentResource = new ResourceService(config);
 
-    }
-
-    /**
-     * Register rules per item
-     * Applicable for in-memory evaluation (e.g. non remote)
-     *
-     * @param {ItemPlayer} itemPlayer - The id associated with item (one per itemPlayer)
-     */
-    registerItemPlayer(itemPlayer)
-    {
-        var associationId = itemPlayer.getAssociationId();
     }
 
     /**
@@ -70,9 +61,9 @@ export default class Removtevaluator
      * @returns {Promise}
      *      On Succss: Returns outcome (Object) in key-value pairs
      */
-    evaluate(associationId, submissionData)
+    evaluate(assignmentUuid, activityUuid, submissionData)
     {
-        return this.evaluateRemote_(associationId, submissionData);
+        return this.evaluateRemote_(assignmentUuid, activityUuid, submissionData);
     }
 
     /**
@@ -80,21 +71,15 @@ export default class Removtevaluator
      * For php implementation, use
      * http://symfony.com/doc/current/components/expression_language/syntax.html
      *
-     * @param {Object} rule
+     * @param {string} assignmentUuid
+     * @param {string} activityUuid
      * @param {Array.<{fieldId, answered}>} answer - student submission
      *
      * @returns {Promise}
      *      On Succss: Returns outcome (Object) in key-value pairs
      */
-    evaluateLocal_(associationId, submissionData)
+    evaluateRemote_(assignmentUuid, activityUuid, submissionData)
     {
-        throw Error('NO IMPLEMENT');
-
-        /*
-        return promiseutils.createPromise( function(resolve, reject) {
-            // @todo - implement
-
-        }.bind(this));
-        */
+        return this.assignmentResource.doRequest({method: 'POST', body: submissionData}, assignmentUuid + '/activity/' + activityUuid + '/eval');
     }
 }

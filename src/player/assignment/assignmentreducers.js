@@ -69,7 +69,22 @@ const initialState = Immutable.Map({
     itemEvalBriefs: Immutable.OrderedMap({})
 });
 
+/*
+EvalBrief: {{
+    activityId: action.activityId,
+    attemptNum: action.attemptNum,
+    secondsSpent: action.secondsSpent,
+    aggregateResult: action.aggregateResult
+}}
+*/
 
+/**
+ *
+ * state: {
+ *  itemEvalBriefs: OrderedMap.<{string} activityId, {EvalBrief}>
+ *  stats:
+ * }
+ */
 function reportReducer(state = initialState, action)
 {
     switch (action.type) {

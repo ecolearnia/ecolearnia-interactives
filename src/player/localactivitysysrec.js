@@ -39,6 +39,8 @@ export default class LocalActivitySysRec
     {
         this.currId_ = 0;
         this.activities_ = {};
+
+        this.itemEvalBriefs_ = [];
     }
 
     /**
@@ -58,8 +60,8 @@ export default class LocalActivitySysRec
     add(activityDetails)
     {
         return promiseutils.createPromise( function(resolve, reject) {
-            let activityId = activityDetails.id ? activityDetails.id : this.getNextId();
-            activityDetails.id = activityId;
+            let activityId = activityDetails.uuid ? activityDetails.uuid : this.getNextId();
+            activityDetails.uuid = activityId;
             this.activities_[activityId] = cloneObject(activityDetails);
 
             return resolve(activityId);
@@ -108,6 +110,7 @@ export default class LocalActivitySysRec
                     this.activities_[id].evalDetails = [];
                 }
                 this.activities_[id].evalDetails.push(cloneObject(itemState));
+
             }
 
             if (timestamps) {
@@ -122,6 +125,59 @@ export default class LocalActivitySysRec
     {
         //(Math.floor((Math.random() * 1000) + 1)).toString()
         return 'LOCAL-' + (this.currId_++).toString();
+    }
+
+
+    updateEvalBriefs(assignmentUuid, activityUuid, evalDetails)
+    {
+        var evalBrief = {};
+        evalBrief.attemptNum = evalDetails.evalResult.attemptNum;
+        evalBrief.secondsSpent = evalDetails.submission.secondsSpent;
+        evalBrief.aggregateResult = evalDetails.evalResult.aggregate;
+
+        var found = false;
+        for(var i=0; i < this.itemEvalBriefs_.length; i++ ) {
+            if (this.itemEvalBriefs_[i].activityId == activityUuid) {
+                this.itemEvalBriefs_[i] = evalBrief;
+                found = true;
+            }
+        }
+        if (!found) {
+            this.itemEvalBriefs_.push(evalBrief);
+        }
+
+    }
+
+    /**
+     * Builds a stats object
+     * @param {Array.<>}itemEvalBriefs
+     */
+    buildStats()
+    {
+        let stats = {
+            score: 0,
+            corrects: 0,
+            incorrects: 0,
+            semicorrects: 0
+        };
+
+        for (let i=0; i < this.itemEvalBriefs_.length; i++) {
+            if (this.itemEvalBriefs_[i].aggregateResult) {
+                let itemEvalBrief = this.itemEvalBriefs_[i];
+                stats.score += itemEvalBrief.aggregateResult.score;
+                if (itemEvalBrief.aggregateResult.pass) {
+                    stats.corrects++;
+                } else {
+                    if (itemEvalBrief.aggregateResult.score == 0) {
+                        stats.incorrects++;
+                    } else {
+                        // Partial correct
+                        stats.semicorrects++;
+                    }
+                }
+            }
+        }
+        return stats;
     }
 
 }

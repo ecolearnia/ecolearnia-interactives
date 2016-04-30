@@ -102,8 +102,8 @@
         if (activityDescriptor) {
             $("#activitySelector").append(
                 $("<option></option>")
-                .attr("value", activityDescriptor.id)
-                .text(activityDescriptor.id)
+                .attr("value", activityDescriptor.uuid)
+                .text(activityDescriptor.uuid)
                 .prop('selected', true)
              );
         } else {

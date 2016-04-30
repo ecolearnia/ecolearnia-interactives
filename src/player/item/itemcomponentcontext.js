@@ -31,6 +31,10 @@ import utils from '../../../libs/common/utils';
  */
 export default class ComponentContext
 {
+    /**
+     * @param {string} componentId, the ID of the component
+     * @param {player.item.ItemWrapper} item
+     */
     constructor(componentId, item)
     {
         /**
@@ -46,6 +50,8 @@ export default class ComponentContext
 
         // For closure
         var dispatcher = this.item.dispatcher_;
+        let assignmentId = this.item.getAssignmentId();
+        this.assignmentId_ = assignmentId;
         let activityId = this.item.getActivityId();
         this.activityId_ = activityId;
         this.dispatcher = {
@@ -55,12 +61,12 @@ export default class ComponentContext
              */
             updateState: function (state)
             {
-                return dispatcher.updateState(activityId, componentId, state);
+                return dispatcher.updateState(assignmentId, activityId, componentId, state);
             },
 
             evaluate: function ()
             {
-                return dispatcher.evaluate(activityId);
+                return dispatcher.evaluate(assignmentId, activityId);
             },
 
             appendMessage: function (message)

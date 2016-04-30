@@ -5,7 +5,7 @@ var lodash = require('lodash');
 
 var testutils = require('../testutils');
 
-import LocalNodeSysRec from '../../src/player/localnodesysrec';
+import LocalActivitySysRec from '../../src/player/localactivitysysrec';
 
 // Component Under Test
 import LocalEvaluator from '../../src/player/localevaluator';
@@ -62,10 +62,10 @@ describe('LocalEvaluator', function () {
 	var localSysRec;
 
 	beforeEach(function(){
-		localSysRec = new LocalNodeSysRec();
+		localSysRec = new LocalActivitySysRec();
 		localSysRec.add(
 			{
-				id: 'testContent',
+				uuid: 'testContent',
 				content: testContent
 			}
 		);
@@ -283,7 +283,7 @@ describe('LocalEvaluator', function () {
 				}
 			};
 
-			return evaluator.evaluate('testContent', submissionDetails)
+			return evaluator.evaluate('testAssId', 'testContent', submissionDetails)
 			.then(function(evalDetails){
 				let expected = [{
 					"@type": "evaluation",
@@ -300,8 +300,8 @@ describe('LocalEvaluator', function () {
 						}
 					}
 				}];
-				//console.log("SysRecord.evalDetails" + JSON.stringify(localSysRec.nodes_['testContent'].evalDetails));
-				expect(localSysRec.nodes_['testContent'].evalDetails, 'SysRecord.evalDetails does not match!')
+				//console.log("SysRecord.evalDetails" + JSON.stringify(localSysRec.activities_['testContent'].evalDetails));
+				expect(localSysRec.activities_['testContent'].evalDetails, 'SysRecord.evalDetails does not match!')
 					.to.deep.equals(expected);
 				expect(evalDetails, 'evalDetails does not match!')
 					.to.deep.equals(expected[0].data.evalResult);
@@ -312,13 +312,13 @@ describe('LocalEvaluator', function () {
 			evaluator = new LocalEvaluator({ sysRecords: localSysRec});
 
 			// Init mock values, just suffice with any data and makes the array to have one element
-			localSysRec.nodes_['testContent'].evalDetails = [{evalResult:{dummyField:'dontcare'}}];
+			localSysRec.activities_['testContent'].evalDetails = [{evalResult:{dummyField:'dontcare'}}];
 			var submissionDetails = {
 				field1: {value: 15},
 				field2: {value: 18}
 			};
 
-			return evaluator.evaluate('testContent', submissionDetails)
+			return evaluator.evaluate('testAssId', 'testContent', submissionDetails)
 			.then(function(){
 				done("Should not have succeeded");
 			})

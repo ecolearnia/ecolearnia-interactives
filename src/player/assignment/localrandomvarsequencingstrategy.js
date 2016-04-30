@@ -75,9 +75,35 @@ export default class LocalRandomVarSequencingStrategy
          * Index of the current activity;
          */
         this.cursor_ = 0;
+
+        /**
+         * @todo - Verify if this is only applicable for local version
+         */
+        this.assignmentContext_ = {};
     }
 
     /**
+     * Starts a new assignment
+     * @param {string} outsetNodeUuid - outsent content node
+     * @return AssignmentDetails
+     */
+    startAssignment(outsetNodeUuid)
+    {
+        // nothing to do for local
+    }
+
+    /**
+     * Resumes an existig assignment
+     * @param {string} assignmentUuid - assignment id
+     * @return AssignmentDetails
+     */
+    resumeAssignment(assignmentUuid)
+    {
+        // nothing to do for local
+    }
+
+    /**
+     * NO USED...
      * Set the assignment context
      * The assignment context include:
      * assemblySettings: {
@@ -115,9 +141,9 @@ export default class LocalRandomVarSequencingStrategy
      * Gets the activity in the sequence history
      * @return {player.ActivityDescriptor}
      */
-    retrieveActivity(id)
+    retrieveActivity(uuid)
     {
-        return this.sysRecords_.get(id);
+        return this.sysRecords_.get(uuid);
     }
 
     /**
@@ -136,6 +162,8 @@ export default class LocalRandomVarSequencingStrategy
             return Promise.resolve(null);
         }
 
+        var assignmentStats = this.sysRecords_.buildStats();
+
         return self.getTemplateContent_()
         .then(function(content){
 
@@ -149,9 +177,9 @@ export default class LocalRandomVarSequencingStrategy
             return self.sysRecords_.add(newActivityDetails)
             .then(function(activityId) {
                 let newActivityDescriptor = {
-                    id: activityId,
+                    uuid: activityId,
                     playerName: 'ItemPlayer',
-                    userId: newActivityDetails.userId,
+                    userId: newActivityDetails.userId
                 };
                 self.activityDescriptors_.push(newActivityDescriptor);
 

@@ -14,7 +14,7 @@ describe('ItemPlayer', function () {
 		beforeEach(function(){
             var settings = {
                 pubsub :'mockPubSub',
-                nodeProvider: 'mockNodeProvider',
+                activityProvider: 'mockActivityProvider',
                 componentNamespace: 'interactives'
             };
 
@@ -30,7 +30,7 @@ describe('ItemPlayer', function () {
             expect(itemPlayer.logger_).to.not.null;
             expect(itemPlayer.pubsub).to.equal('mockPubSub');
             expect(itemPlayer.componentModule_).to.not.null;
-            expect(itemPlayer.nodeProvider_).to.equal('mockNodeProvider');
+            expect(itemPlayer.activityProvider_).to.equal('mockActivityProvider');
             expect(itemPlayer.store_).to.not.null;
             expect(itemPlayer.dispatcher_).to.not.null;
 		});

@@ -141,7 +141,7 @@ export default class ItemPlayer
     fetchActivity_(activityDescriptor)
     {
         let self = this;
-        return this.activityProvider_.fetch(activityDescriptor.id)
+        return this.activityProvider_.fetch(activityDescriptor.assignmentUuid, activityDescriptor.uuid)
         .then(function(activityDetails){
             let itemConfig = {
                 componentModule: self.componentModule_,
@@ -152,7 +152,7 @@ export default class ItemPlayer
                 self.item_.dispose();
             }
             self.item_ = new ItemWrapper(itemConfig);
-            self.item_.setContent(activityDetails.id, activityDetails.content);
+            self.item_.setContent(activityDetails);
 
             return activityDetails;
         });
@@ -188,10 +188,11 @@ export default class ItemPlayer
                 // This produces forceUpdate before component being rendered
                 // Calling an asyc method, Promise warning can be ignored
                 this.dispatcher_.updateState(
-                    activityDetails.id,
+                    activityDetails.assignmentUuid,
+                    activityDetails.uuid,
                     'fields',
                     stateData,
-                    true // Skip saving to the system or records
+                    true // Skip saving to the system or records, we just need to render
                 );
 
                 if (isEvaluation)
