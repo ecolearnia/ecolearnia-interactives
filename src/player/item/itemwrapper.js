@@ -180,7 +180,7 @@ export default class ItemWrapper
 
         this.assignmentId_ = activityDetails.assignmentUuid;
         this.activityId_ = activityDetails.uuid;
-        this.content_ = activityDetails.content;
+        this.content_ = (activityDetails.contentInstance) || activityDetails.content;
         this.componentReferences_ = {};
 
         // Convert component spec from array to Object map for efficient

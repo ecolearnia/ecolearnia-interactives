@@ -100,21 +100,23 @@ export default class LocalActivitySysRec
             if (!this.activities_[id]) {
                 return reject('Unexistent ID');
             }
-            // @todo - use array instead, and resolve a uuid
-            this.activities_[id].itemState = cloneObject(itemState);
+
+            this.activities_[id].item_state = cloneObject(itemState);
 
             // Add evalResult records
             // This case comes from evaluator (e.g. localevaluator.js)
             if (itemState['@type'] === 'evaluation') {
-                if (!('evalDetails' in this.activities_[id])) {
-                    this.activities_[id].evalDetails = [];
+                if (!('item_evalDetailsList' in this.activities_[id])) {
+                    this.activities_[id].item_evalDetailsList = [];
                 }
-                this.activities_[id].evalDetails.push(cloneObject(itemState));
+                this.activities_[id].item_evalDetailsList.push(cloneObject(itemState.data));
+
+                this.activities_[id].item_state.data = { fields: this.activities_[id].item_state.data.submission.fields};
 
             }
 
             if (timestamps) {
-                this.activities_[id].timestamps = cloneObject(timestamps);
+                this.activities_[id].item_timestamps = cloneObject(timestamps);
             }
 
             return resolve();

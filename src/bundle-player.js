@@ -30,6 +30,15 @@ var AssignmentPlayer = require('./player/assignment/assignmentplayer').default;
 module.exports.ItemPlayer = ItemPlayer;
 module.exports.AssignmentPlayer = AssignmentPlayer;
 
+var AssignmentProvider = require('./player/assignment/assignmentprovider').default;
+module.exports.AssignmentProvider = AssignmentProvider;
+var DefaultSequencingStrategy = require('./player/assignment/defaultsequencingstrategy').default;
+module.exports.DefaultSequencingStrategy = DefaultSequencingStrategy;
+var RemoteActivityProvider = require('./player/item/remoteactivityprovider').default;
+module.exports.RemoteActivityProvider = RemoteActivityProvider;
+var RemoteEvaluator = require('./player/remoteevaluator').default;
+module.exports.RemoteEvaluator = RemoteEvaluator;
+
 /**
  * Modules for fully local operation
  * @todo - Externalized into a different js bundle so it can be opted out

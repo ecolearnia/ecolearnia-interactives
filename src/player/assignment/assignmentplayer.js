@@ -105,7 +105,7 @@ export default class AssignmentPlayer
 
 
     /**
-     * Reder
+     * Render
      */
     render(placeholders)
     {
@@ -121,34 +121,38 @@ export default class AssignmentPlayer
         return this.loadNextItem();
     }
 
-    calcStats()
+    /**
+     * Starts a new assignment
+     * @param {string} outsetNodeUuid - outsent content node
+     * @return AssignmentDetails
+     */
+    startAssignment(outsetNodeUuid)
     {
-        let itemEvalBriefs = this.store_.getState()['itemEvalBriefs'].toArray();
-
-        let stats = {
-            score: 0,
-            corrects: 0,
-            incorrects: 0,
-            semicorrects: 0
-        };
-        for (let i=0; i < itemEvalBriefs.length; i++) {
-            if (itemEvalBriefs[i].aggregateResult) {
-                stats.score += itemEvalBriefs[i].aggregateResult.score;
-                if (itemEvalBriefs[i].pass) {
-                    stats.corrects++;
-                } else {
-                    if (itemEvalBriefs[i].score == 0) {
-                        stats.incorrects++;
-                    } else {
-                        // Partial correct
-                        stats.semicorrects++;
-                    }
-                }
-            }
-        }
-        return stats;
+        // nothing to do for local
+        return this.sequencingStrategy_.startAssignment(outsetNodeUuid);
     }
 
+    /**
+     * Resumes an existig assignment
+     * @param {string} assignmentUuid - assignment id
+     * @return AssignmentDetails
+     */
+    resumeAssignment(assignmentUuid)
+    {
+        // nothing to do for local
+        return this.sequencingStrategy_.resumeAssignment(assignmentUuid)
+        .then(function (assignmentDetails){
+            this.assignmentUuid_ = assignmentDetails.uuid;
+            // assignmentDetails.recentActivityUuid
+            // @todo stats
+            this.loadItemByActivityId(assignmentDetails.recentActivityUuid)
+            .then(function(activityDescriptor){
+                //this.logger_
+                return assignmentDetails;
+            });
+
+        });
+    }
 
     /**
      * loads the next item in the sequence
@@ -157,15 +161,15 @@ export default class AssignmentPlayer
     loadNextItem()
     {
         // @todo - set properly the assignmentContext
-        // Not sure to pass the courseContext, learningContext or assignmentContext,
+        /*
         let report = this.store_.getState('report');
         var context = {
             stats: (report) ? report.stats: null
-        };
-        return this.sequencingStrategy_.retrieveNextActivity(context)
+        };*/
+        return this.sequencingStrategy_.retrieveNextActivity()
         .then(function(activityDescriptor){
             this.pubsub_.publishRaw('next-activity-retrieved', activityDescriptor);
-            if (activityDescriptor) {
+            if (activityDescriptor && activityDescriptor.uuid) {
                 return this.fetchItemAndRender_(activityDescriptor)
                 .then(function(activityDescriptor){
                     // When successfully loaded, create a slot in the report for
@@ -192,8 +196,6 @@ export default class AssignmentPlayer
      */
     loadItemByActivityId(activityId)
     {
-        // @todo - set properly the assignmentContext
-        // Not sure to pass the courseContext, learningContext or assignmentContext,
         return this.sequencingStrategy_.retrieveActivity(activityId)
         .then(function(activityDescriptor){
             this.pubsub_.publish('activity-retrieved', activityDescriptor);
@@ -204,7 +206,6 @@ export default class AssignmentPlayer
 
     /**
      * loads an previously intantiated item in the sequene
-     */
     loadItemByIndex(index)
     {
         // @todo - set properly the assignmentContext
@@ -216,6 +217,7 @@ export default class AssignmentPlayer
             return this.fetchItemAndRender_(activityDescriptor);
         }.bind(this));
     }
+    */
 
     /**
      * Load the assignment report (at the end of assignment,

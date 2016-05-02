@@ -30,6 +30,12 @@ var player = require('./bundle-player');
 module.exports.ItemPlayer = player.ItemPlayer;
 module.exports.AssignmentPlayer = player.AssignmentPlayer;
 
+module.exports.AssignmentProvider = player.AssignmentProvider;
+module.exports.RemoteActivityProvider = player.RemoteActivityProvider;
+module.exports.RemoteEvaluator = player.RemoteEvaluator;
+module.exports.DefaultSequencingStrategy = player.DefaultSequencingStrategy;
+
+
 /**
  * Modules for fully local operation
  * @todo - Externalized into a different js bundle so it can be opted out

@@ -168,21 +168,22 @@ export default class ItemPlayer
         return this.fetchActivity_(activityDescriptor)
         .then(function(activityDetails){
             this.logger_.info('activityDetails.timestamps:', activityDetails.timestamps);
-            if (activityDetails.timestamps) {
+            if (activityDetails.item_timestamps) {
                 // set timestamps
                 this.dispatcher_.restoreTimestamps(
-                    activityDetails.timestamps
+                    activityDetails.item_timestamps
                 );
             }
             // Render will add a start timestamp
             this.render(el);
 
-            if (activityDetails.itemState) {
+            if (activityDetails.item_state) {
                 // @todo - later it will change to array of states, array tail
                 // being the last state
-                let isEvaluation = (activityDetails.itemState['@type'] === 'evaluation');
+                let isEvaluation = (activityDetails.item_state['@type'] === 'evaluation');
 
-                let stateData = isEvaluation ? activityDetails.itemState.data.submission.fields : activityDetails.itemState.data.fields;
+                // @todo change the local version accordinlgy
+                //let stateData = isEvaluation ? activityDetails.itemState.data.submission.fields : activityDetails.itemState.data.fields;
 
                 // @todo - fix:
                 // This produces forceUpdate before component being rendered
@@ -191,7 +192,7 @@ export default class ItemPlayer
                     activityDetails.assignmentUuid,
                     activityDetails.uuid,
                     'fields',
-                    stateData,
+                    activityDetails.item_state.data.fields,
                     true // Skip saving to the system or records, we just need to render
                 );
 
@@ -199,7 +200,9 @@ export default class ItemPlayer
                 {
                     // Notice appendEvalDetails, as opposed to evaluate(), only
                     // updates the store
-                    this.dispatcher_.appendEvalDetails(activityDetails.itemState.data);
+                    var lastEvalDetails = activityDetails.item_evalDetailsList[activityDetails.item_evalDetailsList.length-1];
+                    //this.dispatcher_.appendEvalDetails(activityDetails.item_state.data);
+                    this.dispatcher_.appendEvalDetails(lastEvalDetails);
                 }
 
 

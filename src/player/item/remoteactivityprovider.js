@@ -17,8 +17,6 @@
  * @date 3/04/2016
  */
 
-import ResourceService from '../../../libs/common/resourceservice';
-
 /**
  * @class RemoteActivityProvider
  *
@@ -35,7 +33,7 @@ export default class RemoteActivityProvider
      */
     constructor(config)
     {
-        this.assignmentResource = new ResourceService(config);
+        this.assignmentProvider_ = config.assignmentProvider;
     }
 
     /**
@@ -46,7 +44,7 @@ export default class RemoteActivityProvider
      */
     fetch(assignmentUuid, activityUuid)
     {
-        return this.assignmentResource.doRequest({method: 'GET'}, assignmentUuid + '/activity/' + activityUuid);
+        return this.assignmentProvider_.fetchActivity(assignmentUuid, activityUuid);
     }
 
     /**
@@ -55,9 +53,6 @@ export default class RemoteActivityProvider
      */
     saveState(assignmentUuid, activityUuid, state, timestamps)
     {
-        var requestyBody = {
-            state, timestamps
-        };
-        return this.assignmentResource.doRequest({method: 'PUT', body: requestyBody}, assignmentUuid + '/activity/' + activityUuid + '/state');
+        return this.assignmentProvider_.saveActivityState(assignmentUuid, activityUuid, state, timestamps);
     }
  }

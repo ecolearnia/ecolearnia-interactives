@@ -97,13 +97,13 @@ export default class LocalRandomVarSequencingStrategy
      * @param {string} assignmentUuid - assignment id
      * @return AssignmentDetails
      */
-    resumeAssignment(assignmentUuid)
+    getAssignment(assignmentUuid)
     {
         // nothing to do for local
     }
 
     /**
-     * NO USED...
+     * ONLY for local
      * Set the assignment context
      * The assignment context include:
      * assemblySettings: {
@@ -127,7 +127,6 @@ export default class LocalRandomVarSequencingStrategy
     /**
      * Gets the activity in the sequence history
      * @return {player.ActivityDescriptor}
-     */
     retrieveActivityByIndex(index)
     {
         if (index < this.activityDescriptors_.length()) {
@@ -136,6 +135,7 @@ export default class LocalRandomVarSequencingStrategy
             return Promise.reject('Index out of bounds');
         }
     }
+    */
 
     /**
      * Gets the activity in the sequence history
@@ -148,13 +148,13 @@ export default class LocalRandomVarSequencingStrategy
 
     /**
      * Get next activity
-     * @param {player.assignent.AssignmentContext} the assignment context
      * @return {promise} - On success the next sequenceActivity (object containing associationId, item content)
      */
-    retrieveNextActivity(assignmentContext)
+    retrieveNextActivity()
     {
         let self = this;
-        let numItemInstances = dotAccess(assignmentContext, 'assemblySettings.numItemInstances');
+
+        let numItemInstances = dotAccess(this.assignmentContext_, 'assemblySettings.numItemInstances');
         numItemInstances = numItemInstances || 5;
         if (self.activityDescriptors_.length >= numItemInstances)
         {
@@ -162,7 +162,9 @@ export default class LocalRandomVarSequencingStrategy
             return Promise.resolve(null);
         }
 
-        var assignmentStats = this.sysRecords_.buildStats();
+        var assignmentContext = {
+            stats: this.sysRecords_.buildStats()
+        };
 
         return self.getTemplateContent_()
         .then(function(content){

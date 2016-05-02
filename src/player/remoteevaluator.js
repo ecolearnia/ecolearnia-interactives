@@ -20,8 +20,6 @@
 //var logger = require('../../libs/common/logger');
 var logger = require('../../libs/common/logger');
 
-import ResourceService from '../../../libs/common/resourceservice';
-
 /**
  * @class RemoteEvaluator
  *
@@ -42,11 +40,10 @@ export default class RemoteEvaluator
         this.logger_ = logger.getLogger('RemoteEvaluator');
 
         /**
-         * Evaluation handlers
-         * @type {{}}
+         * @type {AssignmentProvider}
          * @private
          */
-        this.assignmentResource = new ResourceService(config);
+        this.assignmentProvider_ = config.assignmentProvider;
 
     }
 
@@ -61,9 +58,9 @@ export default class RemoteEvaluator
      * @returns {Promise}
      *      On Succss: Returns outcome (Object) in key-value pairs
      */
-    evaluate(assignmentUuid, activityUuid, submissionData)
+    evaluate(assignmentUuid, activityUuid, submissionDetails)
     {
-        return this.evaluateRemote_(assignmentUuid, activityUuid, submissionData);
+        return this.evaluateRemote_(assignmentUuid, activityUuid, submissionDetails);
     }
 
     /**
@@ -78,8 +75,8 @@ export default class RemoteEvaluator
      * @returns {Promise}
      *      On Succss: Returns outcome (Object) in key-value pairs
      */
-    evaluateRemote_(assignmentUuid, activityUuid, submissionData)
+    evaluateRemote_(assignmentUuid, activityUuid, submissionDetails)
     {
-        return this.assignmentResource.doRequest({method: 'POST', body: submissionData}, assignmentUuid + '/activity/' + activityUuid + '/eval');
+        return this.assignmentProvider_.evalActivity(assignmentUuid, activityUuid, submissionDetails);
     }
 }

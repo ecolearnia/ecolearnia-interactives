@@ -285,9 +285,8 @@ describe('LocalEvaluator', function () {
 
 			return evaluator.evaluate('testAssId', 'testContent', submissionDetails)
 			.then(function(evalDetails){
-				let expected = [{
-					"@type": "evaluation",
-					"data": {
+				let expected = [
+					{
 						"submission": submissionDetails,
 						"evalResult": {
 							"attemptNum": 1,
@@ -299,12 +298,12 @@ describe('LocalEvaluator', function () {
 							}
 						}
 					}
-				}];
+				];
 				//console.log("SysRecord.evalDetails" + JSON.stringify(localSysRec.activities_['testContent'].evalDetails));
-				expect(localSysRec.activities_['testContent'].evalDetails, 'SysRecord.evalDetails does not match!')
+				expect(localSysRec.activities_['testContent'].item_evalDetailsList, 'SysRecord.item_evalDetailsList does not match!')
 					.to.deep.equals(expected);
 				expect(evalDetails, 'evalDetails does not match!')
-					.to.deep.equals(expected[0].data.evalResult);
+					.to.deep.equals(expected[0].evalResult);
 			});
 		});
 

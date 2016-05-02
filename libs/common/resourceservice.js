@@ -28,13 +28,13 @@ import _ from 'lodash';
   *  A default resource .
   *
   */
- export default class ResourceService
- {
-     /**
-      * @param {object} config
-      */
-     constructor(config)
-     {
+export default class ResourceService
+{
+    /**
+     * @param {object} config
+     */
+    constructor(config)
+    {
         /**
          * The logger
          */
@@ -56,113 +56,112 @@ import _ from 'lodash';
         this.defaultRequestOpts_ = {
             headers: {
                 'Accept': 'application/json',
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                //'credentials': 'include'
             }
         };
 
-     }
+    }
 
-     /**
-      * Gets a resource
-      * @param
-      */
-     get(params)
-     {
-         if (!params || !params._id) {
-             Promise.reject(new Error('_id not provided'));
-         }
-         return this.doRequest({method: 'GET'}, params._id, params);
-     }
+    /**
+     * Gets a resource
+     * @param
+     */
+    get(params)
+    {
+        if (!params || !params._id) {
+            Promise.reject(new Error('_id not provided'));
+        }
+        return this.doRequest({method: 'GET'}, params._id, params);
+    }
 
-     /**
-      * Saves a resource (POST)
-      * Inserts new (POST) if id was not provided, updates (PUT) otherwise
-      * @param
-      */
-     save(params, data)
-     {
-         var method = 'POST';
-         var id = '';
-         if (params && params._id) {
-             method = 'PUT';
-             id = params._id;
-         }
-         let opts  = this.buildCallOpts({method: method, body: data});
+    /**
+     * Saves a resource (POST)
+     * Inserts new (POST) if id was not provided, updates (PUT) otherwise
+     * @param
+     */
+    save(params, data)
+    {
+        var method = 'POST';
+        var id = '';
+        if (params && params._id) {
+            method = 'PUT';
+            id = params._id;
+        }
 
-         return this.doRequest({method: method, body: data}, id, params);
-     }
+        return this.doRequest({method: method, body: data}, id, params);
+    }
 
-     /**
-      * Queries resources (GET list)
-      * @param
-      */
-     query(params)
-     {
-         return this.doRequest({method: 'GET'}, null, params);
-     }
+    /**
+     * Queries resources (GET list)
+     * @param
+     */
+    query(params)
+    {
+        return this.doRequest({method: 'GET'}, null, params);
+    }
 
-     /**
-      * Deletes a resource (DELETE)
-      * @param
-      */
-     delete(params)
-     {
-         let opts  = this.buildCallOpts({method:'DELETE'});
-         return this.doRequest({method: 'DELETE'}, params._id, params);
-     }
+    /**
+     * Deletes a resource (DELETE)
+     * @param
+     */
+    delete(params)
+    {
+        return this.doRequest({method: 'DELETE'}, params._id, params);
+    }
 
-     /**
-      * Same as remove
-      */
-     remove(params)
-     {
-         return this.delete(params);
-     }
+    /**
+     * Same as remove
+     */
+    remove(params)
+    {
+        return this.delete(params);
+    }
 
-     /**
-      * Returns a query string  excluding the _id which should be used in the
-      * URL path.
-      * @param {Map.<string, string>} key value pairs
-      */
-     buildQueryString(params)
-     {
+    /**
+     * Returns a query string  excluding the _id which should be used in the
+     * URL path.
+     * @param {Map.<string, string>} key value pairs
+     */
+    buildQueryString(params)
+    {
         var queryStrings = [];
         for(var key in params)
         {
-             if (key !== '_id') {
-                 queryStrings.push(key + '=' + encodeURIComponent(params[key]));
-             }
+            if (key !== '_id') {
+                queryStrings.push(key + '=' + encodeURIComponent(params[key]));
+            }
         }
         if (queryStrings.length > 0) {
             return '?' + queryStrings.join('&');
         }
         return '';
-     }
+    }
 
-     buildCallOpts(opts)
-     {
-         let optParams = opts || {};
-         let optsMerged  = {};
-         _.assign(optsMerged, optParams, this.defaultRequestOpts_);
-         return optsMerged;
-     }
+    buildCallOpts(opts)
+    {
+        let optParams = opts || {};
+        let optsMerged  = {};
+        _.assign(optsMerged, optParams, this.defaultRequestOpts_);
+        return optsMerged;
+    }
 
-     /**
-      * Makes an http request
-      * @param {object} opts - the options
-      * @param {!string} path - (optional) path to append to the URL, usually
-      *         the id of the resource
-      * @param {!Object} queryParams - (optional) key-value pairs for query string
-      */
-     doRequest(opts, path, params)
-     {
-         let optParams = this.buildCallOpts(opts);
-         let pathParam = path || '';
-         var qstring = this.buildQueryString(params);
-         return fetch(this.baseUrl_ + pathParam + qstring, optParams)
+    /**
+     * Makes an http request
+     * @param {object} opts - the options
+     * @param {!string} path - (optional) path to append to the URL, usually
+     *         the id of the resource
+     * @param {!Object} queryParams - (optional) key-value pairs for query string
+     */
+    doRequest(opts, path, params)
+    {
+        let optParams = this.buildCallOpts(opts);
+        let pathParam = path || '';
+        var qstring = this.buildQueryString(params);
+        return fetch(this.baseUrl_ + pathParam + qstring, optParams)
             .then(checkStatus)
             .then(response => response.json());
-     }
+    }
 }
 
 function checkStatus(response)
@@ -170,7 +169,7 @@ function checkStatus(response)
     if (response.status >= 200 && response.status < 300) {
         return response;
     } else {
-        var error = new Error(response.statusText)
+        var error = new Error(response.statusText);
         error.response = response;
         throw error;
     }
