@@ -55,7 +55,6 @@ player.FieldEvalResult;
  * @typedef {{
  *   attemptNum: (number),
  *   attemptsLeft: (number),
- *   pass: (boolean),
  *   aggregate: (player.FieldEvalResult),
  *   fields: {
  *     <field0>: (player.FieldEvalResult),

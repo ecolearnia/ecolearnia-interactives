@@ -1,4 +1,5 @@
 PENDING list
+- Fix: When last activity reached, return {} instead of null
 - Refactor: rename 'node' to 'activity'
 - [IMPROVE] Given a wrong answer, when user changes the value, remove the marker
 - [TimerComponent]

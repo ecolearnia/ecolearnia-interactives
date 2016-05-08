@@ -14,8 +14,9 @@
     "watch-module-math": "watchify   -t [ babelify --presets [ es2015 react ] ] -x lodash -x ./src/components/module-math-elem.js:module-math-elem -r -o build/eli-math-elem.module.js -d -v",
     "watch-core": "watchify   -t [ babelify --presets [ es2015 react ] ] -x bluebird -x lodash -x react/addons -r ./src/bundle-core.js:core -r -o build/eli-core.bundle.js -d -v",
     "watch-player": "watchify   -t [ babelify --presets [ es2015 react ] ] -x bluebird -x lodash -x react/addons -r ./src/bundle-player.js:player -r -o build/eli-player.bundle.js -d -v",
-    
     "watch-inter": "watchify   -t [ babelify --presets [ es2015 react ] ] -x bluebird -x lodash -x redux -x immutable -x mathjs -x react/addons -r ./src/bundle-interactives.js:interactives -r -o build/eli-interactives.bundle.js -d -v",
+
+    "build-services": "browserify -t babelify  -x bluebird -r ./libs/service/bundle-service.js:service  >  build/eli-services.bundle.min.js",
     "test": "./node_modules/.bin/mocha --compilers js:babel-core/register -u tdd --recursive --reporter spec test/spec --timeout 1500"
   },
   "repository": {
@@ -36,6 +37,7 @@
   "dependencies": {
     "bluebird": "^3.2.2",
     "immutable": "^3.7.6",
+    "js-cookie": "^2.1.1",
     "lodash": "^4.3.0",
     "mathjs": "^2.7.0",
     "react": "^0.14.7",
