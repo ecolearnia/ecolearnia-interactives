@@ -108,8 +108,8 @@ export default class AssignmentPlayer
         var self = this;
         return this.resourceService.doRequest({method: 'POST', body: JSON.stringify(account)}, 'signup')
         .then(function(response) {
-            if (response.data) {
-                self.setSession(response.data.token, response.data.auth.account);
+            if (response) {
+                self.setSession(response.token, response.auth.account);
                 return self.getAccount();
             } else {
                 // Login failed (bad id or password)
@@ -118,7 +118,7 @@ export default class AssignmentPlayer
         })
         .catch(function(error) {
             // Error wrapped by $http containing config, data, status, statusMessage, etc.
-            //if (error.data)
+            //if (error)
             throw error;
         });
     }
@@ -131,8 +131,8 @@ export default class AssignmentPlayer
         var self = this;
         return this.resourceService.doRequest({method: 'POST', body: JSON.stringify(credentials)}, 'signin')
         .then(function(response) {
-            if (response.data) {
-                self.setSession(response.data.token, response.data.auth.account);
+            if (response) {
+                self.setSession(response.token, response.auth.account);
                 return self.getAccount();
             } else {
                 // Login failed (bad id or password)
@@ -141,7 +141,7 @@ export default class AssignmentPlayer
         })
         .catch(function(error) {
             // Error wrapped by $http containing config, data, status, statusMessage, etc.
-            //if (error.data)
+            //if (error)
             throw error;
         });
     }
@@ -185,7 +185,7 @@ export default class AssignmentPlayer
                     headers: { 'Authorization': self.getToken() }
                 })*/
                 .then(function(response) {
-                    self.setAccount(response.data); // account
+                    self.setAccount(response); // account
                     resolve(self.getAccount());
                 })
                 .catch(function(error) {
