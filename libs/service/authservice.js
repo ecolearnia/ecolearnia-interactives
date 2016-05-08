@@ -106,7 +106,7 @@ export default class AssignmentPlayer
     signup(account)
     {
         var self = this;
-        return this.resourceService.doRequest({method: 'POST'}, 'signup', account)
+        return this.resourceService.doRequest({method: 'POST', body: JSON.stringify(account)}, 'signup')
         .then(function(response) {
             if (response.data) {
                 self.setSession(response.data.token, response.data.auth.account);
@@ -129,7 +129,7 @@ export default class AssignmentPlayer
     signin(credentials)
     {
         var self = this;
-        return this.resourceService.doRequest({method: 'POST'}, 'signin', credentials)
+        return this.resourceService.doRequest({method: 'POST', body: JSON.stringify(credentials)}, 'signin')
         .then(function(response) {
             if (response.data) {
                 self.setSession(response.data.token, response.data.auth.account);
