@@ -4,9 +4,8 @@
   "description": "EcoLearnia's interactives (UI) library",
   "main": "el-interactives.js",
   "scripts": {
-    "webserver": "python -m SimpleHTTPServer 8000",
     "browsersync": "browser-sync start --server",
-    "opentest": "open /Applications/Google\\ Chrome.app http://localhost:8000/artifacts/samples/sample-interactives1.html",
+    "opentest": "open /Applications/Google\\ Chrome.app http://localhost:3000/artifacts/samples/sample-interactives1.html",
     "build-deps-core": "browserify -t babelify  -r bluebird -r lodash -r redux -r immutable -r react/addons | uglifyjs -c >  build/eli-externdeps.bundle.min.js",
     "build-deps-math": "browserify -t babelify  -r mathjs | uglifyjs -c >  build/eli-externdeps-math.bundle.min.js",
     "watch-module-common": "watchify   -t [ babelify --presets [ es2015 react ] ] -x lodash -x react/addons -r ./src/components/module-common.js:module-common -r -o build/eli-common.module.js -d",
