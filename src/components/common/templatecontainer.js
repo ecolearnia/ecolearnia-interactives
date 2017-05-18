@@ -15,7 +15,7 @@
  * @date 10/21/15
  */
 var React = require('react');
-var EliReactComponent = require('./elireactcomponent').EliReactComponent;
+import EliReactComponent from '../../core/elireactcomponent';
 
 const ID_PREFIX = 'elio_';
 
@@ -33,7 +33,7 @@ const ID_PREFIX = 'elio_';
  *
  * @todo - Do validation/sanitization of the HTML tags in the template string.
  */
-export class TemplateContainerComponent extends EliReactComponent
+export default class TemplateContainerComponent extends EliReactComponent
 {
 
     constructor(props)
@@ -81,7 +81,7 @@ export class TemplateContainerComponent extends EliReactComponent
         this.renderChildren_();
         return (
             <div ref="templateBody" dangerouslySetInnerHTML={this.createMarkup()} />
-            )
+        );
     }
 
     /***** React methods *****/
@@ -158,4 +158,4 @@ export class TemplateContainerComponent extends EliReactComponent
 
         return template.join('');
     }
-};
+}

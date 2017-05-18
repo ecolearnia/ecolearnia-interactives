@@ -22,7 +22,6 @@ var _ = require('lodash');
 //import { logger } from '../../libs/common/logger';
 var promiseutils = require('../../../libs/common/promiseutils');
 
-import ItemActionFactory from './itemactionfactory';
 
 /**
  * @class ItemDispatcher
@@ -60,9 +59,9 @@ export default class ItemDispatcher
         this.store_;
 
         /**
-         * @type {NodeProvider}
+         * @type {ActivityProvider}
          */
-        this.nodeProvider_;
+        this.activityProvider_;
 
         /**
          * @type {ActionFactory}
@@ -74,18 +73,18 @@ export default class ItemDispatcher
          */
         this.evaluator_;
 
-        if(config && config.nodeProvider) {
-            this.nodeProvider_ = config.nodeProvider;
+        if(config && config.activityProvider) {
+            this.activityProvider_ = config.activityProvider;
         }
         if(config && config.actionFactory) {
             this.actionFactory_ = config.actionFactory;
         } else {
-            throw new Exception('actionFactory not provided')
+            throw new Error('actionFactory not provided');
         }
         if(config && config.evaluator) {
             this.evaluator_ = config.evaluator;
         } else {
-            throw new Exception('evaluator not provided')
+            throw new Error('evaluator not provided');
         }
     }
 
@@ -139,12 +138,12 @@ export default class ItemDispatcher
      * Updates state of a component.
      * It also saves in the system or records
      *
-     * @param {string} nodeId -
+     * @param {string} activityId -
      * @param {string} componentId -
      * @param {player.FieldCollection} componentState  - the component state
      * @param {boolean} skipSave  - If true, skip saving in the system or records
      */
-    updateState(nodeId, componentId, componentState, skipSave)
+    updateState(assignmentId, activityId, componentId, componentState, skipSave)
     {
         let self = this;
         // register stop
@@ -157,10 +156,10 @@ export default class ItemDispatcher
             );
 
             let itemState = this.store_.getState('components');
-            if (!skipSave && this.nodeProvider_) {
+            if (!skipSave && this.activityProvider_) {
                 // Save the item state in the system of records
                 let timestamps = this.store_.getState('timestamps');
-                this.nodeProvider_.saveState(nodeId, itemState, timestamps);
+                this.activityProvider_.saveState(assignmentId, activityId, itemState, timestamps);
             }
             resolve(retval);
         }.bind(this));
@@ -169,10 +168,10 @@ export default class ItemDispatcher
     /**
      * Evaluate the current state
      *
-     * @param {string} nodeId  - the nodeId
+     * @param {string} activityId  - the activityId
      * @return {player.EvalDetails}
      */
-    evaluate(nodeId)
+    evaluate(assignmentId, activityId)
     {
         let self = this;
 
@@ -202,13 +201,13 @@ export default class ItemDispatcher
         };
 
         self.pubsub && self.pubsub.publish('submission:beforeProcess', {
-            nodeId: nodeId,
+            activityId: activityId,
             data: itemState
         });
 
         // Evaluator can be either local or remote proxy
-        // The evaluator is expected to save node state with the evalResult
-        return self.evaluator_.evaluate(nodeId, submissionDetails)
+        // The evaluator is expected to save activity state with the evalResult
+        return self.evaluator_.evaluate(assignmentId, activityId, submissionDetails)
         .then( function(evalResult) {
             // @todo - obtain the componentId from the fieldName
             let evalDetails = {
@@ -225,7 +224,7 @@ export default class ItemDispatcher
                 // publish event
                 // @todo - change string literals to constants
                 self.pubsub.publish('submission:responded', {
-                    nodeId: nodeId,
+                    activityId: activityId,
                     data: evalDetails
                 });
             }
@@ -235,7 +234,7 @@ export default class ItemDispatcher
         .catch(function(error) {
             // @todo
             self.pubsub && self.pubsub.publish('error', {
-                nodeId: nodeId,
+                activityId: activityId,
                 error: error
             });
             //alert(error);

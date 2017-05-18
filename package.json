@@ -4,11 +4,18 @@
   "description": "EcoLearnia's interactives (UI) library",
   "main": "el-interactives.js",
   "scripts": {
-    "webserver": "python -m SimpleHTTPServer 8000",
-    "opentest": "open /Applications/Google\\ Chrome.app http://localhost:8000/artifacts/samples/sample-interactives1.html",
-    "build-deps": "browserify -t babelify  -r bluebird -r lodash -r react/addons | uglifyjs -c >  build/el-externdeps.bundle.min.js",
-    "build-inter": "browserify -t [ babelify --presets [ es2015 react ] ] -x bluebird -x lodash -x react/addons -r ./src/interactives.js:interactives -r -o build/el-interactives.bundle.js -d",
-    "watch-inter": "watchify   -t [ babelify --presets [ es2015 react ] ] -x bluebird -x lodash -x react/addons -r ./src/interactives.js:interactives -r -o build/el-interactives.bundle.js -d -v",
+    "browsersync": "browser-sync start --server",
+    "opentest": "open /Applications/Google\\ Chrome.app http://localhost:3000/artifacts/samples/sample-interactives1.html",
+    "build-deps-core": "browserify -t babelify  -r bluebird -r lodash -r redux -r immutable -r react/addons | uglifyjs -c >  build/eli-externdeps.bundle.min.js",
+    "build-deps-math": "browserify -t babelify  -r mathjs | uglifyjs -c >  build/eli-externdeps-math.bundle.min.js",
+    "watch-module-common": "watchify   -t [ babelify --presets [ es2015 react ] ] -x lodash -x react/addons -r ./src/components/module-common.js:module-common -r -o build/eli-common.module.js -d",
+    "watch-module-assessment": "watchify   -t [ babelify --presets [ es2015 react ] ] -x lodash -x react/addons -r ./src/components/module-assessment-common.js:module-assessment-common -r -o build/eli-assessment-common.module.js -d -v",
+    "watch-module-math": "watchify   -t [ babelify --presets [ es2015 react ] ] -x lodash -x ./src/components/module-math-elem.js:module-math-elem -r -o build/eli-math-elem.module.js -d -v",
+    "watch-core": "watchify   -t [ babelify --presets [ es2015 react ] ] -x bluebird -x lodash -x react/addons -r ./src/bundle-core.js:core -r -o build/eli-core.bundle.js -d -v",
+    "watch-player": "watchify   -t [ babelify --presets [ es2015 react ] ] -x bluebird -x lodash -x react/addons -r ./src/bundle-player.js:player -r -o build/eli-player.bundle.js -d -v",
+    "watch-inter": "watchify   -t [ babelify --presets [ es2015 react ] ] -x bluebird -x lodash -x redux -x immutable -x mathjs -x react/addons -r ./src/bundle-interactives.js:interactives -r -o build/eli-interactives.bundle.js -d -v",
+
+    "build-services": "browserify -t babelify  -x bluebird -r ./libs/service/bundle-service.js:service  >  build/eli-services.bundle.min.js",
     "test": "./node_modules/.bin/mocha --compilers js:babel-core/register -u tdd --recursive --reporter spec test/spec --timeout 1500"
   },
   "repository": {
@@ -29,6 +36,7 @@
   "dependencies": {
     "bluebird": "^3.2.2",
     "immutable": "^3.7.6",
+    "js-cookie": "^2.1.1",
     "lodash": "^4.3.0",
     "mathjs": "^2.7.0",
     "react": "^0.14.7",
@@ -38,12 +46,12 @@
     "rx": "^4.0.7"
   },
   "devDependencies": {
-    "babel-loader": "^6.2.2",
-    "babel-preset-es2015": "^6.5.0",
+    "babel-loader": "^6.2.4",
+    "babel-preset-es2015": "^6.6.0",
     "babel-preset-react": "^6.5.0",
-    "babelify": "^6.3.0",
+    "babelify": "^7.2.0",
     "blanket": "^1.1.7",
-    "browserify": "^11.2.0",
+    "browserify": "^13.0.0",
     "chai": "^3.5.0",
     "gulp": "^3.9.1",
     "gulp-autoprefixer": "^3.1.0",
@@ -52,8 +60,8 @@
     "mocha": "^2.4.5",
     "should": "^7.1.1",
     "sinon": "^1.17.3",
-    "watchify": "^3.4.0",
-    "webpack": "^1.12.13",
+    "watchify": "^3.7.0",
+    "webpack": "^1.12.15",
     "webpack-dev-server": "^1.14.1"
   }
 }

@@ -16,10 +16,8 @@
  */
 
 var React = require('react');
-var EliReactComponent = require('./elireactcomponent').EliReactComponent;
-var Events = require('../core/events').Events;
-
-var internals = {};
+var Events = require('../../core/events').Events;
+import EliReactComponent from '../../core/elireactcomponent';
 
 /**
  * @class FeedbackComponent
@@ -33,7 +31,7 @@ var internals = {};
  *
  * @todo - Implement!
  */
-export class FeedbackComponent extends EliReactComponent
+export default class FeedbackComponent extends EliReactComponent
 {
     constructor(props)
     {

@@ -17,7 +17,6 @@
  * @date 3/09/2016
  */
 
-import _ from 'lodash';
 import Immutable from 'immutable';
 
 
@@ -61,25 +60,40 @@ function statsReducer(state = Immutable.Map({}), action)
 */
 
 const initialState = Immutable.Map({
-  stats: {
-      score: 0,
-      corrects: 0,
-      incorrects: 0,
-      semicorrects: 0
-  },
-  itemEvalBriefs: Immutable.OrderedMap({})
-})
+    stats: {
+        score: 0,
+        corrects: 0,
+        incorrects: 0,
+        semicorrects: 0
+    },
+    itemEvalBriefs: Immutable.OrderedMap({})
+});
 
+/*
+EvalBrief: {{
+    activityId: action.activityId,
+    attemptNum: action.attemptNum,
+    secondsSpent: action.secondsSpent,
+    aggregateResult: action.aggregateResult
+}}
+*/
 
+/**
+ *
+ * state: {
+ *  itemEvalBriefs: OrderedMap.<{string} activityId, {EvalBrief}>
+ *  stats:
+ * }
+ */
 function reportReducer(state = initialState, action)
 {
     switch (action.type) {
         case 'ADD_EVAL_BRIEF':
 
             let itemEvalBriefs = state.get('itemEvalBriefs') || Immutable.OrderedMap({});
-            state = state.set('itemEvalBriefs', itemEvalBriefs.set(action.nodeId,
+            state = state.set('itemEvalBriefs', itemEvalBriefs.set(action.activityId,
                 {
-                    nodeId: action.nodeId,
+                    activityId: action.activityId,
                     attemptNum: action.attemptNum,
                     secondsSpent: action.secondsSpent,
                     aggregateResult: action.aggregateResult
@@ -130,6 +144,6 @@ function buildStats_(itemEvalBriefs)
 const reducers = {
     report: reportReducer
     //itemEvalBriefs: itemEvalBriefReducer
-}
+};
 
 export default reducers;

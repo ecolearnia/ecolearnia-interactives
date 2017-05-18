@@ -146,7 +146,7 @@ internals.Log.prototype.log = function(level /* log parts */)
 /**
  * Trace log
  */
-internals.Log.prototype.trace = function(args) {
+internals.Log.prototype.trace = function(params) {
     var args = Array.prototype.slice.call(arguments);
     args.unshift(internals.level.trace);
     this.log.apply(this, arguments);
@@ -155,7 +155,7 @@ internals.Log.prototype.trace = function(args) {
 /**
  * Debug log
  */
-internals.Log.prototype.debug = function(args) {
+internals.Log.prototype.debug = function(params) {
     var args = Array.prototype.slice.call(arguments);
     args.unshift(internals.level.debug);
     this.log.apply(this, args);
@@ -164,7 +164,7 @@ internals.Log.prototype.debug = function(args) {
 /**
  * Info log
  */
-internals.Log.prototype.info = function(args) {
+internals.Log.prototype.info = function(params) {
     var args = Array.prototype.slice.call(arguments);
     args.unshift(internals.level.info);
     this.log.apply(this, args);
@@ -173,7 +173,7 @@ internals.Log.prototype.info = function(args) {
 /**
  * Warn log
  */
-internals.Log.prototype.warn = function(args) {
+internals.Log.prototype.warn = function(params) {
     var args = Array.prototype.slice.call(arguments);
     args.unshift(internals.level.warn);
     this.log.apply(this, args);
@@ -182,7 +182,7 @@ internals.Log.prototype.warn = function(args) {
 /**
  * Error log
  */
-internals.Log.prototype.error = function(args) {
+internals.Log.prototype.error = function(params) {
     var args = Array.prototype.slice.call(arguments);
     args.unshift(internals.level.error);
     this.log.apply(this, args);
@@ -192,7 +192,7 @@ internals.Log.prototype.error = function(args) {
  * fatal
  * @param args
  */
-internals.Log.prototype.fatal = function(args) {
+internals.Log.prototype.fatal = function(params) {
     var args = Array.prototype.slice.call(arguments);
     args.unshift(internals.level.fatal);
     this.log.apply(this, args);

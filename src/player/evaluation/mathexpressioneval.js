@@ -54,6 +54,6 @@ export class MathExpressionEval {
 
         return promise;
     }
-};
+}
 
 MathExpressionEval.prototype.name = 'mathexpression';

@@ -9,8 +9,9 @@
 
     <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
-    <script src='../../build/el-externdeps.bundle.min.js'></script>
-    <script src="../../build/el-interactives.bundle.js" type="text/javascript" ></script>
+    <script src='../../build/eli-externdeps.bundle.min.js'></script>
+    <script src='../../build/eli-externdeps-math.bundle.min.js'></script>
+    <script src="../../build/eli-interactives.bundle.js" type="text/javascript" ></script>
 
     <title>Interactive (v0.0.2) Test</title>
 </head>
@@ -34,7 +35,7 @@
     var interactives = require('interactives');
 
     // Provides local node system of records
-    var localSysRec = new interactives.LocalNodeSysRec();
+    var localSysRec = new interactives.LocalActivitySysRec();
 
     var sequencingConfig = {
         sysRecords: localSysRec,
@@ -42,10 +43,10 @@
         resourceUrl: 'item.9numbers.json'
     };
 
-    var nodeProvider = new interactives.LocalNodeProvider({sysRecords: localSysRec});
+    var activityProvider = new interactives.LocalActivityProvider({sysRecords: localSysRec});
     var evaluator = new interactives.LocalEvaluator({sysRecords: localSysRec});
     var assignemntPlayerConfig = {
-        nodeProvider: nodeProvider,
+        activityProvider: activityProvider,
         evaluator: evaluator,
         sequencingStrategy: new interactives.LocalRandomVarSequencingStrategy(sequencingConfig)
     };
@@ -68,7 +69,7 @@
     var placeholders = {
         content: document.getElementById('placeholder-content'),
         scoreboard: document.getElementById('placeholder-scoreboard')
-    }
+    };
 
 
     assignmentPlayer.render(placeholders);
@@ -84,7 +85,7 @@
     }
 
     $("#nodeSelector").change(function(event) {
-        assignmentPlayer.loadItemByNodeId(event.target.value);
+        assignmentPlayer.loadItemByActivityId(event.target.value);
     });
 
 </script>

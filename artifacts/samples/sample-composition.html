@@ -1,0 +1,102 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+<head lang="en">
+    <meta charset="UTF-8" />
+
+    <link rel="stylesheet" href="../../css/app.css">
+
+    <script src="https://code.jquery.com/jquery-2.1.4.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/modernizr/2.8.3/modernizr.min.js"></script>
+    <script src='../../build/el-externdeps.bundle.min.js'></script>
+    <script src="../../build/eli-interactives.bundle.js" type="text/javascript" ></script>
+
+    <script src='https://code.responsivevoice.org/responsivevoice.js'></script>
+
+    <title>Interactive (v0.0.2) Test</title>
+</head>
+<body>
+
+<div class="row">
+  <div class="large-12 columns">
+    <h1>Welcome to EcoLearnia Interactive demo</h1>
+  </div>
+</div>
+<div class="row">
+    <div class="large-12 columns">
+
+
+        <!-- Item pane -->
+        <div class="eli-assignent callout" />
+
+            <div class="row" style="background: yellow">
+
+                <div class="large-12 columns">
+                    <!-- breadcrumbs. @todo - Convert into React component  -->
+                    <div class="eli-assignment-placeholder" id="placeholder-breadcrumbs" ></div>
+                </div>
+            </div>
+
+            <!-- Body  -->
+            <div class="row">
+                <div class="medium-8 columns">
+                    <div class="row">
+                        <div class="small-4 small-centered columns">
+                            <div class="eli-assignment-placeholder" id="_placeholder-content"></div>
+                        </div>
+                    </div>
+                </div>
+                <div class="medium-4 columns">
+                    <div>
+                        <select id="activitySelector"></select>
+                    </div>
+                    <button id="nextButton" type="button" class="success button" onClick="navigateNext()">Next</button>
+                    <div class="eli-assignment-placeholder" id="_placeholder-scoreboard" ></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="row">
+  <div class="large-12 columns">
+    EcoLearnia 2016
+  </div>
+</div>
+
+
+<script type="text/javascript">
+    var interactives = require('interactives');
+
+    var container = new interactives.Container();
+
+    // Registers modules
+    container.registerModule(interactives.modules.common);
+    // All modules registered, now initialize the store
+    container.initStore();
+    container.setContent({
+        "@doc": "This section is defines the structure of this item.",
+        "body": {
+            "mainComponent": "breadcrumbs",
+            "components": {
+                "breadcrumbs": {
+                    "type": "Breadcrumbs",
+                    "config": {}
+                }
+            }
+        }
+    });
+
+    var placeholders = interactives.Container.scanPlaceholders("placeholder-");
+    // render it!
+    container.render(placeholders);
+
+    var breadcrumbs = [{title: 'home'}, {title: 'test'}];
+    container.getDispatcher('common').setBreadcrumbs(breadcrumbs);
+
+
+</script>
+
+</body>
+</html>

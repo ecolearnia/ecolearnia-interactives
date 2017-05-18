@@ -21,7 +21,7 @@ import ReactDOM from 'react-dom';
 import utils  from '../../../libs/common/utils';
 import logger from '../../../libs/common/logger';
 
-import ComponentContext  from '../../components/componentcontext';
+import ComponentContext  from './itemcomponentcontext';
 import stringTemplate from '../../../libs/contrib/templateengine';
 
 
@@ -34,13 +34,13 @@ import stringTemplate from '../../../libs/contrib/templateengine';
   *  Item Wrapper wraps around the item, which is a content instanted.
   *
   */
- export default class ItemWrapper
- {
-     /**
-      * @param {object} config
-      */
-     constructor(config)
-     {
+export default class ItemWrapper
+{
+    /**
+     * @param {object} config
+     */
+    constructor(config)
+    {
         /**
          * The logger
          */
@@ -53,7 +53,16 @@ import stringTemplate from '../../../libs/contrib/templateengine';
          * submission and append the result (activity).
          * @type {string}
          */
-        this.nodeId_;
+        this.assignmentId_;
+
+        /**
+         * ID used to retrieve the LearnerAssignmentItem, the content instance
+         * with associated user/course.
+         * The server uses the retrieved LearnerAssignmentItem to evaluate the
+         * submission and append the result (activity).
+         * @type {string}
+         */
+        this.activityId_;
 
         /**
          * The content which this context is operating on
@@ -67,113 +76,124 @@ import stringTemplate from '../../../libs/contrib/templateengine';
          */
         this.componentSpecs_ = {};
 
-         /**
-          * Map of component id to its instance
-          * @type {Map.<string, {ref: Component, unsubscribe: function>}
-          */
-         this.componentReferences_ = {};
+        /**
+         * Map of component id to its instance
+         * @type {Map.<string, {ref: Component, unsubscribe: function>}
+         */
+        this.componentReferences_ = {};
 
-         /**
-          * Scope in which all the component class definitions are.
-          * @type {Object}
-          */
-         this.componentModule_ = config.componentModule;
+        /**
+         * Scope in which all the component class definitions are.
+         * @type {Object}
+         */
+        this.componentModule_ = config.componentModule;
 
-         /**
-          * @type {StoreFacade}
-          */
-         this.store_ = config.store;
+        /**
+         * @type {StoreFacade}
+         */
+        this.store_ = config.store;
 
-         /**
-          * @type {ItemDispatcher}
-          */
-         this.dispatcher_ = config.dispatcher;
-     }
+        /**
+         * @type {ItemDispatcher}
+         */
+        this.dispatcher_ = config.dispatcher;
+    }
 
      /*** Static methods ***/
 
-     /**
-      *
-      * @param fqn
-      * @returns {object}
-      *      Format: { domain: <definition|components>, id: (string) }
-      */
-     static parseFqn(fqn)
-     {
-         var retval = {};
-         if (fqn) {
-             if (fqn[0] === '.') {
-                 var parts = fqn.split('.');
-                 retval.domain = parts[0];
-                 retval.id = parts.shift();
-             } else {
-                 retval.id = fqn;
-             }
-         }
-         return retval;
-     }
+    /**
+     *
+     * @param fqn
+     * @returns {object}
+     *      Format: { domain: <definition|components>, id: (string) }
+     */
+    static parseFqn(fqn)
+    {
+        var retval = {};
+        if (fqn) {
+            if (fqn[0] === '.') {
+                var parts = fqn.split('.');
+                retval.domain = parts[0];
+                retval.id = parts.shift();
+            } else {
+                retval.id = fqn;
+            }
+        }
+        return retval;
+    }
 
      /*** Member methods ***/
 
-     /**
-      * getStore
-      */
-     getStore()
-     {
-         return this.store_;
-     }
+    /**
+     * getStore
+     */
+    getStore()
+    {
+        return this.store_;
+    }
 
-     /**
-      * Gets the node Id (aka assocationId).
-      *
-      * @param {string} content
-      */
-     getNodeId()
-     {
-         return this.nodeId_;
-     }
+    /**
+     * Gets the assignment Id.
+     *
+     * @return {string}
+     */
+    getAssignmentId()
+    {
+        return this.assignmentId_;
+    }
 
-     /**
-      * Gets the content.
-      *
-      * @param {object} content
-      */
-     getContent()
-     {
-         return this.content_;
-     }
+    /**
+     * Gets the activity Id.
+     *
+     * @return {string}
+     */
+    getActivityId()
+    {
+        return this.activityId_;
+    }
 
-     /**
-      * Sets the content.
-      * Triggers re-rendering.
-      *
-      * @todo - Trigger re-rendering
-      *
-      * @param {string} nodeId - the node ID
-      * @param {object} content - the actual content
-      */
-     setContent(nodeId, content)
-     {
-         if (this.nodeId_ === nodeId) {
-             // Trying to set same content. othing to do.
-             return;
-         }
+    /**
+     * Gets the content.
+     *
+     * @param {object} content
+     */
+    getContent()
+    {
+        return this.content_;
+    }
 
-         this.nodeId_ = nodeId;
-         this.content_ = content;
-         this.componentReferences_ = {};
+    /**
+     * Sets the content.
+     * Triggers re-rendering.
+     *
+     * @todo - Trigger re-rendering
+     *
+     * @param {string} activityId - the activity ID
+     * @param {object} content - the actual content
+     */
+    setContent(activityDetails)
+    {
+        if (this.activityId_ === activityDetails.uuid) {
+            // Trying to set same content. Nothing to do.
+            return;
+        }
 
-         // Convert component spec from array to Object map for efficient
-         // retrieval.
-         // the components are already in form of map
-         this.componentSpecs_ = (content && content.body) ? content.body.components : null;
+        this.assignmentId_ = activityDetails.assignmentUuid;
+        this.activityId_ = activityDetails.uuid;
+        this.content_ = (activityDetails.contentInstance) || activityDetails.content;
+        this.componentReferences_ = {};
 
-         // New content was set, reset the store and trigger render
-         // @todo - Check if the content has been rendered, to rigger reset.
-         this.store_.reset();
-     }
+        // Convert component spec from array to Object map for efficient
+        // retrieval.
+        // the components are already in form of map
+        this.componentSpecs_ = (this.content_ && this.content_.body) ? this.content_.body.components : null;
 
-     ////////// item state access {{ //////////
+        // New content was set, reset the store and trigger render
+        // @todo - Check if the content has been rendered, to rigger reset.
+        this.store_.reset();
+    }
+
+    ////////// item state access {{ //////////
 
      /**
       * Add field answers to staging.
@@ -275,18 +295,18 @@ import stringTemplate from '../../../libs/contrib/templateengine';
          return (evalsState && evalsState.length > 0) ? evalsState[evalsState.length-1] : null;
      }
 
-     /**
-      * Returns true iff there was no prior submission or (there are more
-      * attempts left AND prior attempt was incorrect)
-      * @return boolean
-      */
-     isSubmissionAllowed()
-     {
+    /**
+     * Returns true iff there was no prior submission or (there are more
+     * attempts left AND prior attempt was incorrect)
+     * @return boolean
+     */
+    isSubmissionAllowed()
+    {
         let lastEval = this.getLastEval();
         let allowSubmission = lastEval ? (!lastEval.evalResult.aggregate.pass
             && lastEval.evalResult.attemptsLeft > 0): true;
         return allowSubmission;
-     }
+    }
 
      ////////// }} item state access //////////
 
@@ -354,15 +374,16 @@ import stringTemplate from '../../../libs/contrib/templateengine';
          if (utils.startsWith(fqn, '.'))
          {
              // if it starts with '.model' returns the model's object,
+             var refPath;
              if (utils.startsWith(fqn, '.model'))
              {
-                 var refPath = fqn.substring('.model.'.length );
+                 refPath = fqn.substring('.model.'.length );
                  retval = utils.dotAccess(this.content_.modelDefinition, refPath);
              }
              // if it starts with '.variable' returns the varable's object
              else if (utils.startsWith(fqn, '.variable.'))
              {
-                 var refPath = fqn.substring('.variable.'.length );
+                 refPath = fqn.substring('.variable.'.length );
                  retval = utils.dotAccess(this.content_.variableDeclarations, refPath);
              }
 
@@ -374,7 +395,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
              }
              else
              {
-                 throw new Exception('Wrong object path, must be either .model or .component')
+                 throw new Error('Wrong object path, must be either .model or .component');
              }
          }
          // Not starts with dot means it is already a component name.
@@ -442,7 +463,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
              }
              this.componentReferences_[id] = {
                  ref: this.createComponent(id)
-             }
+             };
          }
          return this.componentReferences_[id].ref;
      }
@@ -499,7 +520,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
             this.logger_.warn('Unexistent componentId for registerUnsubscriber' + componentId);
             return;
         }
-        this.logger_.info({ node: this.nodeId_, component: componentId},  'Registering unsubscribe');
+        this.logger_.info({ activity: this.activityId_, component: componentId},  'Registering unsubscribe');
         this.componentReferences_[componentId].unsubsribe = unsubscribe;
      }
 
@@ -525,7 +546,7 @@ import stringTemplate from '../../../libs/contrib/templateengine';
              if (this.componentReferences_[componentId].el) {
                  //this.unmount(this.componentReferences_[componentId].el);
              } else {
-                 this.logger_.info('Skipping unmountComponentAtNode ' + componentId);
+                 this.logger_.info('Skipping unmountComponentAtActivity ' + componentId);
              }
          }
      }

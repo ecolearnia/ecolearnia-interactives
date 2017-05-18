@@ -15,3 +15,35 @@ span.correct {
 span.incorrect {
         color: $alert-color;
     }
+
+.top-bar.secondary {
+    background-color: $el-theme-secondiary
+}
+
+// This is a card container
+.custom-card {
+  @include card-container(
+    $background: #fff, // Background color
+    $color: #000, // Text color
+    $border: 1px solid #000, // Border
+    $radius: 3px, // Border radius
+    $shadow: 0 4px 10px black, // Box shadow
+    $padding: 1rem,
+    $margin: 1rem // Margin bottom
+  );
+}
+
+// This is a card divider
+.custom-card-divider {
+  @include card-divider(
+    $background: #ccc,
+    $padding: 1rem
+  );
+}
+
+// This is a card section
+.custom-card-section {
+  @include card-section(
+    $padding: 1rem
+  );
+}

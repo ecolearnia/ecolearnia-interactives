@@ -22,24 +22,6 @@ var PubSub = require('../libs/common/pubsub').default;
 module.exports.PubSub = PubSub;
 
 /**
- * Interactive Components:
- * The interactive components must be exported, otherwise the CoreContext will
- * not be able to instantiate.
- */
-var ActionBar = require('./components/actionbar.jsx').ActionBarComponent;
-var Feedback = require('./components/feedback.jsx').FeedbackComponent;
-var SelectQuestion = require('./components/questions/selectquestion.jsx').SelectQuestionComponent;
-var TextFieldQuestion = require('./components/questions/textfieldquestion.jsx').TextFieldQuestionComponent;
-var NineNumbersQuestion = require('./components/questions/ninenumbersquestion.jsx').NineNumbersQuestionComponent;
-var TemplateContainer = require('./components/templatecontainer').TemplateContainerComponent;
-module.exports.ActionBar = ActionBar;
-module.exports.Feedback = Feedback;
-module.exports.SelectQuestion = SelectQuestion;
-module.exports.TextFieldQuestion = TextFieldQuestion;
-module.exports.TemplateContainer = TemplateContainer;
-module.exports.NineNumbersQuestion = NineNumbersQuestion;
-
-/**
  * Players and their auxiliaries:
  * These can be bundled in different file
  */
@@ -48,17 +30,26 @@ var AssignmentPlayer = require('./player/assignment/assignmentplayer').default;
 module.exports.ItemPlayer = ItemPlayer;
 module.exports.AssignmentPlayer = AssignmentPlayer;
 
+var AssignmentProvider = require('./player/assignment/assignmentprovider').default;
+module.exports.AssignmentProvider = AssignmentProvider;
+var DefaultSequencingStrategy = require('./player/assignment/defaultsequencingstrategy').default;
+module.exports.DefaultSequencingStrategy = DefaultSequencingStrategy;
+var RemoteActivityProvider = require('./player/item/remoteactivityprovider').default;
+module.exports.RemoteActivityProvider = RemoteActivityProvider;
+var RemoteEvaluator = require('./player/remoteevaluator').default;
+module.exports.RemoteEvaluator = RemoteEvaluator;
+
 /**
  * Modules for fully local operation
  * @todo - Externalized into a different js bundle so it can be opted out
  */
-var LocalNodeSysRec = require('./player/localnodesysrec').default;
-var LocalNodeProvider = require('./player/item/localnodeprovider').default;
+var LocalActivitySysRec = require('./player/localactivitysysrec').default;
+var LocalActivityProvider = require('./player/item/localactivityprovider').default;
 var LocalRandomVarSequencingStrategy = require('./player/assignment/localrandomvarsequencingstrategy').default;
 var VariablesRandomizer = require('./player/assignment/variablesrandomizer').default;
 var LocalEvaluator = require('./player/localevaluator').default;
-module.exports.LocalNodeSysRec = LocalNodeSysRec
-module.exports.LocalNodeProvider = LocalNodeProvider
+module.exports.LocalActivitySysRec = LocalActivitySysRec;
+module.exports.LocalActivityProvider = LocalActivityProvider;
 module.exports.LocalRandomVarSequencingStrategy = LocalRandomVarSequencingStrategy;
 module.exports.VariablesRandomizer = VariablesRandomizer;
 module.exports.LocalEvaluator = LocalEvaluator;

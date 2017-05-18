@@ -32,8 +32,8 @@ import VariablesRandomizer from './variablesrandomizer.js';
   * declaration and the question prompts should be referencing them.
   *
   * MUST implement the following methods:
-  * retrieveNode(index) -> Promise.resolve(SequenceNode)
-  * retrieveNextNode() -> Promise.resolve(SequenceNode)
+  * retrieveActivity(index) -> Promise.resolve(SequenceActivity)
+  * retrieveNextActivity() -> Promise.resolve(SequenceActivity)
   */
 export default class LocalRandomVarSequencingStrategy
 {
@@ -59,25 +59,51 @@ export default class LocalRandomVarSequencingStrategy
         }
 
         /**
-         * Array of node descriptors
-         * @type Array<player.NodeDescriptors>
+         * Array of activity descriptors
+         * @type Array<player.ActivityDescriptors>
          */
-        this.nodeDescriptors_ = [];
+        this.activityDescriptors_ = [];
 
         /**
          * The local system of records.
          * This is used to add content
-         * @type {LocalNodeSysRec}
+         * @type {LocalActivitySysRec}
          */
         this.sysRecords_ = config.sysRecords;
 
         /**
-         * Index of the current node;
+         * Index of the current activity;
          */
         this.cursor_ = 0;
+
+        /**
+         * @todo - Verify if this is only applicable for local version
+         */
+        this.assignmentContext_ = {};
     }
 
     /**
+     * Starts a new assignment
+     * @param {string} outsetNodeUuid - outsent content node
+     * @return AssignmentDetails
+     */
+    startAssignment(outsetNodeUuid)
+    {
+        // nothing to do for local
+    }
+
+    /**
+     * Resumes an existig assignment
+     * @param {string} assignmentUuid - assignment id
+     * @return AssignmentDetails
+     */
+    getAssignment(assignmentUuid)
+    {
+        // nothing to do for local
+    }
+
+    /**
+     * ONLY for local
      * Set the assignment context
      * The assignment context include:
      * assemblySettings: {
@@ -99,63 +125,67 @@ export default class LocalRandomVarSequencingStrategy
     }
 
     /**
-     * Gets the node in the sequence history
-     * @return {player.NodeDescriptor}
-     */
-    retrieveNodeByIndex(index)
+     * Gets the activity in the sequence history
+     * @return {player.ActivityDescriptor}
+    retrieveActivityByIndex(index)
     {
-        if (index < this.nodeDescriptors_.length()) {
-            return Promise.resolve(this.nodeDescriptors_[index]);
+        if (index < this.activityDescriptors_.length()) {
+            return Promise.resolve(this.activityDescriptors_[index]);
         } else {
-            return Promise.reject("Index out of bounds");
+            return Promise.reject('Index out of bounds');
         }
     }
+    */
 
     /**
-     * Gets the node in the sequence history
-     * @return {player.NodeDescriptor}
+     * Gets the activity in the sequence history
+     * @return {player.ActivityDescriptor}
      */
-    retrieveNode(id)
+    retrieveActivity(uuid)
     {
-        return this.sysRecords_.get(id);
+        return this.sysRecords_.get(uuid);
     }
 
     /**
-     * Get next node
-     * @param {player.assignent.AssignmentContext} the assignment context
-     * @return {promise} - On success the next sequenceNode (object containing associationId, item content)
+     * Get next activity
+     * @return {promise} - On success the next sequenceActivity (object containing associationId, item content)
      */
-    retrieveNextNode(assignmentContext)
+    retrieveNextActivity()
     {
         let self = this;
-        let numItemInstances = dotAccess(assignmentContext, 'assemblySettings.numItemInstances');
+
+        let numItemInstances = dotAccess(this.assignmentContext_, 'assemblySettings.numItemInstances');
         numItemInstances = numItemInstances || 5;
-        if (self.nodeDescriptors_.length >= numItemInstances)
+        if (self.activityDescriptors_.length >= numItemInstances)
         {
             // Reached end of assignment item.
             return Promise.resolve(null);
         }
+
+        var assignmentContext = {
+            stats: this.sysRecords_.buildStats()
+        };
 
         return self.getTemplateContent_()
         .then(function(content){
 
             // The following is supposed to happen in the server side:
             var randomizer = new VariablesRandomizer();
-            let newNodeDetails = {
+            let newActivityDetails = {
                 // Create a random number for the associationId
                 userId: 'test-user',
                 content: randomizer.apply(content, assignmentContext)
             };
-            return self.sysRecords_.add(newNodeDetails)
-            .then(function(nodeId) {
-                let newNodeDescriptor = {
-                    id: nodeId,
+            return self.sysRecords_.add(newActivityDetails)
+            .then(function(activityId) {
+                let newActivityDescriptor = {
+                    uuid: activityId,
                     playerName: 'ItemPlayer',
-                    userId: newNodeDetails.userId,
+                    userId: newActivityDetails.userId
                 };
-                self.nodeDescriptors_.push(newNodeDescriptor);
+                self.activityDescriptors_.push(newActivityDescriptor);
 
-                return newNodeDescriptor;
+                return newActivityDescriptor;
             });
         });
     }

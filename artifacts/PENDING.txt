@@ -1,6 +1,9 @@
 PENDING list
+- Fix: When last activity reached, return {} instead of null
+- Refactor: rename 'node' to 'activity'
 - [IMPROVE] Given a wrong answer, when user changes the value, remove the marker
 - [TimerComponent]
+- [TextField] input type based on data type
 - [TextField] validator based on data type
 - [inputpad] input keypad for tablets
 - React-ify Assignment Breadcrumb component

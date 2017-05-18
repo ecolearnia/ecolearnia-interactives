@@ -11,7 +11,7 @@
  * EcoLearnia v0.0.2
  *
  * @fileoverview
- *  This file includes the definition of LocalNodeProvider class.
+ *  This file includes the definition of LocalActivityProvider class.
  *
  * @author Young Suk Ahn Park
  * @date 3/04/2016
@@ -23,15 +23,15 @@
  }
 
  /**
-  * @class LocalNodeProvider
+  * @class LocalActivityProvider
   *
   * @module interactives/player/item
   *
   * @classdesc
-  *  LocalNodeProvider provides interface for CRUD operation of the Node
+  *  LocalActivityProvider provides interface for CRUD operation of the Activity
   *
   */
- export default class LocalNodeProvider
+ export default class LocalActivityProvider
  {
      /**
       * @param {object} config
@@ -41,36 +41,36 @@
          /**
           * The local system of records.
           * This is used to add content
-          * @type {LocalNodeSysRec}
+          * @type {LocalActivitySysRec}
           */
          this.sysRecords_ = config.sysRecords;
      }
 
      /**
-      * Fetches a Node
-      * @param {string} id  - the node id to fetch
-      * @return {Promise.resolve({player.NodeDetails})} On success resolves
-      *         node details
+      * Fetches an activity
+      * @param {string} id  - the activity id to fetch
+      * @return {Promise.resolve({player.ActivityDetails})} On success resolves
+      *         activity details
       */
-     fetch(id)
+     fetch(assignmentUuid, activityUuid)
      {
-         return this.sysRecords_.get(id);
+         return this.sysRecords_.get(activityUuid);
      }
 
      /**
-      * Saves an node item's state
-      * @param {string} id  - the node Id
+      * Saves an activity item's state
+      * @param {string} id  - the activity Id
       * @param {player.ItemState | player.EvalDetails} state
       * @param {Array} timestamps - Array of timestamps
       * @return {Promise.resolve({string})} On success resolves state id (uuid)
       */
-     saveState(id, state, timestamps)
+     saveState(assignmentUuid, activityUuid, state, timestamps)
      {
          let stateEntry = {
-             "@type": 'interaction',
+             '@type': 'interaction',
              data: cloneObject(state)
-         }
-         return this.sysRecords_.saveState(id, stateEntry, timestamps);
+         };
+         return this.sysRecords_.saveState(activityUuid, stateEntry, timestamps);
      }
 
 

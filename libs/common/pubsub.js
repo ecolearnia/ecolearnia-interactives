@@ -39,7 +39,6 @@ export default class PubSub
 {
     constructor(props)
     {
-        // Using Backbone's event
         this.subjects = {};
     }
 
@@ -56,7 +55,7 @@ export default class PubSub
      * @param {string} topic
      * @param {function} handler
      */
-    unsubscribe (topic, handler)
+    unsubscribe (topic)
     {
         var fnName = createName(topic);
         if (this.subjects[fnName]) {
@@ -104,4 +103,4 @@ export default class PubSub
 
         this.subjects = {};
     }
-};
+}

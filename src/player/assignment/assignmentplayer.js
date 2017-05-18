@@ -25,12 +25,12 @@ import utils  from '../../../libs/common/utils';
 import logger from '../../../libs/common/logger';
 import PubSub from '../../../libs/common/pubsub';
 
-import StoreFacade       from '../storefacade';
-import assignmentReducers  from './assignmentreducers';
-import ItemPlayer from '../item/itemplayer';
+import StoreFacade        from '../../core/storefacade';
+import assignmentReducers from './assignmentreducers';
+import ItemPlayer         from '../item/itemplayer';
 
 import ScoreBoardComponent from './components/scoreboard.jsx';
-import ReportComponent from './components/report.jsx';
+import ReportComponent    from './components/report.jsx';
 
 /**
  * @class AssignmentPlayer
@@ -57,6 +57,11 @@ export default class AssignmentPlayer
     constructor(config)
     {
         /**
+         * The logger
+         */
+        this.logger_ = logger.getLogger('AssignmentPlayer');
+
+        /**
          * DOM element placeholders to render the assignment item
          * Assigned by the load() method
          * @type{Mapp.<{string} placeholderName, {DOM} el}
@@ -70,11 +75,11 @@ export default class AssignmentPlayer
 
         // Item Player Config
         var itemPlayerConfig = {
-            nodeProvider: config.nodeProvider,
+            activityProvider: config.activityProvider,
             evaluator: config.evaluator,
             componentNamespace: 'interactives',
             pubsub: this.pubsub_
-        }
+        };
 
         /**
          * The item player instance which manages an item content
@@ -97,6 +102,11 @@ export default class AssignmentPlayer
         this.subscribeToEvents_();
     }
 
+
+
+    /**
+     * Render
+     */
     render(placeholders)
     {
         this.placeholders_ = placeholders;
@@ -111,64 +121,68 @@ export default class AssignmentPlayer
         return this.loadNextItem();
     }
 
-    calcStats()
+    /**
+     * Starts a new assignment
+     * @param {string} outsetNodeUuid - outsent content node
+     * @return AssignmentDetails
+     */
+    startAssignment(outsetNodeUuid)
     {
-        let itemEvalBriefs = this.store_.getState()['itemEvalBriefs'].toArray();
-
-        let stats = {
-            score: 0,
-            corrects: 0,
-            incorrects: 0,
-            semicorrects: 0
-        };
-        for (let i=0; i < itemEvalBriefs.length; i++) {
-            if (itemEvalBriefs[i].aggregateResult) {
-                stats.score += itemEvalBriefs[i].aggregateResult.score;
-                if (itemEvalBriefs[i].pass) {
-                    stats.corrects++;
-                } else {
-                    if (itemEvalBriefs[i].score == 0) {
-                       stats.incorrects++;
-                    } else {
-                        // Partial correct
-                        stats.semicorrects++;
-                    }
-                }
-            }
-        }
-        return stats;
+        // nothing to do for local
+        return this.sequencingStrategy_.startAssignment(outsetNodeUuid);
     }
 
+    /**
+     * Resumes an existig assignment
+     * @param {string} assignmentUuid - assignment id
+     * @return AssignmentDetails
+     */
+    resumeAssignment(assignmentUuid)
+    {
+        // nothing to do for local
+        return this.sequencingStrategy_.resumeAssignment(assignmentUuid)
+        .then(function (assignmentDetails){
+            this.assignmentUuid_ = assignmentDetails.uuid;
+            // assignmentDetails.recentActivityUuid
+            // @todo stats
+            this.loadItemByActivityId(assignmentDetails.recentActivityUuid)
+            .then(function(activityDescriptor){
+                //this.logger_
+                return assignmentDetails;
+            });
+
+        });
+    }
 
     /**
      * loads the next item in the sequence
-     * Next item involves intantiation of a new node
+     * Next item involves intantiation of a new activity
      */
     loadNextItem()
     {
         // @todo - set properly the assignmentContext
-        // Not sure to pass the courseContext, learningContext or assignmentContext,
-        let report = this.store_.getState('report')
+        /*
+        let report = this.store_.getState('report');
         var context = {
             stats: (report) ? report.stats: null
-        };
-        return this.sequencingStrategy_.retrieveNextNode(context)
-        .then(function(nodeDescriptor){
-            this.pubsub_.publishRaw('next-node-retrieved', nodeDescriptor);
-            if (nodeDescriptor) {
-                return this.fetchItemAndRender_(nodeDescriptor)
-                .then(function(nodeDescriptor){
+        };*/
+        return this.sequencingStrategy_.retrieveNextActivity()
+        .then(function(activityDescriptor){
+            this.pubsub_.publishRaw('next-activity-retrieved', activityDescriptor);
+            if (activityDescriptor && activityDescriptor.uuid) {
+                return this.fetchItemAndRender_(activityDescriptor)
+                .then(function(activityDescriptor){
                     // When successfully loaded, create a slot in the report for
                     // the item. This will keep proper ordering even if the
                     // student skips the item and submits later on
-                    if (nodeDescriptor) {
+                    if (activityDescriptor) {
                         this.store_.dispatch({
-                            type: "ADD_EVAL_BRIEF",
-                            nodeId: nodeDescriptor.id,
+                            type: 'ADD_EVAL_BRIEF',
+                            activityId: activityDescriptor.uuid,
                             attemptNum: 0,
                             aggregateResult: null
                         });
-                    };
+                    }
                 }.bind(this));
             } else {
                 // resolve to null, nothing else to do.
@@ -180,42 +194,41 @@ export default class AssignmentPlayer
     /**
      * loads an previously intantiated item in the sequene
      */
-    loadItemByNodeId(nodeId)
+    loadItemByActivityId(activityId)
     {
-        // @todo - set properly the assignmentContext
-        // Not sure to pass the courseContext, learningContext or assignmentContext,
-        return this.sequencingStrategy_.retrieveNode(nodeId)
-        .then(function(nodeDescriptor){
-            this.pubsub_.publish('node-retrieved', nodeDescriptor);
+        return this.sequencingStrategy_.retrieveActivity(activityId)
+        .then(function(activityDescriptor){
+            this.pubsub_.publish('activity-retrieved', activityDescriptor);
 
-            return this.fetchItemAndRender_(nodeDescriptor);
+            return this.fetchItemAndRender_(activityDescriptor);
         }.bind(this));
     }
 
     /**
      * loads an previously intantiated item in the sequene
-     */
     loadItemByIndex(index)
     {
         // @todo - set properly the assignmentContext
         // Not sure to pass the courseContext, learningContext or assignmentContext,
-        return this.sequencingStrategy_.retrieveNodeByIndex(index)
-        .then(function(nodeDescriptor){
-            this.pubsub_.publish('node-retrieved', nodeDescriptor);
+        return this.sequencingStrategy_.retrieveActivityByIndex(index)
+        .then(function(activityDescriptor){
+            this.pubsub_.publish('activity-retrieved', activityDescriptor);
 
-            return this.fetchItemAndRender_(nodeDescriptor);
+            return this.fetchItemAndRender_(activityDescriptor);
         }.bind(this));
     }
+    */
 
     /**
-     * Loand the assignment report (at the end of assignment,
+     * Load the assignment report (at the end of assignment,
      * when no more items left)
      */
     loadReport()
     {
         //let stats = this.store_.getState('stats')
-        if (placeholders.content) {
-            ReactDOM.render(<ReportComponent store={this.store_} context={null} />, placeholders.content);
+        // this.placeholders_?
+        if (this.placeholders_.content) {
+            ReactDOM.render(<ReportComponent store={this.store_} context={null} />, this.placeholders_.content);
         }
     }
 
@@ -240,10 +253,10 @@ export default class AssignmentPlayer
      /**
       * Loads an item content and render it
       */
-     fetchItemAndRender_(nodeDescriptor)
-     {
-         return this.itemPlayer_.fetchNodeAndRender(nodeDescriptor, this.itemEl_);
-     }
+    fetchItemAndRender_(activityDescriptor)
+    {
+        return this.itemPlayer_.fetchActivityAndRender(activityDescriptor, this.itemEl_);
+    }
 
     /**
      * Subscribe to various events
@@ -297,7 +310,7 @@ export default class AssignmentPlayer
      */
     handleSubmissionBeforeRequestEvent_(message)
     {
-        console.log('handleSubmissionBeforeRequestEvent_:' + JSON.stringify(message));
+        this.logger_.debug({message: message}, 'handleSubmissionBeforeRequestEvent_');
     }
 
     /**
@@ -306,18 +319,18 @@ export default class AssignmentPlayer
      */
     handleSubmissionRespondedEvent_(message)
     {
-        message.nodeId;
+        message.activityId;
         message.data.evalResult;
 
         this.store_.dispatch({
-            type: "ADD_EVAL_BRIEF",
-            nodeId: message.nodeId,
+            type: 'ADD_EVAL_BRIEF',
+            activityId: message.activityId,
             attemptNum: message.data.evalResult.attemptNum,
             secondsSpent: message.data.submission.secondsSpent,
             aggregateResult: message.data.evalResult.aggregate
         });
 
-        console.log('handleSubmissionRespondedEvent_:' + JSON.stringify(message));
+        this.logger_.debug({message: message}, 'handleSubmissionRespondedEvent_');
     }
 
     /**
@@ -325,7 +338,8 @@ export default class AssignmentPlayer
      */
     handleNavigateEvent_(message)
     {
-        console.log('handleNavigateEvent_:' + JSON.stringify(message));
+        this.logger_.debug({message: message}, 'handleNavigateEvent_');
+
         if (message.param === 'next') {
             // @todo - pass context
             return this.loadNextItem();

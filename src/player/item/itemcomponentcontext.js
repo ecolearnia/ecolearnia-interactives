@@ -17,8 +17,7 @@
  * @date 2/20/16
  */
 
-var _ = require('lodash');
-import utils from '../../libs/common/utils';
+import utils from '../../../libs/common/utils';
 
 /**
  * @class ComponentContext
@@ -32,9 +31,12 @@ import utils from '../../libs/common/utils';
  */
 export default class ComponentContext
 {
+    /**
+     * @param {string} componentId, the ID of the component
+     * @param {player.item.ItemWrapper} item
+     */
     constructor(componentId, item)
     {
-        let self = this;
         /**
          * The item player
          */
@@ -48,8 +50,10 @@ export default class ComponentContext
 
         // For closure
         var dispatcher = this.item.dispatcher_;
-        let nodeId = this.item.getNodeId();
-        this.nodeId_ = nodeId;
+        let assignmentId = this.item.getAssignmentId();
+        this.assignmentId_ = assignmentId;
+        let activityId = this.item.getActivityId();
+        this.activityId_ = activityId;
         this.dispatcher = {
 
             /**
@@ -57,19 +61,19 @@ export default class ComponentContext
              */
             updateState: function (state)
             {
-                return dispatcher.updateState(nodeId, componentId, state);
+                return dispatcher.updateState(assignmentId, activityId, componentId, state);
             },
 
             evaluate: function ()
             {
-                return dispatcher.evaluate(nodeId);
+                return dispatcher.evaluate(assignmentId, activityId);
             },
 
             appendMessage: function (message)
             {
                 return dispatcher.appendMessage(message);
             }
-        }
+        };
     }
 
     /**
@@ -83,9 +87,9 @@ export default class ComponentContext
     /**
      * Return the componentId
      */
-    getNodeId()
+    getActivityId()
     {
-        return this.nodeId_;
+        return this.activityId_;
     }
 
     ///////// @todo - all the implementation were copied over to itemwrapper

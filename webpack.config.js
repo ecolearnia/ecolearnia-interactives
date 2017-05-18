@@ -2,11 +2,11 @@
 
 var path = require("path");
 module.exports = {
-  entry: './src/interactives.js',
+  entry: './src/bundle-interactives.js',
   output: {
     path: path.resolve(__dirname, "build"),
     publicPath: "/",
-    filename: "el-interactives.bundle2.js"
+    filename: "eli-interactives.bundle2.js"
   },
   module: {
     loaders: [

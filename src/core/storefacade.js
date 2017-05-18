@@ -18,7 +18,7 @@
  */
 
 var _ = require('lodash');
-import { createStore, applyMiddleware, combineReducers, compose} from 'redux'
+import { createStore, applyMiddleware, combineReducers, compose} from 'redux';
 import thunk from 'redux-thunk';
 
 /**
@@ -44,15 +44,15 @@ export default class StoreFacade
         // Wrapper around ther reducers to handle
         // _RESET_ action
         // @see: http://stackoverflow.com/questions/35622588/how-to-reset-the-state-of-a-redux-store/35641992#35641992
-        const resettableReducer = (state, action) => {
+        const resetableReducer = (state, action) => {
             if (action.type === '_RESET_') {
                 state = undefined;
             }
-            return rootReducer(state, action)
+            return rootReducer(state, action);
         };
 
         this.store_ = createStore(
-            resettableReducer,
+            resetableReducer,
             compose(
                 applyMiddleware(thunk),
                 // window.devToolsExtension is the Redux Chrome DevTools
@@ -97,6 +97,26 @@ export default class StoreFacade
     }
 
     /**
+     * @see: https://github.com/reactjs/redux/issues/303#issuecomment-125184409
+     */
+    observeChanges(onChange, select = s => s)
+    {
+        let currentState;
+
+        function handleChange() {
+            let nextState = select(this.store_.getState());
+            if (nextState !== currentState) {
+                currentState = nextState;
+                onChange(currentState);
+            }
+        }
+
+        let unsubscribe = this.store_.subscribe(handleChange);
+        handleChange();
+        return unsubscribe;
+    }
+
+    /**
      * subscribe to store change
      * @param {function} listener
      */
@@ -115,12 +135,12 @@ export default class StoreFacade
         var state;
         if (name != undefined){
             state = this.store_.getState()[name];
-            return this.store_.getState()[name].toJS();
+            //return this.store_.getState()[name].toJS();
         } else {
             state = this.store_.getState();
         }
         // If the state is of type Immutablejs, return the native java value.
-        return (state.toJS) ? state.toJS() : state;
+        return (state && state.toJS) ? state.toJS() : state;
     }
 
     /**

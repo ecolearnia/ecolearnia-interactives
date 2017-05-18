@@ -30,12 +30,12 @@ var internals = {};
  */
 internals.registerEvalEngines = function(evaluator)
 {
-	var matheval = new MathExpressionEval()
-    evaluator.registerEngine(matheval);
-    var regexeval = new RegexEval()
-    evaluator.registerEngine(regexeval);
-    var multimatch = new MultiMatch()
-    evaluator.registerEngine(multimatch);
+	var matheval = new MathExpressionEval();
+	evaluator.registerEngine(matheval);
+	var regexeval = new RegexEval();
+	evaluator.registerEngine(regexeval);
+	var multimatch = new MultiMatch();
+	evaluator.registerEngine(multimatch);
 };
 
 

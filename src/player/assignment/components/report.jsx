@@ -16,7 +16,7 @@
  */
 
 import React from 'react';
-import {EliReactComponent} from '../../../components/elireactcomponent';
+import EliReactComponent from '../../../core/elireactcomponent';
 
 /**
  * @class ScoreBoard
@@ -51,7 +51,7 @@ export default class ReportComponent extends EliReactComponent
             let title = '';
             let secondsSpent = '';
 
-            title = (evalBrief.nodeId) ? evalBrief.nodeId : "";
+            title = (evalBrief.activityId) ? evalBrief.activityId : "";
             secondsSpent = (evalBrief.secondsSpent) ? evalBrief.secondsSpent : "0";
             if (evalBrief && evalBrief.aggregateResult) {
                  correctnessMark = (evalBrief.aggregateResult.pass) ? "&#10003;" : "&#10007;";
@@ -79,8 +79,8 @@ export default class ReportComponent extends EliReactComponent
                         <tr>
                             <th>#</th>
                             <th></th>
-                            <th className={self.classNameFor('cell.numeric')}>{secondsSpentSigma} spent</th>
-                            <th></th>
+                            <th className={self.classNameFor('cell.numeric')}>Time spent</th>
+                            <th>Attempts</th>
                         </tr>
                     </thead>
                     <tbody>

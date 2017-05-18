@@ -26,7 +26,7 @@ var _ = require('lodash');
 function endsWith (str, suffix)
 {
     return str.indexOf(suffix, str.length - suffix.length) !== -1;
-};
+}
 module.exports.endsWith = endsWith;
 
 /**
@@ -41,7 +41,7 @@ function startsWith (str, prefix, position)
 {
     position = position || 0;
     return str.lastIndexOf(prefix, position) === position;
-};
+}
 module.exports.startsWith = startsWith;
 
 /**
@@ -79,7 +79,7 @@ function dotAccess (obj, is, value)
         }
         return dotAccess(obj[is[0]], is.slice(1), value);
     }
-};
+}
 module.exports.dotAccess = dotAccess;
 
 
@@ -93,7 +93,7 @@ function dotPopulate(obj, values)
             dotAccess(obj, property, values[property]);
         }
     }
-};
+}
 
 module.exports.dotPopulate = dotPopulate;
 
@@ -127,7 +127,7 @@ function hydrate (obj)
         }
     }
     return hydratedObj;
-};
+}
 
 module.exports.hydrate = hydrate;
 
@@ -155,51 +155,53 @@ function dehydrate(obj, pathPrefix, dotChar)
         }
     }
     return dehydratedObj;
-};
+}
 
 module.exports.dehydrate = dehydrate;
 
 // @see: http://stackoverflow.com/questions/2450954/how-to-randomize-shuffle-a-javascript-array
-function shuffleArray(array) {
-  var currentIndex = array.length, temporaryValue, randomIndex;
+function shuffleArray(array)
+{
+    var currentIndex = array.length, temporaryValue, randomIndex;
 
-  // While there remain elements to shuffle...
-  while (0 !== currentIndex) {
+    // While there remain elements to shuffle...
+    while (0 !== currentIndex) {
 
-    // Pick a remaining element...
-    randomIndex = Math.floor(Math.random() * currentIndex);
-    currentIndex -= 1;
+        // Pick a remaining element...
+        randomIndex = Math.floor(Math.random() * currentIndex);
+        currentIndex -= 1;
 
-    // And swap it with the current element.
-    temporaryValue = array[currentIndex];
-    array[currentIndex] = array[randomIndex];
-    array[randomIndex] = temporaryValue;
-  }
+        // And swap it with the current element.
+        temporaryValue = array[currentIndex];
+        array[currentIndex] = array[randomIndex];
+        array[randomIndex] = temporaryValue;
+    }
 
-  return array;
+    return array;
 }
 
 module.exports.shuffleArray = shuffleArray;
 
-function permutate(inputArr) {
-  var results = [];
+function permutate(inputArr)
+{
+    var results = [];
 
-  function permutate(arr, memo) {
-    var cur, memo = memo || [];
+    function permutate(arr, memo) {
+        var cur, memo = memo || [];
 
-    for (var i = 0; i < arr.length; i++) {
-      cur = arr.splice(i, 1);
-      if (arr.length === 0) {
-        results.push(memo.concat(cur));
-      }
-      permutate(arr.slice(), memo.concat(cur));
-      arr.splice(i, 0, cur[0]);
+        for (var i = 0; i < arr.length; i++) {
+            cur = arr.splice(i, 1);
+            if (arr.length === 0) {
+                results.push(memo.concat(cur));
+            }
+            permutate(arr.slice(), memo.concat(cur));
+            arr.splice(i, 0, cur[0]);
+        }
+
+        return results;
     }
 
-    return results;
-  }
-
-  return permutate(inputArr);
+    return permutate(inputArr);
 }
 
 module.exports.permutate = permutate;

@@ -17,8 +17,6 @@
  * @date 2/10/2016
  */
 
-var _ = require('lodash');
-import {dehydrate} from '../../../libs/common/utils';
 var logger = require('../../../libs/common/logger');
 
 var namespace = {};
@@ -72,7 +70,7 @@ export default class ItemActionFactory
     /**
      * Returns action for registering a stop timestamp
      *
-     * @param {Date!} timestamp  - Optiona: the timestamp
+     * @param {Date!} timestamp  - Optional: the timestamp
      */
     timestampStop(timestamp)
     {
@@ -85,7 +83,7 @@ export default class ItemActionFactory
     /**
      * Returns action for restoring (replacing) timestamps
      *
-     * @param {Date!} timestamp  - Optiona: the timestamp
+     * @param {Date!} timestamps  - 
      */
     restoreTimestamps(timestamps)
     {

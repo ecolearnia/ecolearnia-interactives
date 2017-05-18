@@ -18,8 +18,6 @@
 var React = require('react');
 import utils from '../../libs/common/utils';
 
-var internals = {};
-
 /**
  * @class EliReactComponent
  * @abstract
@@ -30,7 +28,7 @@ var internals = {};
  *  Abstract class which all React-based EL-I components should extend.
  *
  */
-export class EliReactComponent extends React.Component
+export default class EliReactComponent extends React.Component
 {
     constructor(props)
     {
@@ -45,20 +43,19 @@ export class EliReactComponent extends React.Component
     subscribeToStateChange()
     {
         let componentId = '<anon-component>';
-        let nodeId = '<anon-node>';
+        let activityId = '<anon-activity>';
         if (this.props.context) {
             componentId = this.props.context.getComponentId();
-            nodeId = this.props.context.getNodeId();
+            if (this.props.context.getActivityId) {
+                activityId = this.props.context.getActivityId();
+            }
         }
         // @todo - use store's observeChanges() instead to listen to changes to
         //         specific state properties.
         this.unsubscribe = this.props.store.subscribe(function() {
-            console.log('[' + nodeId +':'+ componentId + '@' + this.constructor.name + '] state updated! ' + JSON.stringify(this.props.store.getState('components')));
+            console.log('[' + activityId +':'+ componentId + '@' + this.constructor.name + '] state updated! ' + JSON.stringify(this.props.store.getState('components')));
             this.forceUpdate();
         }.bind(this));
-        if (this.props.context) {
-            this.props.context.item.registerUnsubscriber(componentId, this.unsubscribe);
-        }
     }
 
     /**
@@ -72,18 +69,21 @@ export class EliReactComponent extends React.Component
 
     /**
      * React component about to unmounting
+     * Unsubscrive itself from Store changes
      */
     componentWillUnmount()
     {
         let componentId = '<anon-component>';
-        let nodeId = '<anon-node>';
+        let activityId = '<anon-activity>';
         if (this.props.context) {
             componentId = this.props.context.getComponentId();
-            nodeId = this.props.context.getNodeId();
+            if (this.props.context.getActivityId) {
+                activityId = this.props.context.getActivityId();
+            }
         }
-        console.log('[' + nodeId +':'+ componentId + '@' + this.constructor.name + '] componentWillUnmount.');
+        console.log('[' + activityId +':'+ componentId + '@' + this.constructor.name + '] componentWillUnmount.');
         if (this.unsubscribe) {
-            console.log('[' + nodeId +':'+ componentId + '] unsubscribing.');
+            console.log('[' + activityId +':'+ componentId + '] unsubscribing.');
             this.unsubscribe();
         }
     }
@@ -94,15 +94,15 @@ export class EliReactComponent extends React.Component
     componentId()
     {
         return (this.componentId_) ? this.componentId_ : '<anon-component>';
-    };
+    }
 
     /**
      * Returns the ID of this component instance
      */
-    nodeId()
+    activityId()
     {
-        return (this.nodeId_) ? this.nodeId_ : '<anon-node>';
-    };
+        return (this.activityId_) ? this.activityId_ : '<anon-activity>';
+    }
 
     /**
      * Returns the DOM class name mostly for styling
@@ -115,12 +115,12 @@ export class EliReactComponent extends React.Component
                 numeric: 'text-right'
             },
             button: {
-                _default: "button",
-                primary: "button primary",
-                secondary: "button secondary",
-                success: "button success",
-                warning: "button warning",
-                alert: "button alert"
+                _default: 'button',
+                primary: 'button primary',
+                secondary: 'button secondary',
+                success: 'button success',
+                warning: 'button warning',
+                alert: 'button alert'
             }
         };
         return utils.dotAccess(foundationTheme, objName);
@@ -153,7 +153,7 @@ EliReactComponent.propTypes = {
     context: React.PropTypes.object.isRequired,
     /**
      * @type {StoreFacade}
-     * Player's item state store
+     * Container's state store
      */
     store: React.PropTypes.object.isRequired
 };
